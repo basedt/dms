@@ -199,7 +199,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
         title: intl.formatMessage({ id: "dms.console.workspace.export" }),
         breadcrumb: {},
       }}
-      subTitle="文件下载链接将在10天后过期"
+      subTitle= {intl.formatMessage({id:'dms.console.workspace.export.subTitle'})} 
       extra={[
         <Input
           key="search"

@@ -1,5 +1,4 @@
 import { DataTaskService } from "@/services/workspace/data.task";
-import { DataSourceService } from "@/services/workspace/datasource.service";
 import { UploadOutlined } from "@ant-design/icons";
 import { ProFormInstance, StepsForm } from "@ant-design/pro-components";
 import { useIntl, useModel } from "@umijs/max";
@@ -18,7 +17,7 @@ import {
   Upload,
   UploadFile,
 } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export interface DataImportModalProps {
   workspaceId: number | string;
@@ -43,47 +42,47 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
   });
   const { setMenuKey } = useModel("global");
 
-  useEffect(() => {
-    // DataSourceService.listByWorkspace(data?.workspaceId as string).then(
-    //   (resp) => {
-    //     if (resp.success) {
-    //       setDbList(resp.data as DMS.Dict[]);
-    //     }
-    //   }
-    // );
-  }, []);
-
   const descItems = () => {
     const items: DescriptionsProps["items"] = [
       {
         key: "schema",
-        label: "模式",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.schema",
+        }),
         children: formValues.schema,
       },
       {
         key: "tableName",
-        label: "表名",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.tableName",
+        }),
         children: formValues.tableName,
       },
       {
         key: "file",
-        label: "文件名",
+        label: intl.formatMessage({ id: "dms.console.workspace.import.file" }),
         children: formValues.file?.file?.name,
       },
       {
         key: "fileType",
-        label: "文件类型",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.fileType",
+        }),
         children: formValues.fileType,
       },
       {
         key: "fileEncoding",
-        label: "文件编码",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.fileEncoding",
+        }),
         children: formValues.fileEncoding,
       },
 
       {
         key: "isTruncate",
-        label: "清空目标表",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.truncate",
+        }),
         children: formValues.isTruncate?.toString(),
       },
     ];
@@ -91,7 +90,9 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
     if (formValues.fileType == "CSV") {
       items.push({
         key: "separator",
-        label: "分隔符",
+        label: intl.formatMessage({
+          id: "dms.console.workspace.import.separator",
+        }),
         children: formValues.separator,
       });
     }
@@ -154,7 +155,9 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
           >
             <div style={{ marginBottom: 16 }}>
               <Alert
-                message="仅支持200M以下的CSV、EXCEL文件上传，文件中的数据列需是对应表数据列的子集，自动兼容常见日期时间格式，对于数据量较大的文件建议使用数据同步工具导入。"
+                message={intl.formatMessage({
+                  id: "dms.console.workspace.import.toolTip",
+                })}
                 type="info"
                 showIcon
               />
@@ -166,7 +169,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
     >
       <StepsForm.StepForm
         name="one"
-        title="目标表"
+        title={intl.formatMessage({ id: "dms.console.workspace.import.step1" })}
         layout="horizontal"
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
@@ -185,16 +188,32 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
           return true;
         }}
       >
-        <Form.Item name="schema" label="模式" rules={[{ required: true }]}>
+        <Form.Item
+          name="schema"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.schema",
+          })}
+          rules={[{ required: true }]}
+        >
           <Input disabled />
         </Form.Item>
-        <Form.Item name="tableName" label="表名" rules={[{ required: true }]}>
+        <Form.Item
+          name="tableName"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.tableName",
+          })}
+          rules={[{ required: true }]}
+        >
           <Input disabled />
         </Form.Item>
         <Form.Item
           name="isTruncate"
-          label="清空目标表"
-          tooltip="勾选后会先清空目标表再导入数据"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.truncate",
+          })}
+          tooltip={intl.formatMessage({
+            id: "dms.console.workspace.import.truncate.toolTip",
+          })}
           valuePropName="checked"
         >
           <Checkbox />
@@ -202,7 +221,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
       </StepsForm.StepForm>
       <StepsForm.StepForm
         name="two"
-        title="源文件"
+        title={intl.formatMessage({ id: "dms.console.workspace.import.step2" })}
         layout="horizontal"
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
@@ -218,7 +237,13 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
           return true;
         }}
       >
-        <Form.Item name="file" label="文件" rules={[{ required: true }]}>
+        <Form.Item
+          name="file"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.file",
+          })}
+          rules={[{ required: true }]}
+        >
           <Upload
             name="file"
             maxCount={1}
@@ -227,7 +252,11 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
               let flag = true;
               if (fileInfo.size > 1024 * 1024 * 200) {
                 flag = false;
-                message.error(`文件大小不能超过200M`);
+                message.error(
+                  intl.formatMessage({
+                    id: "dms.console.workspace.import.file.sizeLimit",
+                  })
+                );
               } else {
                 setUploadFile(fileInfo);
               }
@@ -235,16 +264,25 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
             }}
             onChange={(info) => {
               const fileType = info.file.name.split(".").pop();
-              formRef.current?.setFieldValue("fileType", fileType=='csv'?'csv':'xlsx');
+              formRef.current?.setFieldValue(
+                "fileType",
+                fileType == "csv" ? "csv" : "xlsx"
+              );
               setSeparatorStatus(fileType === "csv");
             }}
           >
-            <Button icon={<UploadOutlined />}>选择文件</Button>
+            <Button icon={<UploadOutlined />}>
+              {intl.formatMessage({
+                id: "dms.console.workspace.import.file.select",
+              })}
+            </Button>
           </Upload>
         </Form.Item>
         <Form.Item
           name="fileType"
-          label="文件类型"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.fileType",
+          })}
           rules={[{ required: true }]}
         >
           <Radio.Group
@@ -259,7 +297,9 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         </Form.Item>
         <Form.Item
           name="fileEncoding"
-          label="文件编码"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.fileEncoding",
+          })}
           rules={[{ required: true }]}
         >
           <Select>
@@ -267,7 +307,13 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
             <Select.Option value="GBK">GBK</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item name="separator" label="分隔符" rules={[{ required: true }]}>
+        <Form.Item
+          name="separator"
+          label={intl.formatMessage({
+            id: "dms.console.workspace.import.separator",
+          })}
+          rules={[{ required: true }]}
+        >
           <Select disabled={!separatorStatus}>
             <Select.Option value=",">,</Select.Option>
             <Select.Option value=";">;</Select.Option>
@@ -277,7 +323,10 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
           </Select>
         </Form.Item>
       </StepsForm.StepForm>
-      <StepsForm.StepForm name="three" title="导入总览">
+      <StepsForm.StepForm
+        name="three"
+        title={intl.formatMessage({ id: "dms.console.workspace.import.step3" })}
+      >
         <Descriptions
           items={descItems()}
           style={{ marginLeft: 80 }}

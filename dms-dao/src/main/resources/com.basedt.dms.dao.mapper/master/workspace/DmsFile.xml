@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.basedt.dms.dao.mapper.master.workspace.DmsFileMapper">
+    <resultMap id="dmsFileMap" type="com.basedt.dms.dao.entity.master.workspace.DmsFile">
+        <id column="id" property="id"/>
+        <result column="creator" property="creator"/>
+        <result column="create_time" property="createTime"/>
+        <result column="editor" property="editor"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="workspace_id" property="workspaceId"/>
+        <result column="datasource_id" property="datasourceId"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_type" property="fileType"/>
+        <result column="file_catalog" property="fileCatalog"/>
+        <result column="file_status" property="fileStatus"/>
+        <result column="content" property="content"/>
+        <result column="version" property="version"/>
+        <result column="owner" property="owner"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <delete id="deleteByFileName">
+        delete from dms_file
+        <where>
+            workspace_id = #{workspaceId,jdbcType=BIGINT}
+            and file_name = #{fileName,jdbcType=VARCHAR}
+            and file_catalog = #{fileCatalog,jdbcType=BIGINT}
+        </where>
+    </delete>
+
+    <update id="renameFile">
+        update dms_file
+        <set>
+            file_name = #{newFileName,jdbcType=VARCHAR}
+        </set>
+        <where>
+            workspace_id = #{workspaceId,jdbcType=BIGINT}
+            and file_name = #{fileName,jdbcType=VARCHAR}
+            and file_catalog = #{fileCatalog,jdbcType=BIGINT}
+        </where>
+    </update>
+
+    <update id="moveCatalog">
+        update dms_file
+        <set>
+            file_catalog = #{newFileCatalog,jdbcType=BIGINT}
+        </set>
+        <where>
+            workspace_id = #{workspaceId,jdbcType=BIGINT}
+            and file_name = #{fileName,jdbcType=VARCHAR}
+            and file_catalog = #{fileCatalog,jdbcType=BIGINT}
+        </where>
+    </update>
+
+    <select id="listAllByWorkspaceAndDatasource" resultMap="dmsFileMap">
+        select
+        f.id,
+        f.workspace_id,
+        f.datasource_id,
+        f.file_name,
+        f.file_type,
+        f.file_catalog,
+        f.file_status,
+        f.content,
+        f.version,
+        f.owner,
+        f.remark,
+        f.creator,
+        f.create_time,
+        f.editor,
+        f.update_time
+        from
+        (
+        select
+        t.id,
+        t.workspace_id,
+        t.datasource_id,
+        t.file_name,
+        t.file_type,
+        t.file_catalog,
+        t.file_status,
+        t.content,
+        t.version,
+        t.owner,
+        t.remark,
+        t.creator,
+        t.create_time,
+        t.editor,
+        t.update_time,
+        row_number() over(partition by t.workspace_id,t.file_catalog,t.file_name order by t.version desc) as rn
+        from dms_file t
+        <where>
+            t.workspace_id = #{workspaceId,jdbcType=BIGINT}
+            and t.datasource_id = #{datasourceId,jdbcType=BIGINT}
+        </where>
+        ) f
+        <where>
+            f.rn = 1
+        </where>
+    </select>
+
+    <select id="selectLatestFile" resultMap="dmsFileMap">
+        select
+        t.id,
+        t.workspace_id,
+        t.datasource_id,
+        t.file_name,
+        t.file_type,
+        t.file_catalog,
+        t.file_status,
+        t.content,
+        t.version,
+        t.owner,
+        t.remark,
+        t.creator,
+        t.create_time,
+        t.editor,
+        t.update_time
+        from dms_file t
+        <where>
+            t.workspace_id = #{workspaceId,jdbcType=BIGINT}
+            and t.file_catalog = #{fileCatalog,jdbcType=BIGINT}
+            and t.file_name = #{fileName,jdbcType=VARCHAR}
+        </where>
+        order by t.version desc
+        limit 1
+    </select>
+</mapper>

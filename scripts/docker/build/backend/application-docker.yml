@@ -1,0 +1,127 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      master:
+        name: dms-master
+        driver-class-name: org.postgresql.Driver
+        username: root
+        password: 123456
+        url: jdbc:postgresql://db:5432/dms
+        initial-size: 5
+        max-active: 30
+        min-idle: 5
+        max-wait: 1000
+        # 是否支持psCache oracle下建议开启，mysql下建议关闭
+        pool-prepared-statements: false
+        # 参数大于0 poolPreparedStatements自动设置为true
+        #max-pool-prepared-statement-per-connection-size: 5
+        validation-query: select 1
+        validation-query-timeout: 1
+        test-on-borrow: true
+        test-on-return: true
+        test-while-idle: true
+        time-between-eviction-runs-millis: 10000
+        min-evictable-idle-time-millis: 30000
+        async-close-connection-enable: true
+        use-global-data-source-stat: true
+        filters: stat,wall,slf4j
+        filter:
+          stat:
+            db-type: postgresql
+            merge-sql: true
+            slow-sql-millis: 10000
+            log-slow-sql: true
+          slf4j:
+            enabled: true
+            result-set-log-enabled: false
+      log:
+        name: dms-log
+        driver-class-name: org.postgresql.Driver
+        username: root
+        password: 123456
+        url: jdbc:postgresql://db:5432/dms
+        initial-size: 5
+        max-active: 30
+        min-idle: 5
+        max-wait: 1000
+        pool-prepared-statements: false
+        validation-query: select 1
+        validation-query-timeout: 1
+        test-on-borrow: true
+        test-on-return: true
+        test-while-idle: true
+        time-between-eviction-runs-millis: 10000
+        min-evictable-idle-time-millis: 30000
+        async-close-connection-enable: true
+        use-global-data-source-stat: true
+        filters: stat,wall,slf4j
+        filter:
+          stat:
+            db-type: postgresql
+            merge-sql: true
+            slow-sql-millis: 10000
+            log-slow-sql: true
+          slf4j:
+            enabled: true
+            result-set-log-enabled: false
+
+  redis:
+    database: 0
+    host: redis
+    port: 6379
+    password: 123456
+    timeout: 5000
+    lettuce:
+      pool:
+        min-idle: 0
+        max-idle: 10
+        max-wait: 10000
+        max-active: 50
+  quartz:
+    properties:
+      org.quartz:
+        dataSource:
+          quartzDS:
+            driverClassName: org.postgresql.Driver
+            url: jdbc:postgresql://db:5432/dms
+            username: root
+            password: 123456
+            maxActive: 20
+  mail:
+    host: dms_backend
+    username: dms
+    password: 123456
+    port: 25
+    default-encoding: UTF-8
+
+socket.io:
+  host: dms_backend
+  port: 8366
+  workerThreads: 100
+# log
+logging:
+  level:
+    root: info
+    springfox.documentation: warn
+    org.springframework.boot.autoconfigure: warn
+    org.springframework.beans.factory: warn
+    org.springframework.context: warn

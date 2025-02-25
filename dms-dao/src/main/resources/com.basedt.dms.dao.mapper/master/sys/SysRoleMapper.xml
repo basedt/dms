@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.basedt.dms.dao.mapper.master.sys.SysRoleMapper">
+    <resultMap id="sysRoleMap" type="com.basedt.dms.dao.entity.master.sys.SysRole">
+        <id column="id" property="id"/>
+        <result column="creator" property="creator"/>
+        <result column="create_time" property="createTime"/>
+        <result column="editor" property="editor"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="role_code" property="roleCode"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_type" property="roleType"/>
+        <result column="role_status" property="roleStatus"/>
+        <result column="role_desc" property="roleDesc"/>
+        <collection property="privileges" javaType="java.util.List"
+                    ofType="com.basedt.dms.dao.entity.master.sys.SysPrivilege">
+            <id column="privilege_id" property="id"/>
+            <result column="privilege_code" property="privilegeCode"/>
+            <result column="privilege_name" property="privilegeName"/>
+            <result column="parent_code" property="parentCode"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByUserName" resultMap="sysRoleMap">
+        <![CDATA[
+        select t3.id,
+               t3.creator,
+               t3.create_time,
+               t3.editor,
+               t3.update_time,
+               t3.role_code,
+               t3.role_name,
+               t3.role_type,
+               t3.role_status,
+               t3.role_desc,
+               t5.id as privilege_id,
+               t5.privilege_code,
+               t5.privilege_name,
+               t5.parent_code
+        from sys_user t1
+                 join sys_user_role t2
+                      on t1.id = t2.user_id
+                 join sys_role t3
+                      on t2.role_id = t3.id
+                 left join sys_role_privilege t4
+                           on t3.id = t4.role_id
+                 left join sys_privilege t5
+                           on t4.privilege_id = t5.id
+        ]]>
+        where t1.user_name = #{userName,jdbcType=VARCHAR}
+          and t3.role_status in ('01')
+    </select>
+</mapper>

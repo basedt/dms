@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dms-service</artifactId>
+        <groupId>com.basedt</groupId>
+        <version>${reversion}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dms-service-workspace</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.basedt</groupId>
+            <artifactId>dms-service-security</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basedt</groupId>
+            <artifactId>dms-plugins-datasource</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basedt</groupId>
+            <artifactId>dms-plugins-input</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basedt</groupId>
+            <artifactId>dms-plugins-output</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basedt</groupId>
+            <artifactId>dms-service-log</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>ST4</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

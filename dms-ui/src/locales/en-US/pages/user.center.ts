@@ -1,0 +1,25 @@
+export default {
+  "dms.user.center.profile": "Profile",
+  "dms.user.center.security": "Security Settings",
+  "dms.user.center.security.password": "Password",
+  "dms.user.center.security.password.desc":
+    "Current account password strength: Strong",
+  "dms.user.center.security.password.edit": "Change Password",
+  "dms.user.center.security.password.old": "Old Password",
+  "dms.user.center.security.password.new": "New Password",
+  "dms.user.center.security.password.confirm": "Confirm Password",
+  "dms.user.center.security.email": "Bind Email",
+  "dms.user.center.security.email.desc": "Email: ",
+  "dms.user.center.security.email.edit": "Change Email",
+  "dms.user.center.security.email.mail": "Email",
+  "dms.user.center.security.email.authCode": "Verification Code",
+  "dms.user.center.security.email.authCode.get": "Get Verification Code",
+  "dms.user.center.security.email.authCode.info":
+    "Verification code has been sent to your email, please check your inbox!",
+  "dms.user.center.message": "Notifications",
+  "dms.user.center.log": "Login Log",
+  "dms.user.center.log.ipAddress": "IP Address: ",
+  "dms.user.center.log.clientInfo": "Client: ",
+  "dms.user.center.log.os": "Operating System: ",
+  "dms.user.center.log.browser": "Browser: ",
+};

@@ -1,0 +1,140 @@
+.customHeaderMenuButton {
+    float: left;
+    margin: 0 0 0 3px;
+}
+
+.customHeaderLabel {
+    float: left;
+    margin: 0 0 0 3px !important;
+}
+
+.customSortDownLabel {
+    float: left;
+    margin: 0 0 0 3px;
+}
+
+.customSortUpLabel {
+    float: left;
+    margin: 0;
+}
+
+.customSortRemoveLabel {
+    float: left;
+    margin: 0 0 0 3px;
+    font-size: 11px;
+}
+
+.active {
+    color: cornflowerblue;
+}
+
+.ag-ltr .ag-header-cell::before {
+    background-color: #bdbdbd;
+    z-index: 3;
+}
+
+.ag-header-cell:not(.ag-header-cell-auto-height) .ag-header-cell-comp-wrapper {
+    overflow: hidden;
+}
+
+.ag-ltr .ag-header-cell-resize,
+.ag-header-cell {
+    background: #f5f7f7;
+}
+
+.customHeaderLabel {
+    margin: 0 3px 0 5px !important;
+}
+
+.ag-header-cell-comp-wrapper {
+    position: relative;
+
+    >div {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    span {
+        display: flex;
+        position: absolute;
+        right: 2px;
+        top: 4px;
+        padding-left: 3px;
+        background-color: #f3f6f6;
+    }
+}
+
+.ag-ltr .ag-cell {
+    border-right: 1px solid #c5c5c5;
+}
+
+.ag-header-cell,
+.ag-header-group-cell {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.ag-overlay-loading-wrapper {
+    display: none;
+}
+
+.sorterPopover {
+    width: 220px;
+    // background-color: #ccc;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+
+    :global {
+        .ant-tree-switcher {
+            width: 5px;
+        }
+
+        .ant-tree-title {
+            display: flex;
+            width: 180px;
+            white-space: nowrap;
+            overflow-x: hidden;
+        }
+
+        .ant-tree-list {
+            margin: 5px 0;
+        }
+
+        .ant-tree-list-holder-inne {
+            padding-bottom: 10px;
+        }
+
+        :where(.css-dev-only-do-not-override-1xd99dr).ant-tree .ant-tree-checkbox+span {
+            width: 200px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+
+    &_Top {
+        display: flex;
+        flex-direction: column;
+
+        >span {
+            display: flex;
+            align-items: end;
+
+            >span {
+                position: relative;
+                top: 2px;
+                margin-right: 5px;
+            }
+        }
+    }
+
+    &_Bottom {
+        margin-top: 0px;
+
+        &_input {
+            margin: 8px 0;
+            height: 25px
+        }
+    }
+}

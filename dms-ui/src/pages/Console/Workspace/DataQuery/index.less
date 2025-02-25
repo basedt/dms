@@ -1,0 +1,45 @@
+.panel-horizontal {
+  height: calc(100vh - 56px);
+}
+
+.panel_handle_hover {
+  border: 1px solid #f3f3f3 !important;
+
+  &:hover {
+    border: 3px solid #e6f4ff !important;
+  }
+}
+
+
+.catalogTreeContainer {
+  :global {
+
+    .ant-tree-node-content-wrapper,
+    .ant-tree-node-content-wrapper-close {
+      display: flex;
+    }
+
+    .ant-tree-node-content-wrapper,
+    .ant-tree-node-content-wrapper-open {
+      display: flex;
+    }
+
+    .ant-tree-title {
+      min-width: 680px; //same with left container max width
+    }
+
+    .ant-dropdown-trigger {
+      white-space: nowrap;
+    }
+
+    .ant-tree-list-holder::-webkit-scrollbar {
+      display: none;
+      /* 隐藏滚动条（针对 Webkit 浏览器） */
+    }
+
+    .ant-tree-list-holder {
+      scrollbar-width: none;
+      /* Firefox 浏览器中隐藏滚动条 */
+    }
+  }
+}

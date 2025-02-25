@@ -1,0 +1,129 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+services:
+
+  db_dev:
+    image: postgres:15.1-alpine
+    profiles: [ "dev" ]
+    container_name: dms_postgres_dev
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: dms
+    ports:
+      - 5432:5432
+    volumes:
+      - ../data:/var/lib/postgresql/data
+    networks:
+      - dms
+  db:
+    image: postgres:15.1-alpine
+    profiles: [ "deploy" ]
+    container_name: dms_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: dms
+    ports:
+      - 5432:5432
+    volumes:
+      - ../../db/postgres/data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "dms", "-U", "-u$$POSTGRES_USER" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - dms
+  redis_dev:
+    image: redis:7.0.7
+    profiles: [ "dev" ]
+    container_name: dms_redis_dev
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - dms
+  redis:
+    image: redis:7.0.7
+    profiles: [ "deploy" ]
+    container_name: dms_redis
+    restart: always
+    ports:
+      - 6379:6379
+    networks:
+      - dms
+  minio_dev:
+    image: bitnami/minio:2024
+    profiles: [ "dev" ]
+    container_name: dms_minio_dev
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DEFAULT_BUCKETS=dms
+    ports:
+      - 9000:9000
+      - 9001:9001
+    networks:
+      - dms
+  minio:
+    image: bitnami/minio:2024
+    profiles: [ "deploy" ]
+    container_name: dms_minio
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DEFAULT_BUCKETS=dms
+    ports:
+      - 9000:9000
+      - 9001:9001
+    networks:
+      - dms
+  dms_backend:
+    image: dms-backend:v1.0.0-arm64
+    profiles: [ "deploy" ]
+    container_name: dms-backend
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://dms-backend:8080/dms/api/health/status" ]
+    ports:
+      - 8080:8080
+      - 8366:8366
+    networks:
+      - dms
+  dms-frontend:
+    image: dms-frontend:v1.0.0-arm64
+    profiles: [ "deploy" ]
+    container_name: dms-frontend
+    depends_on:
+      dms_backend:
+        condition: service_healthy
+    ports:
+      - 80:80
+    networks:
+      - dms
+
+networks:
+  dms:
+    driver: bridge

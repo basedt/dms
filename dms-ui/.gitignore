@@ -1,0 +1,16 @@
+# umi
+.umi
+.umi-production
+
+
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+*bak
+
+# dependencies
+**/node_modules
+dist
+
+.vscode
+node

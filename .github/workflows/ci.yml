@@ -17,13 +17,13 @@ jobs:
         jdk: [ 8,11,17 ]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: checkout source code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
-      - name: Setup jdk env ${{ matrix.jdk }}
+      - name: Setup Jdk Env ${{ matrix.jdk }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.jdk }}
           distribution: 'corretto'
           cache: 'maven'
-      - name: Build project with maven
-        run: mvn clean package -B -U -T 4 -Dmaven.test.skip=true --file pom.xml
+      - name: Build Project With Maven
+        run: mvn clean package -B -U -T 4 '-Dmaven.test.skip=true' --file pom.xml

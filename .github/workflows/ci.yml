@@ -16,7 +16,7 @@ jobs:
         jdk: [ 8, 11,17 ]
       runs-on: ${{ matrix.os }}
   steps:
-    - name: checkout
+    - name: checkout source code
       uses: actions/checkout@v4
     - name: Setup jdk env ${{ matrix.jdk }}
       uses: actions/setup-java@v4

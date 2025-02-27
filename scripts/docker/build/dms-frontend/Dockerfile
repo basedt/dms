@@ -1,7 +1,7 @@
 FROM maven:3.9.6-amazoncorretto-8 as build
 ENV DMS_HOME=/opt/app
 COPY ./ $DMS_HOME/dms
-RUN cd $DMS_HOME/dms && mvn clean package -B -U -T 4 '-Dmaven.test.skip=true' -pl dms-ui
+RUN cd $DMS_HOME/dms && mvn clean package -B -U -T 4 '-Dmaven.test.skip=true'
 
 FROM nginx:stable as docker
 ENV DMS_HOME=/opt/app

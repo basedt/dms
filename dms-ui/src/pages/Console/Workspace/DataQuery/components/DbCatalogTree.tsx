@@ -273,10 +273,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         id: "dms.console.workspace.dataquery.refresh",
       }),
       onClick: () => {
-        console.log("refresh", node);
-        idbAPI.getTablesByDbId(datasourceId as string).then((d) => {
-          console.log("db tables info :", d);
-        });
+        // console.log("refresh", node);
         refreshTreeData(node);
       },
     });
@@ -353,7 +350,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   const dataImport = (node: DMS.CatalogTreeNode<string>) => {
     let tableInfo: string[] = node.identifier.split(".");
-    console.log(tableInfo);
     setDataImportData({
       open: true,
       data: {

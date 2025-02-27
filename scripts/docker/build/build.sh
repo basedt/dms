@@ -14,11 +14,11 @@ mvn clean package -DskipTests
 mkdir -p $CUR_DIR/tmp/backend
 cp $DMS_HOME/dms-api/target/dms-api.jar $CUR_DIR/tmp/backend
 cd $CUR_DIR
-docker build -f ./backend/Dockerfile -t dms-backend:$1 .
+docker build -f ./dms-backend/Dockerfile -t dms-backend:$1 .
 ## build frontend docker image
 mkdir -p $CUR_DIR/tmp/frontend
 cp -r $DMS_HOME/dms-ui/dist/* $CUR_DIR/tmp/frontend
 cd $CUR_DIR
-docker build -f ./frontend/Dockerfile -t dms-frontend:$1 .
+docker build -f ./dms-frontend/Dockerfile -t dms-frontend:$1 .
 
 rm -rf $CUR_DIR/tmp

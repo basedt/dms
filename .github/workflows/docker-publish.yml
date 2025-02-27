@@ -4,24 +4,60 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  ALIYUN_REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  ALIYUN_REPO: basedt
+#  REGISTRY:
 
 jobs:
   build:
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        platform: [ linux/amd64 , linux/arm64 ]
+        image: [ dms-backend , dms-frontend ]
     runs-on: ubuntu-latest
     steps:
       - name: Prepare
+#        暂时还不知道什么意思
         run: |
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - name: Checkout Source Code
         uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 8
+          distribution: 'corretto'
+          cache: 'maven'
+      - name: Extract project version
+        id: version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: basedt/dms
+          images: ${{ matrix.image }}
+      - name: Login to Aliyun
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ALIYUN_REGISTRY_USER }}
+          password: ${{ secrets.ALIYUN_REGISTRY_PASSWD }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and publish
+        uses: docker/build-push-action@v6
+        with:
+          platforms: ${{ matrix.platform }}
+          file: scripts/docker/build/${{ matrix.image }}/Dockerfile
+          context: .
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ ALIYUN_REGISTRY }}/${{ ALIYUN_REPO }}/${{ matrix.image }}/${{ env.PROJECT_VERSION }}
+          push: true
+
+

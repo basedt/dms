@@ -57,7 +57,7 @@ jobs:
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ ALIYUN_REGISTRY }}/${{ ALIYUN_REPO }}/${{ matrix.image }}/${{ env.PROJECT_VERSION }}
+          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}/${{ env.PROJECT_VERSION }}
           push: true
 
 

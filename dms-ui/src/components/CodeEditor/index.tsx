@@ -20,7 +20,7 @@ type CoderEditorProps = {
   theme: string;
   language?: string;
   maxHeight: number;
-  dataSourceId: string | number;
+  dataSourceId: string;
   fileId?: string | number;
   workspaceId?: string | number;
   fileName?: string;
@@ -84,7 +84,6 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log("socket connect on", socket.id);
       setIsConnected(true);
     });
 

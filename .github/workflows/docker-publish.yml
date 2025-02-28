@@ -6,7 +6,6 @@ on:
 env:
   ALIYUN_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   ALIYUN_REPO: basedt
-#  REGISTRY:
 
 jobs:
   build:
@@ -17,11 +16,6 @@ jobs:
         image: [ dms-backend , dms-frontend ]
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
-#        暂时还不知道什么意思
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - name: Checkout Source Code
         uses: actions/checkout@v4
       - name: Setup Java
@@ -30,14 +24,8 @@ jobs:
           java-version: 8
           distribution: 'corretto'
           cache: 'maven'
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8
+      - name: Build Project With Maven
+        run: mvn clean package -B -U -T 4 '-Dmaven.test.skip=true' --file pom.xml
       - name: Extract project version
         id: version
         run: |

@@ -50,6 +50,6 @@ jobs:
           context: .
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            gleiyu/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
-            gleiyu/${{ matrix.image }}:latest
+            basedt/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+            basedt/${{ matrix.image }}:latest
           push: true

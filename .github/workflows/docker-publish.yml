@@ -47,5 +47,7 @@ jobs:
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
           labels: ${{ steps.meta.outputs.labels }}
-          tags: gleiyu/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+          tags: |
+            gleiyu/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+            gleiyu/${{ matrix.image }}:latest
           push: true

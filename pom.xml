@@ -52,7 +52,7 @@
         <maven.compiler.plugin>3.8.1</maven.compiler.plugin>
         <maven.flatten.plugin>1.2.7</maven.flatten.plugin>
         <maven.frontend.plugin>1.9.1</maven.frontend.plugin>
-        <reversion>1.0.0-snapshot</reversion>
+        <reversion>1.0.1-snapshot</reversion>
         <spring.boot.version>2.7.6</spring.boot.version>
         <druid.spring.boot.version>1.2.15</druid.spring.boot.version>
         <mysql.version>8.0.28</mysql.version>

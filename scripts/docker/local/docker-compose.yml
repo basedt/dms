@@ -16,21 +16,6 @@
 
 services:
 
-#  db:
-#    image: postgres:15.1-alpine
-#    profiles: [ "prod" ]
-#    container_name: dms_postgres_dev
-#    restart: always
-#    environment:
-#      POSTGRES_USER: root
-#      POSTGRES_PASSWORD: 123456
-#      POSTGRES_DB: dms
-#    ports:
-#      - 5432:5432
-#    volumes:
-#      - ../data:/var/lib/postgresql/data
-#    networks:
-#      - dms
   db:
     image: postgres:15.1-alpine
     profiles: [ "dev","prod" ]
@@ -52,15 +37,6 @@ services:
       start_period: 10s
     networks:
       - dms
-#  redis_dev:
-#    image: redis:7.0.7
-#    profiles: [  ]
-#    container_name: dms_redis_dev
-#    restart: always
-#    ports:
-#      - 6379:6379
-#    networks:
-#      - dms
   redis:
     image: redis:7.0.7
     profiles: [ "dev","prod" ]
@@ -70,19 +46,6 @@ services:
       - 6379:6379
     networks:
       - dms
-#  minio_dev:
-#    image: bitnami/minio:2024
-#    profiles: [ "dev" ]
-#    container_name: dms_minio_dev
-#    environment:
-#      - MINIO_ROOT_USER=admin
-#      - MINIO_ROOT_PASSWORD=password
-#      - MINIO_DEFAULT_BUCKETS=dms
-#    ports:
-#      - 9000:9000
-#      - 9001:9001
-#    networks:
-#      - dms
   minio:
     image: bitnami/minio:2024
     profiles: [ "dev","prod" ]
@@ -97,7 +60,7 @@ services:
     networks:
       - dms
   dms_backend:
-    image: registry.cn-hangzhou.aliyuncs.com/basedt/dms-backend:1.0.1-snapshot
+    image: gleiyu/dms-backend
     profiles: [ "prod" ]
     container_name: dms-backend
     depends_on:
@@ -113,7 +76,7 @@ services:
     networks:
       - dms
   dms-frontend:
-    image: registry.cn-hangzhou.aliyuncs.com/basedt/dms-frontend:1.0.1-snapshot
+    image: gleiyu/dms-frontend
     profiles: [ "prod" ]
     container_name: dms-frontend
     depends_on:

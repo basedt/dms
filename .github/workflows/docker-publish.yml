@@ -58,12 +58,17 @@ jobs:
 #        uses: docker/metadata-action@v5
 #        with:
 #          images: ${{ matrix.image_name_env }}
-      - name: Login to Aliyun
+#      - name: Login to Aliyun
+#        uses: docker/login-action@v3
+#        with:
+#          registry: ${{ env.ALIYUN_REGISTRY }}
+#          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+#          password: ${{ secrets.DOCKER_REGISTRY_PASSWD }}
+      - name: Login to Docker
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.ALIYUN_REGISTRY }}
-          username: ${{ secrets.ALIYUN_REGISTRY_USER }}
-          password: ${{ secrets.ALIYUN_REGISTRY_PASSWD }}
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWD }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -74,7 +79,6 @@ jobs:
           platforms: ${{ matrix.platform }}
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
-          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
+#          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
+          tags: ${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
           push: true
-
-

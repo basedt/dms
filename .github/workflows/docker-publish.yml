@@ -6,8 +6,6 @@ on:
 env:
   ALIYUN_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   ALIYUN_REPO: basedt
-  IMAGE_NAME_BACKEND: dms-backend
-  IMAGE_NAME_FRONTEND: dms-frontend
 
 jobs:
   build:
@@ -16,22 +14,22 @@ jobs:
       matrix:
         include:
           - service_name: "build-backend-amd64"
-            image_name_env: "dms-backend-amd64"
+            image_name_env: "amd64"
             image: "dms-backend"
 #            context: "api"
             platform: linux/amd64
           - service_name: "build-backend-arm64"
-            image_name_env: "dms-backend-arm64"
+            image_name_env: "arm64"
             image: "dms-backend"
 #            context: "api"
             platform: linux/arm64
           - service_name: "build-frontend-amd64"
-            image_name_env: "dms-frontend-amd64"
+            image_name_env: "amd64"
             image: "dms-frontend"
 #            context: "web"
             platform: linux/amd64
           - service_name: "build-frontend-arm64"
-            image_name_env: "dms-frontend-arm64"
+            image_name_env: "arm64"
             image: "dms-frontend"
 #            context: "web"
             platform: linux/arm64

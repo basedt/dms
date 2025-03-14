@@ -55,11 +55,11 @@ jobs:
         run: |
           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ matrix.image_name_env }}
+#      - name: Docker meta
+#        id: meta
+#        uses: docker/metadata-action@v5
+#        with:
+#          images: ${{ matrix.image_name_env }}
       - name: Login to Aliyun
         uses: docker/login-action@v3
         with:
@@ -76,7 +76,6 @@ jobs:
           platforms: ${{ matrix.platform }}
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
-          labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
           push: true
 

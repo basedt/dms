@@ -60,7 +60,7 @@ services:
     networks:
       - dms
   dms_backend:
-    image: gleiyu/dms-backend
+    image: basedt/dms-backend
     profiles: [ "prod" ]
     container_name: dms-backend
     depends_on:
@@ -76,7 +76,7 @@ services:
     networks:
       - dms
   dms-frontend:
-    image: gleiyu/dms-frontend
+    image: basedt/dms-frontend
     profiles: [ "prod" ]
     container_name: dms-frontend
     depends_on:

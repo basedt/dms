@@ -117,6 +117,13 @@ socket.io:
   host: dms_backend
   port: 8366
   workerThreads: 100
+
+minio:
+  endpoint: http://localhost:9000
+  accessKey: admin
+  secretKey: password
+  bucketName: dms
+  expiry: 30
 # log
 logging:
   level:

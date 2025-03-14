@@ -16,24 +16,9 @@
 
 services:
 
-  db_dev:
-    image: postgres:15.1-alpine
-    profiles: [ "dev" ]
-    container_name: dms_postgres_dev
-    restart: always
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: dms
-    ports:
-      - 5432:5432
-    volumes:
-      - ../data:/var/lib/postgresql/data
-    networks:
-      - dms
   db:
     image: postgres:15.1-alpine
-    profiles: [ "deploy" ]
+    profiles: [ "dev","prod" ]
     container_name: dms_postgres
     restart: always
     environment:
@@ -43,7 +28,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ../../db/postgres/data:/var/lib/postgresql/data
+      - ../data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "dms", "-U", "-u$$POSTGRES_USER" ]
       interval: 30s
@@ -52,40 +37,18 @@ services:
       start_period: 10s
     networks:
       - dms
-  redis_dev:
-    image: redis:7.0.7
-    profiles: [ "dev" ]
-    container_name: dms_redis_dev
-    restart: always
-    ports:
-      - 6379:6379
-    networks:
-      - dms
   redis:
     image: redis:7.0.7
-    profiles: [ "deploy" ]
+    profiles: [ "dev","prod" ]
     container_name: dms_redis
     restart: always
     ports:
       - 6379:6379
     networks:
       - dms
-  minio_dev:
-    image: bitnami/minio:2024
-    profiles: [ "dev" ]
-    container_name: dms_minio_dev
-    environment:
-      - MINIO_ROOT_USER=admin
-      - MINIO_ROOT_PASSWORD=password
-      - MINIO_DEFAULT_BUCKETS=dms
-    ports:
-      - 9000:9000
-      - 9001:9001
-    networks:
-      - dms
   minio:
     image: bitnami/minio:2024
-    profiles: [ "deploy" ]
+    profiles: [ "dev","prod" ]
     container_name: dms_minio
     environment:
       - MINIO_ROOT_USER=admin
@@ -97,8 +60,8 @@ services:
     networks:
       - dms
   dms_backend:
-    image: dms-backend:v1.0.0-arm64
-    profiles: [ "deploy" ]
+    image: basedt/dms-backend
+    profiles: [ "prod" ]
     container_name: dms-backend
     depends_on:
       redis:
@@ -113,8 +76,8 @@ services:
     networks:
       - dms
   dms-frontend:
-    image: dms-frontend:v1.0.0-arm64
-    profiles: [ "deploy" ]
+    image: basedt/dms-frontend
+    profiles: [ "prod" ]
     container_name: dms-frontend
     depends_on:
       dms_backend:

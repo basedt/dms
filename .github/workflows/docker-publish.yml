@@ -44,9 +44,7 @@ jobs:
       - name: Build and publish
         uses: docker/build-push-action@v6
         with:
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: linux/amd64,linux/arm64
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
           labels: ${{ steps.meta.outputs.labels }}

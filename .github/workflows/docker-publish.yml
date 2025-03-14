@@ -1,4 +1,4 @@
-name: publish docker image
+name: Publish Docker Image
 
 on:
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
           labels: ${{ steps.meta.outputs.labels }}
-          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}/${{ env.PROJECT_VERSION }}
+          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
           push: true
 
 

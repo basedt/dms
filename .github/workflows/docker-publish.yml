@@ -80,5 +80,5 @@ jobs:
           file: scripts/docker/build/${{ matrix.image }}/Dockerfile
           context: .
 #          tags: ${{ env.ALIYUN_REGISTRY }}/${{ env.ALIYUN_REPO }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
-          tags: ${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
+          tags: gleiyu/${{ matrix.image }}:${{ env.PROJECT_VERSION }}-${{ matrix.image_name_env }}
           push: true

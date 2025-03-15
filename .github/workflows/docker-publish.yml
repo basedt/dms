@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 env:
+  REGISTRY_DOCKER: basedt
   REGISTRY_GHCR: ghcr.io
   REGISTRY_TENCENTYUN: ccr.ccs.tencentyun.com
 
@@ -39,7 +40,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ matrix.image }}
+          images: |
+            ${{ env.REGISTRY_DOCKER }}/${{ matrix.image }}
+            ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}
+            ${{ env.REGISTRY_TENCENTYUN }}/basedt/${{ matrix.image }}
       - name: Login to Docker
         uses: docker/login-action@v3
         with:
@@ -71,6 +75,10 @@ jobs:
           context: .
           labels: ${{ steps.meta.outputs.labels }}
           tags: |
-            basedt/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
-            basedt/${{ matrix.image }}:latest
+            ${{ env.REGISTRY_DOCKER }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+            ${{ env.REGISTRY_DOCKER }}/${{ matrix.image }}:latest
+            ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+            ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}:latest
+            ${{ env.REGISTRY_TENCENTYUN }}/basedt/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
+            ${{ env.REGISTRY_TENCENTYUN }}/basedt/${{ matrix.image }}:latest
           push: true

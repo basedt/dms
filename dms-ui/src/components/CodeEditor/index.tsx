@@ -13,7 +13,7 @@ import DmsGrid from "../DmsAgGrid";
 import { SqlHistoryService } from "@/services/workspace/sql.service";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import classNames from "classnames";
-import suggestionsProvider from './suggestionsProvider'
+import suggestionsProvider from "./suggestionsProvider";
 import "./index.less";
 
 type CoderEditorProps = {
@@ -79,7 +79,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
       stopButton: true,
       publishButton: true,
     }); // sql编辑按钮
-  const totalButtonDisableRef = useRef<DMS.sqlTopButton>({ ...totalButtonDisable }); // sql编辑按钮
+  const totalButtonDisableRef = useRef<DMS.sqlTopButton>({
+    ...totalButtonDisable,
+  }); // sql编辑按钮
   const labelCounterRef = useRef(0); //存储当前执行的数量
 
   useEffect(() => {
@@ -103,9 +105,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
         ...totalButtonDisable,
         stopButton: true,
         runButton: false,
-      }
+      };
       setTotalButtonDisable(runningResults);
-      totalButtonDisableRef.current = runningResults
+      totalButtonDisableRef.current = runningResults;
     });
 
     socket.on("error", (value) => {
@@ -125,9 +127,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
       const runningResults = {
         ...totalButtonDisable,
         stopButton: true,
-      }
+      };
       setTotalButtonDisable(runningResults);
-      totalButtonDisableRef.current = runningResults
+      totalButtonDisableRef.current = runningResults;
     });
 
     socket.on("stop", (value) => {
@@ -200,7 +202,6 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
   };
 
   /**
-   *
    * if selected value is not null then return value of editor
    */
   const getSelectedValue = () => {
@@ -233,9 +234,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
         ...totalButtonDisable,
         stopButton: false,
         runButton: true,
-      }
+      };
       setTotalButtonDisable(runningResults);
-      totalButtonDisableRef.current = runningResults
+      totalButtonDisableRef.current = runningResults;
 
       socket.emit("exec", {
         script: sql,
@@ -270,8 +271,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
       const newColumn = {
         ...value,
         key: Math.random().toString(36).substr(2, 6),
-        label: `${intl.formatMessage({ id: "dms.common.tabs.result" })}${labelCounterRef.current + 1
-          }`,
+        label: `${intl.formatMessage({ id: "dms.common.tabs.result" })}${
+          labelCounterRef.current + 1
+        }`,
       };
       labelCounterRef.current += 1;
       return [...prevDataColumns, newColumn];
@@ -280,7 +282,10 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
 
   //保存
   const saveFile = () => {
-    setTotalButtonDisable({ ...totalButtonDisableRef.current, publishButton: false });
+    setTotalButtonDisable({
+      ...totalButtonDisableRef.current,
+      publishButton: false,
+    });
     if (!file.current) return;
     const content = editorRef?.current?.getModel()?.getValue();
     FileService.save({ ...file.current, content } as DMS.File).then((resp) => {
@@ -331,9 +336,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
             const runningResults = {
               ...totalButtonDisable,
               publishButton: true,
-            }
+            };
             setTotalButtonDisable(runningResults);
-            totalButtonDisableRef.current = runningResults
+            totalButtonDisableRef.current = runningResults;
             initialData();
           }
         });
@@ -369,7 +374,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
           id: "dms.common.message.operate.formatting.success",
         })
       );
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -408,9 +413,9 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
                         ...totalButtonDisable,
                         stopButton: true,
                         runButton: false,
-                      }
+                      };
                       setTotalButtonDisable(runningResults);
-                      totalButtonDisableRef.current = runningResults
+                      totalButtonDisableRef.current = runningResults;
                     }
                   });
                 }}
@@ -433,18 +438,6 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
                   id: "dms.console.workspace.dataquery.save",
                 })}
               </Button>
-              {/* <Button
-                size="small"
-                type="default"
-                onClick={() => {
-                  initialData();
-                }}
-                style={{ height: 22, fontSize: 12 }}
-              >
-                {intl.formatMessage({
-                  id: "dms.console.workspace.dataquery.refresh",
-                })}
-              </Button> */}
               <Button
                 size="small"
                 type="default"
@@ -478,13 +471,11 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
             width={"100%"}
             theme={theme}
             value={sqlScript}
-            // beforeMount={(monaco) => {
-            //   monaco.languages.registerCompletionItemProvider("sql", {
-            //     provideCompletionItems,
-            //   });
-            // }}
             beforeMount={(monaco) => {
-              monaco.languages.registerCompletionItemProvider("sql", suggestionsProvider);
+              monaco.languages.registerCompletionItemProvider(
+                "sql",
+                suggestionsProvider(dataSourceId)
+              );
             }}
             defaultLanguage={language}
             onChange={(value) => {

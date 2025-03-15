@@ -1,7 +1,13 @@
 name: Publish Docker Image
 
 on:
+  tags:
+    - *
   workflow_dispatch:
+
+env:
+  REGISTRY_GHCR: ghcr.io
+  REGISTRY_TENCENTYUN: ccr.ccs.tencentyun.com
 
 jobs:
   build:
@@ -10,6 +16,11 @@ jobs:
       matrix:
         image: [ dms-backend , dms-frontend ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -36,6 +47,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_REGISTRY_USER }}
           password: ${{ secrets.DOCKER_REGISTRY_PASSWD }}
+      - name: Login to Ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_GHCR }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to TencentYun
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_TENCENTYUN }}
+          username: ${{ secrets.TENCENTYUN_REGISTRY_USER }}
+          password: ${{ secrets.TENCENTYUN_REGISTRY_PASSWD }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx

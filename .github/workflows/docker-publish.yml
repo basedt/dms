@@ -1,8 +1,6 @@
 name: Publish Docker Image
 
 on:
-  tags:
-    - *
   workflow_dispatch:
 
 env:

@@ -6,7 +6,6 @@ on:
 env:
   REGISTRY_DOCKER: basedt
   REGISTRY_GHCR: ghcr.io
-  REGISTRY_HW: swr.cn-north-4.myhuaweicloud.com
 
 jobs:
   build:
@@ -43,7 +42,6 @@ jobs:
           images: |
             ${{ env.REGISTRY_DOCKER }}/${{ matrix.image }}
             ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}
-            ${{ env.REGISTRY_HW }}/basedt/${{ matrix.image }}
       - name: Login to Docker
         uses: docker/login-action@v3
         with:
@@ -55,12 +53,6 @@ jobs:
           registry: ${{ env.REGISTRY_GHCR }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Login to HW
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY_HW }}
-          username: ${{ secrets.HW_REGISTRY_USER }}
-          password: ${{ secrets.HW_REGISTRY_PASSWD }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -79,6 +71,4 @@ jobs:
             ${{ env.REGISTRY_DOCKER }}/${{ matrix.image }}:latest
             ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
             ${{ env.REGISTRY_GHCR }}/${{ github.repository }}/${{ matrix.image }}:latest
-            ${{ env.REGISTRY_HW }}/basedt/${{ matrix.image }}:${{ env.PROJECT_VERSION }}
-            ${{ env.REGISTRY_HW }}/basedt/${{ matrix.image }}:latest
           push: true

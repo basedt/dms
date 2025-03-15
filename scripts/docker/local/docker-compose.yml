@@ -66,6 +66,8 @@ services:
     depends_on:
       redis:
         condition: service_started
+      minio:
+        condition: service_started
       db:
         condition: service_healthy
     healthcheck:

@@ -20,11 +20,11 @@ package com.basedt.dms;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 
 @SpringBootApplication
 @EnableSpringUtil
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 60 * 3, redisNamespace = "dms:session")
+@EnableRedisIndexedHttpSession(maxInactiveIntervalInSeconds = 60 * 3, redisNamespace = "dms:session")
 public class DmsApplication {
     public static void main(String[] args) {
         SpringApplication.run(DmsApplication.class);

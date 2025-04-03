@@ -1,12 +1,31 @@
-﻿import type { RequestOptions } from "@@/plugin-request/request";
-import { message, notification } from "antd";
-import { getLocale, history, RequestConfig } from "@umijs/max";
+﻿import type { RequestOptions } from '@@/plugin-request/request';
+import { getLocale, history, RequestConfig } from '@umijs/max';
+import { message, notification } from 'antd';
 
 /**
  * @name 错误处理
  * pro 自带的错误处理， 可以在这里做自己的改动
  * @doc https://umijs.org/docs/max/request#配置
  */
+
+const handleError = (
+  errorCode: string | undefined,
+  errorMessage: string | undefined,
+  showType: string | undefined,
+) => {
+  if (showType === '1') {
+    message.warning(errorMessage, 2);
+  } else if (showType === '2') {
+    message.error(errorMessage, 2);
+  } else if (showType === '4') {
+    notification.error({
+      message: 'Error:' + errorCode,
+      description: errorMessage,
+      duration: 3,
+    });
+  }
+};
+
 export const errorConfig: RequestConfig = {
   errorConfig: {},
 
@@ -16,7 +35,7 @@ export const errorConfig: RequestConfig = {
       // 拦截请求配置，进行个性化处理。
       const headers = {
         ...config.headers,
-        "Accept-Language": getLocale(),
+        'Accept-Language': getLocale(),
       };
       return { ...config, headers: headers };
     },
@@ -26,13 +45,13 @@ export const errorConfig: RequestConfig = {
   responseInterceptors: [
     (response) => {
       // check response status
-      if (response.status != 200) {
+      if (response.status !== 200) {
         switch (response.status) {
           case 401:
-            history.push("/user/login");
+            history.push('/user/login');
             break;
           case 403:
-            history.push("/403");
+            history.push('/403');
             break;
           default:
             break;
@@ -42,45 +61,23 @@ export const errorConfig: RequestConfig = {
       const { data: respData } = response as unknown as DMS.ResponseBody<any>;
       if (
         respData &&
-        respData.success != null &&
-        respData.success != undefined &&
+        respData.success !== null &&
+        respData.success !== undefined &&
         !respData.success
       ) {
         switch (respData.errorCode) {
-          case "401":
-            history.push("/user/login");
+          case '401':
+            history.push('/user/login');
             break;
-          case "403":
-            history.push("/403");
+          case '403':
+            history.push('/403');
             break;
           default:
-            handleError(
-              respData.errorCode,
-              respData.errorMessage,
-              respData.showType
-            );
+            handleError(respData.errorCode, respData.errorMessage, respData.showType);
             break;
         }
       }
       return response;
     },
   ],
-};
-
-const handleError = (
-  errorCode: string | undefined,
-  errorMessage: string | undefined,
-  showType: string | undefined
-) => {
-  if (showType == "1") {
-    message.warning(errorMessage, 2);
-  } else if (showType == "2") {
-    message.error(errorMessage, 2);
-  } else if (showType == "4") {
-    notification.error({
-      message: "Error:" + errorCode,
-      description: errorMessage,
-      duration: 3,
-    });
-  }
 };

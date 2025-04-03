@@ -7,15 +7,18 @@ import { useIntl } from "@umijs/max";
 const UserProfile: React.FC = () => {
   const intl = useIntl();
   const [form] = Form.useForm();
-  useEffect(() => {
-    refreshUserInfo();
-  }, []);
 
   const refreshUserInfo = () => {
     AuthService.getCurrentUser(true).then((resp) => {
       form.setFieldsValue(resp.data);
     });
   };
+  
+  useEffect(() => {
+    refreshUserInfo();
+  }, []);
+
+
 
   return (
     <>

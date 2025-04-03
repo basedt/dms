@@ -73,7 +73,7 @@ public class MessageAlertServiceImpl implements SysMessageService {
 
     @Override
     public List<SysMessageDTO> listByIds(Set<Long> ids) {
-        List<SysMessage> list = this.sysMessageMapper.selectBatchIds(ids);
+        List<SysMessage> list = this.sysMessageMapper.selectByIds(ids);
         return SysMessageConvert.INSTANCE.toDto(list);
     }
 

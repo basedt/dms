@@ -19,7 +19,7 @@ package com.basedt.dms.service.workspace.param;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class DmsSqlExecParam {

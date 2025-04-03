@@ -57,13 +57,15 @@ public class Constants {
 
     public static final String ROLE_NORMAL = "_normal";
 
-    public static final String DMS_CONFIG_ADMIN_INIT = "admin.init";
-
     public static final String ROOT_PRIVILEGE_CODE = "root";
 
     public static final String ROOT_CATALOG_CODE = "CATALOG_ROOT";
 
+    public static final String CFG_ADMIN_INIT = "admin.init";
+
     public static final String CFG_EMAIL_CODE = "email";
+
+    public static final String CFG_LLM_CODE = "llm";
 
     public static final String CODEC_STR_PREFIX = "Encrypted:";
 

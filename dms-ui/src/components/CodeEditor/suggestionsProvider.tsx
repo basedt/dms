@@ -158,13 +158,12 @@ const suggestionsProvider = (
       model: monaco.editor.ITextModel,
       position: monaco.Position
     ): Promise<monaco.languages.CompletionList> => {
-      const { lineNumber, column } = position;
+      const { lineNumber } = position;
       const textBeforePointer = getTextBeforePointer(
         model,
         position,
         lineNumber
       );
-      const textBeforePointerMulti = getTextBeforePointer(model, position, 1);
       const textAfterPointerMulti = getTextAfterPointer(model, position);
 
       const tokens = textBeforePointer.trim().split(/\s+/);

@@ -80,7 +80,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = (props) => {
         if (props?.dataList?.length === filterDataList.length) {
             setFilterButton(true)
         }
-        // setFilterButton
     }
 
     const content = (

@@ -86,6 +86,13 @@ declare namespace DMS {
     port: number;
   };
 
+  type LLMConfig = {
+    type: string;
+    model: string;
+    baseUrl: string;
+    apiKey: string;
+  };
+
   type SysMessage = {
     id?: number;
     title: string;
@@ -95,7 +102,7 @@ declare namespace DMS {
     content: string;
     isRead: DMS.Dict;
     isDelete: DMS.Dict;
-    createTime:Date;
+    createTime: Date;
   };
 
   type SysMessageParam = {

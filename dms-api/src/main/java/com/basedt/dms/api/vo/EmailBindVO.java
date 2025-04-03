@@ -17,10 +17,10 @@
  */
 package com.basedt.dms.api.vo;
 
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class EmailBindVO {

@@ -33,6 +33,12 @@
 
         <dependency>
             <groupId>com.basedt</groupId>
+            <artifactId>dms-service-llm</artifactId>
+            <version>${reversion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.basedt</groupId>
             <artifactId>dms-scheduler</artifactId>
             <version>${reversion}</version>
         </dependency>

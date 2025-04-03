@@ -1,16 +1,13 @@
-import Footer from "@/components/Footer";
-import { LinkOutlined } from "@ant-design/icons";
 import { AliveScope } from "react-activation";
 import { Settings as LayoutSettings } from "@ant-design/pro-components";
 import type { RunTimeLayoutConfig } from "@umijs/max";
-import { history, Link } from "@umijs/max";
+import { history } from "@umijs/max";
 import defaultSettings from "../config/defaultSettings";
 import CollapsedIcon from "./components/CollapsedIcon";
 import Header from "./components/Header";
 import RightContent from "./components/Header/RightContent";
 import { errorConfig } from "./requestErrorConfig";
 import { AuthService } from "./services/admin/auth.service";
-const isDev = process.env.NODE_ENV === "development";
 const whiteList: string[] = ["/user/login", "/user/register"];
 
 /**

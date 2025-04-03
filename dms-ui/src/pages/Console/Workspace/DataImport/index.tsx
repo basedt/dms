@@ -1,20 +1,11 @@
-import { DICT_TYPE } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { DataTaskService } from "@/services/workspace/data.task";
-import { DataSourceService } from "@/services/workspace/datasource.service";
-import { NumberUtil } from "@/utils/NumberUtil";
-import {
-  FilterOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
-import { useIntl } from "@umijs/max";
+import { DICT_TYPE } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { DataTaskService } from '@/services/workspace/data.task';
+import { DataSourceService } from '@/services/workspace/datasource.service';
+import { NumberUtil } from '@/utils/NumberUtil';
+import { FilterOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -27,10 +18,10 @@ import {
   Select,
   Space,
   Tooltip,
-} from "antd";
-import moment from "moment";
-import { useEffect, useRef, useState } from "react";
-import TaskLogModal from "../components/TaskLogModal";
+} from 'antd';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
+import TaskLogModal from '../components/TaskLogModal';
 
 const { RangePicker } = DatePicker;
 
@@ -39,7 +30,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
   const [queryForm] = Form.useForm();
   const { workspaceId } = props;
   const actionRef = useRef<ActionType>();
-  const taskType = "i";
+  const taskType = 'i';
   const [dbList, setDbList] = useState<DMS.Dict[]>([]);
   const [taskStatusList, setTaskStatusList] = useState<DMS.Dict[]>([]);
   const [queryFormOpen, setQueryFormOpen] = useState<boolean>(false);
@@ -47,9 +38,9 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
     workspaceId: workspaceId,
     taskType: taskType,
   });
-  const [logModalData, setLogModalData] = useState<
-    DMS.ModalProps<{ taskId: number | string }>
-  >({ open: false });
+  const [logModalData, setLogModalData] = useState<DMS.ModalProps<{ taskId: number | string }>>({
+    open: false,
+  });
 
   useEffect(() => {
     DataSourceService.listByWorkspace(workspaceId as string).then((resp) => {
@@ -67,30 +58,28 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
   const columns: ProColumns<DMS.DataTask>[] = [
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.datasourceId",
+        id: 'dms.console.workspace.import.datasourceId',
       }),
-      dataIndex: "datasourceId",
+      dataIndex: 'datasourceId',
       width: 180,
-      fixed: "left",
+      fixed: 'left',
       render: (dom, entity) => {
-        const value = dbList.filter(
-          (item) => item.value == entity.datasourceId
-        );
+        const value = dbList.filter((item) => item.value == entity.datasourceId);
         return value[0].label;
       },
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.fileName",
+        id: 'dms.console.workspace.import.fileName',
       }),
-      dataIndex: "fileName",
+      dataIndex: 'fileName',
       width: 180,
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.fileType",
+        id: 'dms.console.workspace.import.fileType',
       }),
-      dataIndex: "fileType",
+      dataIndex: 'fileType',
       width: 100,
       render: (dom, entity) => {
         return entity.fileType?.label;
@@ -98,9 +87,9 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.fileSize",
+        id: 'dms.console.workspace.import.fileSize',
       }),
-      dataIndex: "fileSize",
+      dataIndex: 'fileSize',
       width: 100,
       render: (dom, entity) => {
         return NumberUtil.byteFormat(entity.fileSize as number);
@@ -108,9 +97,9 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.fileEncoding",
+        id: 'dms.console.workspace.import.fileEncoding',
       }),
-      dataIndex: "fileEncoding",
+      dataIndex: 'fileEncoding',
       width: 100,
       render: (dom, entity) => {
         return entity.fileEncoding?.label;
@@ -118,9 +107,9 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.taskStatus",
+        id: 'dms.console.workspace.import.taskStatus',
       }),
-      dataIndex: "taskStatus",
+      dataIndex: 'taskStatus',
       width: 100,
       render: (dom, entity) => {
         return intl.formatMessage({ id: entity.taskStatus?.label });
@@ -128,39 +117,39 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.import.creator",
+        id: 'dms.console.workspace.import.creator',
       }),
-      dataIndex: "creator",
+      dataIndex: 'creator',
       width: 100,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 160,
     },
 
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 120,
       render: (_, record) => (
         <Space>
-          {moment().diff(moment(record.createTime), "days") <= 7 &&
-            record.taskStatus?.value == "3" && (
+          {moment().diff(moment(record.createTime), 'days') <= 7 &&
+            record.taskStatus?.value == '3' && (
               <a
                 key="download"
                 onClick={() => {
                   DataTaskService.download(record);
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.download" })}
+                {intl.formatMessage({ id: 'dms.common.operate.download' })}
               </a>
             )}
-          {moment().diff(moment(record.createTime), "days") <= 7 && (
+          {moment().diff(moment(record.createTime), 'days') <= 7 && (
             <a
               key="log"
               onClick={() => {
@@ -171,7 +160,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
               }}
             >
               {intl.formatMessage({
-                id: "dms.console.workspace.import.action.log",
+                id: 'dms.console.workspace.import.action.log',
               })}
             </a>
           )}
@@ -195,7 +184,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
   return (
     <PageContainer
       header={{
-        title: intl.formatMessage({ id: "dms.console.workspace.import" }),
+        title: intl.formatMessage({ id: 'dms.console.workspace.import' }),
         breadcrumb: {},
       }}
       extra={[
@@ -204,15 +193,12 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onPressEnter={onSearchInputChange}
           onChange={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
           <Badge
             dot={
               queryFormData.createTimeFrom ||
@@ -233,10 +219,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -269,7 +252,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
       ></ProTable>
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -283,13 +266,13 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
               <Button
                 onClick={() => {
                   let d = {
-                    datasourceId: "",
-                    fileName: "",
+                    datasourceId: '',
+                    fileName: '',
                     taskType: taskType,
-                    taskStatus: "",
-                    creator: "",
-                    createTimeFrom: "",
-                    createTimeTo: "",
+                    taskStatus: '',
+                    creator: '',
+                    createTimeFrom: '',
+                    createTimeTo: '',
                   };
                   queryForm.setFieldsValue({
                     ...d,
@@ -301,13 +284,13 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
                   });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
-                  queryForm.validateFields().then((values) => {
+                  queryForm.validateFields().then((values: any) => {
                     let d: DMS.DataTaskParam = {
                       workspaceId: workspaceId,
                       taskType: taskType,
@@ -316,14 +299,10 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
                       taskStatus: values?.taskStatus,
                       creator: values?.creator,
                       createTimeFrom: values?.createTime
-                        ? moment(values?.createTime[0].$d).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                          )
+                        ? moment(values?.createTime[0].$d).format('YYYY-MM-DD HH:mm:ss')
                         : undefined,
                       createTimeTo: values?.createTime
-                        ? moment(values?.createTime[1].$d).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                          )
+                        ? moment(values?.createTime[1].$d).format('YYYY-MM-DD HH:mm:ss')
                         : undefined,
                     };
                     setQueryFormData({ ...d });
@@ -333,37 +312,41 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          form={queryForm}
-        >
+        <Form layout="horizontal" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={queryForm}>
           <Form.Item
             name="datasourceId"
             label={intl.formatMessage({
-              id: "dms.console.workspace.import.datasourceId",
+              id: 'dms.console.workspace.import.datasourceId',
             })}
           >
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               allowClear={true}
               showSearch={true}
               placeholder={intl.formatMessage({
-                id: "dms.console.workspace.dataquery.select",
+                id: 'dms.console.workspace.dataquery.select',
               })}
             >
               {dbList &&
                 dbList.map((item) => {
+                  const label: string = item.label || 'img-db';
+                  const dbinfo: string[] = label.split('-');
                   return (
                     <Select.Option key={item.value} value={item.value}>
-                      {item.label}
+                      <Space style={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                          src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}
+                          style={{ width: 16, height: 16 }}
+                          alt=""
+                        />
+                        {dbinfo[1]}
+                      </Space>
                     </Select.Option>
                   );
                 })}
@@ -372,7 +355,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="fileName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.import.fileName",
+              id: 'dms.console.workspace.import.fileName',
             })}
           >
             <Input></Input>
@@ -380,15 +363,15 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="taskStatus"
             label={intl.formatMessage({
-              id: "dms.console.workspace.import.taskStatus",
+              id: 'dms.console.workspace.import.taskStatus',
             })}
           >
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               allowClear={true}
               showSearch={true}
               placeholder={intl.formatMessage({
-                id: "dms.common.operate.select.placeholder",
+                id: 'dms.common.operate.select.placeholder',
               })}
             >
               {taskStatusList &&
@@ -405,7 +388,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="creator"
             label={intl.formatMessage({
-              id: "dms.console.workspace.import.creator",
+              id: 'dms.console.workspace.import.creator',
             })}
           >
             <Input />
@@ -413,7 +396,7 @@ const DataImportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="createTime"
             label={intl.formatMessage({
-              id: "dms.common.table.field.createTime",
+              id: 'dms.common.table.field.createTime',
             })}
           >
             <RangePicker showTime={true}></RangePicker>

@@ -77,7 +77,7 @@ services:
       - 8366:8366
     networks:
       - dms
-  dms-frontend:
+  dms_frontend:
     image: basedt/dms-frontend
     profiles: [ "prod" ]
     container_name: dms-frontend

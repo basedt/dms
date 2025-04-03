@@ -1,20 +1,11 @@
-import { DICT_TYPE } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { DataTaskService } from "@/services/workspace/data.task";
-import { DataSourceService } from "@/services/workspace/datasource.service";
-import { NumberUtil } from "@/utils/NumberUtil";
-import {
-  FilterOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
-import { useIntl } from "@umijs/max";
+import { DICT_TYPE } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { DataTaskService } from '@/services/workspace/data.task';
+import { DataSourceService } from '@/services/workspace/datasource.service';
+import { NumberUtil } from '@/utils/NumberUtil';
+import { FilterOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -27,10 +18,10 @@ import {
   Select,
   Space,
   Tooltip,
-} from "antd";
-import moment from "moment";
-import { useEffect, useRef, useState } from "react";
-import TaskLogModal from "../components/TaskLogModal";
+} from 'antd';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
+import TaskLogModal from '../components/TaskLogModal';
 
 const { RangePicker } = DatePicker;
 
@@ -39,16 +30,16 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
   const [queryForm] = Form.useForm();
   const actionRef = useRef<ActionType>();
   const { workspaceId } = props;
-  const taskType = "e";
+  const taskType = 'e';
   const expiryDay: number = 10;
   const [queryFormOpen, setQueryFormOpen] = useState<boolean>(false);
   const [queryFormData, setQueryFormData] = useState<DMS.DataTaskParam>({
     workspaceId: workspaceId,
     taskType: taskType,
   });
-  const [logModalData, setLogModalData] = useState<
-    DMS.ModalProps<{ taskId: number | string }>
-  >({ open: false });
+  const [logModalData, setLogModalData] = useState<DMS.ModalProps<{ taskId: number | string }>>({
+    open: false,
+  });
   const [dbList, setDbList] = useState<DMS.Dict[]>([]);
   const [taskStatusList, setTaskStatusList] = useState<DMS.Dict[]>([]);
 
@@ -68,30 +59,28 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
   const columns: ProColumns<DMS.DataTask>[] = [
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.datasourceId",
+        id: 'dms.console.workspace.export.datasourceId',
       }),
-      dataIndex: "datasourceId",
+      dataIndex: 'datasourceId',
       width: 180,
-      fixed: "left",
+      fixed: 'left',
       render: (dom, entity) => {
-        const value = dbList.filter(
-          (item) => item.value == entity.datasourceId
-        );
+        const value = dbList.filter((item) => item.value == entity.datasourceId);
         return value[0].label;
       },
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.fileName",
+        id: 'dms.console.workspace.export.fileName',
       }),
-      dataIndex: "fileName",
+      dataIndex: 'fileName',
       width: 180,
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.fileType",
+        id: 'dms.console.workspace.export.fileType',
       }),
-      dataIndex: "fileType",
+      dataIndex: 'fileType',
       width: 100,
       render: (dom, entity) => {
         return entity.fileType?.label;
@@ -99,9 +88,9 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.fileSize",
+        id: 'dms.console.workspace.export.fileSize',
       }),
-      dataIndex: "fileSize",
+      dataIndex: 'fileSize',
       width: 100,
       render: (dom, entity) => {
         return NumberUtil.byteFormat(entity.fileSize as number);
@@ -109,9 +98,9 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.fileEncoding",
+        id: 'dms.console.workspace.export.fileEncoding',
       }),
-      dataIndex: "fileEncoding",
+      dataIndex: 'fileEncoding',
       width: 100,
       render: (dom, entity) => {
         return entity.fileEncoding?.label;
@@ -119,9 +108,9 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.taskStatus",
+        id: 'dms.console.workspace.export.taskStatus',
       }),
-      dataIndex: "taskStatus",
+      dataIndex: 'taskStatus',
       width: 100,
       render: (dom, entity) => {
         return intl.formatMessage({ id: entity.taskStatus?.label });
@@ -129,39 +118,39 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.export.creator",
+        id: 'dms.console.workspace.export.creator',
       }),
-      dataIndex: "creator",
+      dataIndex: 'creator',
       width: 100,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 160,
     },
 
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 120,
       render: (_, record) => (
         <Space>
-          {moment().diff(moment(record.createTime), "days") <= expiryDay &&
-            record.taskStatus?.value == "3" && (
+          {moment().diff(moment(record.createTime), 'days') <= expiryDay &&
+            record.taskStatus?.value == '3' && (
               <a
                 key="download"
                 onClick={() => {
                   DataTaskService.download(record);
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.download" })}
+                {intl.formatMessage({ id: 'dms.common.operate.download' })}
               </a>
             )}
-          {moment().diff(moment(record.createTime), "days") <= expiryDay && (
+          {moment().diff(moment(record.createTime), 'days') <= expiryDay && (
             <a
               key="log"
               onClick={() => {
@@ -172,7 +161,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
               }}
             >
               {intl.formatMessage({
-                id: "dms.console.workspace.export.action.log",
+                id: 'dms.console.workspace.export.action.log',
               })}
             </a>
           )}
@@ -196,25 +185,22 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
   return (
     <PageContainer
       header={{
-        title: intl.formatMessage({ id: "dms.console.workspace.export" }),
+        title: intl.formatMessage({ id: 'dms.console.workspace.export' }),
         breadcrumb: {},
       }}
-      subTitle= {intl.formatMessage({id:'dms.console.workspace.export.subTitle'})} 
+      subTitle={intl.formatMessage({ id: 'dms.console.workspace.export.subTitle' })}
       extra={[
         <Input
           key="search"
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onPressEnter={onSearchInputChange}
           onChange={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
           <Badge
             dot={
               queryFormData.createTimeFrom ||
@@ -235,10 +221,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -271,7 +254,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
       ></ProTable>
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -285,13 +268,13 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
               <Button
                 onClick={() => {
                   let d = {
-                    datasourceId: "",
-                    fileName: "",
+                    datasourceId: '',
+                    fileName: '',
                     taskType: taskType,
-                    taskStatus: "",
-                    creator: "",
-                    createTimeFrom: "",
-                    createTimeTo: "",
+                    taskStatus: '',
+                    creator: '',
+                    createTimeFrom: '',
+                    createTimeTo: '',
                   };
                   queryForm.setFieldsValue({
                     ...d,
@@ -303,13 +286,13 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
                   });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
-                  queryForm.validateFields().then((values) => {
+                  queryForm.validateFields().then((values: any) => {
                     let d: DMS.DataTaskParam = {
                       workspaceId: workspaceId,
                       taskType: taskType,
@@ -318,14 +301,10 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
                       taskStatus: values?.taskStatus,
                       creator: values?.creator,
                       createTimeFrom: values?.createTime
-                        ? moment(values?.createTime[0].$d).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                          )
+                        ? moment(values?.createTime[0].$d).format('YYYY-MM-DD HH:mm:ss')
                         : undefined,
                       createTimeTo: values?.createTime
-                        ? moment(values?.createTime[1].$d).format(
-                            "YYYY-MM-DD HH:mm:ss"
-                          )
+                        ? moment(values?.createTime[1].$d).format('YYYY-MM-DD HH:mm:ss')
                         : undefined,
                     };
                     setQueryFormData({ ...d });
@@ -335,37 +314,41 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          form={queryForm}
-        >
+        <Form layout="horizontal" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={queryForm}>
           <Form.Item
             name="datasourceId"
             label={intl.formatMessage({
-              id: "dms.console.workspace.export.datasourceId",
+              id: 'dms.console.workspace.export.datasourceId',
             })}
           >
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               allowClear={true}
               showSearch={true}
               placeholder={intl.formatMessage({
-                id: "dms.console.workspace.dataquery.select",
+                id: 'dms.console.workspace.dataquery.select',
               })}
             >
               {dbList &&
                 dbList.map((item) => {
+                  const label: string = item.label || 'img-db';
+                  const dbinfo: string[] = label.split('-');
                   return (
                     <Select.Option key={item.value} value={item.value}>
-                      {item.label}
+                      <Space style={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                          src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}
+                          style={{ width: 16, height: 16 }}
+                          alt=""
+                        />
+                        {dbinfo[1]}
+                      </Space>
                     </Select.Option>
                   );
                 })}
@@ -374,7 +357,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="fileName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.export.fileName",
+              id: 'dms.console.workspace.export.fileName',
             })}
           >
             <Input></Input>
@@ -382,15 +365,15 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="taskStatus"
             label={intl.formatMessage({
-              id: "dms.console.workspace.export.taskStatus",
+              id: 'dms.console.workspace.export.taskStatus',
             })}
           >
             <Select
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
               allowClear={true}
               showSearch={true}
               placeholder={intl.formatMessage({
-                id: "dms.common.operate.select.placeholder",
+                id: 'dms.common.operate.select.placeholder',
               })}
             >
               {taskStatusList &&
@@ -407,7 +390,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="creator"
             label={intl.formatMessage({
-              id: "dms.console.workspace.export.creator",
+              id: 'dms.console.workspace.export.creator',
             })}
           >
             <Input />
@@ -415,7 +398,7 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
           <Form.Item
             name="createTime"
             label={intl.formatMessage({
-              id: "dms.common.table.field.createTime",
+              id: 'dms.common.table.field.createTime',
             })}
           >
             <RangePicker showTime={true}></RangePicker>

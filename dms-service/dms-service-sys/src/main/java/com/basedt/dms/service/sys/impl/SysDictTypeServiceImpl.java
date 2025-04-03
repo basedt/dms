@@ -36,7 +36,7 @@ import com.basedt.dms.service.sys.param.SysDictTypeParam;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +76,7 @@ public class SysDictTypeServiceImpl implements SysDictTypeService {
                     .stream()
                     .map(SysDictDTO::getId)
                     .collect(Collectors.toList());
-            this.sysDictMapper.deleteBatchIds(idList);
+            this.sysDictMapper.deleteByIds(idList);
             DictCache.evictCache(dictType.getDictTypeCode());
         }
         this.sysDictTypeMapper.deleteById(id);

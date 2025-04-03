@@ -33,6 +33,9 @@ import com.basedt.dms.service.log.dto.LogLoginDTO;
 import com.basedt.dms.service.security.utils.SecurityUtil;
 import com.basedt.dms.service.sys.cache.DictCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -44,9 +47,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -137,7 +138,7 @@ public class LogAspect {
             UserAgent userAgent = UserAgentUtil.parse(agentStr);
             OS os = userAgent.getOs();
             Browser browser = userAgent.getBrowser();
-            log.setIpAddress(ServletUtil.getClientIP(request));
+            log.setIpAddress(request.getRemoteAddr());
             log.setActionUrl(request.getRequestURL().toString());
             log.setToken(SecurityUtil.getSessionIdFromCookie(request));
             log.setClientInfo(userAgent.getPlatform().getName());
@@ -175,7 +176,7 @@ public class LogAspect {
             UserAgent userAgent = UserAgentUtil.parse(agentStr);
             OS os = userAgent.getOs();
             Browser browser = userAgent.getBrowser();
-            log.setIpAddress(ServletUtil.getClientIP(request));
+            log.setIpAddress(request.getRemoteAddr());
             log.setLoginType(loginType);
             log.setClientInfo(userAgent.getPlatform().getName());
             log.setOsInfo(os.getName());

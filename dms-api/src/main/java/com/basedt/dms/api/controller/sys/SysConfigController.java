@@ -20,11 +20,13 @@ package com.basedt.dms.api.controller.sys;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.basedt.dms.alert.dto.EmailConfigDTO;
 import com.basedt.dms.api.annotation.AuditLogging;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.vo.ResponseVO;
+import com.basedt.dms.service.llm.DmsChatClient;
 import com.basedt.dms.service.sys.SysConfigService;
+import com.basedt.dms.service.sys.dto.EmailConfigDTO;
+import com.basedt.dms.service.sys.dto.LLMConfigDTO;
 import com.basedt.dms.service.sys.dto.SysConfigDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,8 +51,8 @@ public class SysConfigController {
 
     @GetMapping(path = "email")
     @AuditLogging
-    @Operation(summary = "query email config info", description = "query email config info")
-    public ResponseEntity<ResponseVO<EmailConfigDTO>> showEmail() {
+    @Operation(summary = "get email config info", description = "get email config info")
+    public ResponseEntity<ResponseVO<EmailConfigDTO>> getEmail() {
         String emailConfig =
                 this.sysConfigService.selectValueByKey(Constants.CFG_EMAIL_CODE);
         EmailConfigDTO config;
@@ -83,4 +85,27 @@ public class SysConfigController {
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
+    @GetMapping(path = "llm")
+    @AuditLogging
+    @Operation(summary = "get llm config info", description = "get email config info")
+    public ResponseEntity<ResponseVO<LLMConfigDTO>> getLLM() {
+        LLMConfigDTO config = this.sysConfigService.getLLMConfig();
+        return new ResponseEntity<>(ResponseVO.success(config), HttpStatus.OK);
+    }
+
+
+    @PutMapping(path = "llm")
+    @AuditLogging
+    @Operation(summary = "set llm config info", description = "set llm config info")
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseVO<Object>> configLLM(
+            @Validated @RequestBody LLMConfigDTO llmConfig) {
+        this.sysConfigService.deleteByKey(Constants.CFG_LLM_CODE);
+        SysConfigDTO sysConfig = new SysConfigDTO();
+        sysConfig.setCfgCode(Constants.CFG_LLM_CODE);
+        sysConfig.setCfgValue(JSONUtil.toJsonStr(llmConfig));
+        this.sysConfigService.insert(sysConfig);
+        DmsChatClient.refreshInstance(llmConfig);
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
+    }
 }

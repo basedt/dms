@@ -36,8 +36,8 @@ export const AuthService = {
       let roles: DMS.SysRole[] = currentUser.roles as DMS.SysRole[];
       for (let i = 0; i < roles.length; i++) {
         if (
-          roles[i].roleCode == code ||
-          PRIVILEGES.roleSuperAdmin == roles[i].roleCode
+          roles[i].roleCode === code ||
+          PRIVILEGES.roleSuperAdmin === roles[i].roleCode
         ) {
           return true;
         }
@@ -46,8 +46,8 @@ export const AuthService = {
             .privileges as DMS.SysPrivilege[];
           for (let p = 0; p < privileges.length; p++) {
             if (
-              privileges[p].privilegeCode == code ||
-              privileges[p].privilegeCode == PRIVILEGES.roleSuperAdmin
+              privileges[p].privilegeCode === code ||
+              privileges[p].privilegeCode === PRIVILEGES.roleSuperAdmin
             ) {
               return true;
             }

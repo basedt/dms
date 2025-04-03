@@ -19,12 +19,6 @@ type Node = {
   children?: Node[];
 };
 
-interface TreeNode {
-  title: string;
-  key: string;
-  children?: TreeNode[];
-}
-
 // 导出数据到 Excel 的函数
 export const exportDataToExcel = (dataList: DataList, fileName: string): void => {
   const headers = dataList.columns.map(col => col.title);

@@ -15,16 +15,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.api.dto;
+package com.basedt.dms.common.enums;
 
-import lombok.Data;
+import com.basedt.dms.common.vo.DictVO;
+import lombok.Getter;
 
-@Data
-public class LoginInfo {
+import java.util.Objects;
 
-    private String status;
+@Getter
+public enum LLMType {
+    DASHSCOPE("dashScope", "DashScope"),
+    OPENAI("openai", "OpenAI"),
+    DEEPSEEK("deepseek", "DeepSeek"),
+    OLLAMA("ollama", "Ollama");
 
-    private String type;
+    private final String value;
+    private final String label;
 
-    private String currentAuthority;
+    LLMType(String value, String label) {
+        this.label = label;
+        this.value = value;
+    }
+
+    public boolean equalsAsDict(DictVO dictVO) {
+        if (Objects.nonNull(dictVO)) {
+            return this.getValue().equals(dictVO.getValue());
+        }
+        return false;
+    }
+
+    public DictVO toDict() {
+        return new DictVO(this.getValue(), this.getLabel());
+    }
 }

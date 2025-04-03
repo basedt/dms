@@ -24,12 +24,12 @@ import com.basedt.dms.service.security.enums.ActionCode;
 import com.basedt.dms.service.security.enums.BlockCode;
 import com.basedt.dms.service.security.enums.ModuleCode;
 import com.basedt.dms.service.security.enums.PageCode;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 public class SecurityUtil {

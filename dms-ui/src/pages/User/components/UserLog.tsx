@@ -1,8 +1,8 @@
-import { LogService } from "@/services/user/log.service";
-import { List, Pagination, Tooltip, Typography } from "antd";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { useIntl } from "@umijs/max";
+import { LogService } from '@/services/user/log.service';
+import { useIntl } from '@umijs/max';
+import { List, Pagination, Tooltip, Typography } from 'antd';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 
 const UserLog: React.FC = () => {
   const intl = useIntl();
@@ -16,10 +16,6 @@ const UserLog: React.FC = () => {
   });
   const [total, setTotal] = useState<number>(0);
 
-  useEffect(() => {
-    refreshLogs(pageInfo.pageSize, pageInfo.current);
-  }, []);
-
   const refreshLogs = (pageSize: number, current: number) => {
     LogService.list({ pageSize, current }).then((resp) => {
       setLogs(resp.data);
@@ -27,17 +23,21 @@ const UserLog: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    refreshLogs(pageInfo.pageSize, pageInfo.current);
+  }, []);
+
   return (
     <>
       <Typography.Title level={4} style={{ marginTop: 0 }}>
-        {intl.formatMessage({ id: "dms.user.center.log" })}
+        {intl.formatMessage({ id: 'dms.user.center.log' })}
       </Typography.Title>
       <div>
         <List
           itemLayout="horizontal"
           dataSource={logs}
           renderItem={(item) => (
-            <List.Item style={{ padding: "0px 0px 0px 0px" }}>
+            <List.Item style={{ padding: '0px 0px 0px 0px' }}>
               <List.Item.Meta
                 title={
                   <Typography.Text strong>
@@ -52,19 +52,19 @@ const UserLog: React.FC = () => {
                 description={
                   <Typography.Text type="secondary">
                     {intl.formatMessage({
-                      id: "dms.user.center.log.ipAddress",
+                      id: 'dms.user.center.log.ipAddress',
                     }) + item.ipAddress}
                     &nbsp;&nbsp;
                     {intl.formatMessage({
-                      id: "dms.user.center.log.clientInfo",
+                      id: 'dms.user.center.log.clientInfo',
                     }) + item.clientInfo}
                     &nbsp;&nbsp;
                     {intl.formatMessage({
-                      id: "dms.user.center.log.os",
+                      id: 'dms.user.center.log.os',
                     }) + item.osInfo}
                     &nbsp;&nbsp;
                     {intl.formatMessage({
-                      id: "dms.user.center.log.browser",
+                      id: 'dms.user.center.log.browser',
                     }) + item.browserInfo}
                     &nbsp;&nbsp;
                   </Typography.Text>

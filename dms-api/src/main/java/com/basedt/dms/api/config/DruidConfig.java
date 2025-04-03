@@ -17,8 +17,8 @@
  */
 package com.basedt.dms.api.config;
 
-import com.alibaba.druid.support.http.StatViewServlet;
-import com.alibaba.druid.support.http.WebStatFilter;
+import com.alibaba.druid.support.jakarta.StatViewServlet;
+import com.alibaba.druid.support.jakarta.WebStatFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

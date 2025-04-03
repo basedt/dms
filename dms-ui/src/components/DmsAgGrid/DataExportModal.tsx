@@ -1,9 +1,9 @@
-import { DICT_TYPE, PATTERNS } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { DataTaskService } from "@/services/workspace/data.task";
-import { useIntl, useModel } from "@umijs/max";
-import { Form, Input, InputNumber, message, Modal, Radio, Select } from "antd";
-import { useEffect, useState } from "react";
+import { DICT_TYPE, PATTERNS } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { DataTaskService } from '@/services/workspace/data.task';
+import { useIntl, useModel } from '@umijs/max';
+import { Form, Input, InputNumber, message, Modal, Radio, Select } from 'antd';
+import { useEffect, useState } from 'react';
 
 const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
   const intl = useIntl();
@@ -11,7 +11,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [fileEncodingList, setFileEncodingList] = useState<DMS.Dict[]>([]);
-  const { setMenuKey } = useModel("global");
+  const { setMenuKey } = useModel('global');
 
   useEffect(() => {
     DictDataService.listByType(DICT_TYPE.fileEncoding).then((resp) => {
@@ -23,7 +23,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
 
   return (
     <Modal
-      title={intl.formatMessage({ id: "dms.common.operate.export" })}
+      title={intl.formatMessage({ id: 'dms.common.operate.export' })}
       open={open}
       onOk={() => {
         setLoading(true);
@@ -35,7 +35,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
             fileType: { value: values.fileType },
             splitRow: values.splitRow,
             fileEncoding: { value: values.fileEncoding },
-            taskType: { value: "e" },
+            taskType: { value: 'e' },
             sqlScript: data?.sqlScript as string,
           };
           DataTaskService.newExportTask(d).then((resp) => {
@@ -43,19 +43,19 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
               message.info(
                 <>
                   {intl.formatMessage({
-                    id: "dms.console.workspace.dataquery.export.success.info",
+                    id: 'dms.console.workspace.dataquery.export.success.info',
                   })}
                   <a
                     onClick={() => {
-                      setMenuKey("export");
+                      setMenuKey('export');
                     }}
                   >
                     &nbsp;
                     {intl.formatMessage({
-                      id: "dms.console.workspace.dataquery.export.success.view",
+                      id: 'dms.console.workspace.dataquery.export.success.view',
                     })}
                   </a>
-                </>
+                </>,
               );
               handleOk ? handleOk(false) : null;
             }
@@ -75,14 +75,14 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
         initialValues={{
-          fileEncoding: "UTF-8",
+          fileEncoding: 'UTF-8',
           splitRow: 0,
           fileName: data?.fileName,
         }}
       >
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.export.fileName",
+            id: 'dms.console.workspace.dataquery.export.fileName',
           })}
           name="fileName"
           rules={[
@@ -91,7 +91,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
             {
               pattern: PATTERNS.excludeSpecialChar,
               message: intl.formatMessage({
-                id: "dms.common.validate.excludeSpecialChar",
+                id: 'dms.common.validate.excludeSpecialChar',
               }),
             },
           ]}
@@ -101,33 +101,33 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
 
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.export.fileType",
+            id: 'dms.console.workspace.dataquery.export.fileType',
           })}
           name="fileType"
           rules={[{ required: true }]}
         >
           <Radio.Group>
-            <Radio value={"csv"}>CSV</Radio>
-            <Radio value={"xlsx"}>EXCEL</Radio>
-            <Radio value={"orc"}>ORC</Radio>
+            <Radio value={'csv'}>CSV</Radio>
+            <Radio value={'xlsx'}>EXCEL</Radio>
+            <Radio value={'orc'}>ORC</Radio>
           </Radio.Group>
         </Form.Item>
 
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.export.splitRow",
+            id: 'dms.console.workspace.dataquery.export.splitRow',
           })}
           name="splitRow"
           tooltip={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.export.splitRow.tip",
+            id: 'dms.console.workspace.dataquery.export.splitRow.tip',
           })}
         >
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
 
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.export.fileEncoding",
+            id: 'dms.console.workspace.dataquery.export.fileEncoding',
           })}
           name="fileEncoding"
         >
@@ -136,9 +136,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
             allowClear={true}
             optionFilterProp="label"
             filterOption={(input, option) =>
-              (option!.children as unknown as string)
-                .toLowerCase()
-                .includes(input.toLowerCase())
+              (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
             }
           >
             {fileEncodingList.map((item) => {

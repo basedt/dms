@@ -1,0 +1,11 @@
+node_modules
+.umi
+.umi-production
+**/*.svg
+.eslintignore
+.gitignore
+.prettierignore
+LICENSE
+CNAME
+/build
+/public

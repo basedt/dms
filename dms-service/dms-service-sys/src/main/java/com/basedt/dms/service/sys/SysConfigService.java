@@ -17,6 +17,7 @@
  */
 package com.basedt.dms.service.sys;
 
+import com.basedt.dms.service.sys.dto.LLMConfigDTO;
 import com.basedt.dms.service.sys.dto.SysConfigDTO;
 
 public interface SysConfigService {
@@ -30,5 +31,7 @@ public interface SysConfigService {
     void deleteByKey(String key);
 
     String selectValueByKey(String key);
+
+    LLMConfigDTO getLLMConfig();
 
 }

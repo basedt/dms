@@ -17,6 +17,7 @@
         <module>dms-service-security</module>
         <module>dms-service-log</module>
         <module>dms-service-workspace</module>
+        <module>dms-service-llm</module>
     </modules>
 
 </project>

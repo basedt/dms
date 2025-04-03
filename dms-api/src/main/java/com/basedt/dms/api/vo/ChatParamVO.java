@@ -15,28 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.alert.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+package com.basedt.dms.api.vo;
+
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
-@Schema(name = "EmailConfigDTO", title = "email config dto")
-public class EmailConfigDTO {
-    @Email
-    private String email;
+public class ChatParamVO {
 
-    @NotBlank
-    private String password;
+    private String cid;
 
-    @NotBlank
-    private String host;
-
-    @NotNull
-    private Integer port;
-
+    private List<String> messages;
 }

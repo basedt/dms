@@ -21,6 +21,7 @@ import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.enums.Bool;
 import com.basedt.dms.common.enums.RegisterChannel;
 import com.basedt.dms.common.enums.UserStatus;
+import com.basedt.dms.service.llm.DmsChatClient;
 import com.basedt.dms.service.sys.SysConfigService;
 import com.basedt.dms.service.sys.SysDictTypeService;
 import com.basedt.dms.service.sys.SysRoleService;
@@ -81,10 +82,11 @@ public class DmsApplicationRunner implements ApplicationRunner {
         log.info("Initialize system data begin ...");
         initSuperAdmin();
         log.info("Initialize system data finish.");
+        DmsChatClient.newInstance();
     }
 
     private void initSuperAdmin() {
-        String isAdminInit = sysConfigService.selectValueByKey(Constants.DMS_CONFIG_ADMIN_INIT);
+        String isAdminInit = sysConfigService.selectValueByKey(Constants.CFG_ADMIN_INIT);
         if (Bool.YES.getValue().equals(isAdminInit)) {
             log.info("init super admin account ...");
             SysUserDTO userDTO = new SysUserDTO();
@@ -101,8 +103,8 @@ public class DmsApplicationRunner implements ApplicationRunner {
             SysUserDTO admin = sysUserService.selectByUserName(userDTO.getUserName());
             SysRoleDTO superAdminRole = sysRoleService.selectOne(Constants.ROLE_SUPER_ADMIN);
             this.sysRoleService.grantRoleToUser(admin, superAdminRole);
-            log.info("reset system config key {} to {}", Constants.DMS_CONFIG_ADMIN_INIT, Bool.NO.getValue());
-            this.sysConfigService.update(Constants.DMS_CONFIG_ADMIN_INIT, Bool.NO.getValue());
+            log.info("reset system config key {} to {}", Constants.CFG_ADMIN_INIT, Bool.NO.getValue());
+            this.sysConfigService.update(Constants.CFG_ADMIN_INIT, Bool.NO.getValue());
         }
     }
 

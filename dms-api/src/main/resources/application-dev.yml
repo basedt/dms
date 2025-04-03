@@ -83,19 +83,35 @@ spring:
           slf4j:
             enabled: true
             result-set-log-enabled: false
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+      timeout: 5000
+      lettuce:
+        pool:
+          min-idle: 0
+          max-idle: 10
+          max-wait: 10000
+          max-active: 50
+  ai:
+    chat:
+      client:
+        enabled: false
+    dashscope:
+      api-key: ${AI_DASHSCOPE_API_KEY}
+      chat:
+        options:
+          model: qwen-max
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.openai-hk.com
+      chat:
+        options:
+          model: ${OPENAI_MODEL_ID}
 
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    password: 123456
-    timeout: 5000
-    lettuce:
-      pool:
-        min-idle: 0
-        max-idle: 10
-        max-wait: 10000
-        max-active: 50
   quartz:
     properties:
       org.quartz:
@@ -112,6 +128,7 @@ spring:
     password: 123456
     port: 25
     default-encoding: UTF-8
+
 
 socket.io:
   host: localhost

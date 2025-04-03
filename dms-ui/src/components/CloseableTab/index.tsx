@@ -47,7 +47,7 @@ const CloseableTab: React.FC<CloseableTabProps> = ({
     fnArgument: () => void;
   }>({
     visible: false,
-    fnArgument: () => {},
+    fnArgument: () => { },
   });
 
   const unsavedHint = useMemo(() => {
@@ -57,11 +57,11 @@ const CloseableTab: React.FC<CloseableTabProps> = ({
         id: "dms.common.operate.delete.confirm.saveContent",
       }),
       visible: isModalOpen.visible,
-      onCancel: () => setIsModalOpen({ visible: false, fnArgument: () => {} }),
-      onClose: () => setIsModalOpen({ visible: false, fnArgument: () => {} }),
+      onCancel: () => setIsModalOpen({ visible: false, fnArgument: () => { } }),
+      onClose: () => setIsModalOpen({ visible: false, fnArgument: () => { } }),
       onOk: () => {
         isModalOpen.fnArgument();
-        setIsModalOpen({ visible: false, fnArgument: () => {} });
+        setIsModalOpen({ visible: false, fnArgument: () => { } });
       },
       closeIcon: true,
       maskClosable: false,

@@ -1,17 +1,20 @@
-import { PageContainer } from "@ant-design/pro-components";
-import { Col, Menu, Row } from "antd";
-import React, { useState } from "react";
-import { useIntl } from "@umijs/max";
-import EmailSetting from "./EmailSetting";
+import { PageContainer } from '@ant-design/pro-components';
+import { useIntl } from '@umijs/max';
+import { Col, Menu, Row } from 'antd';
+import React, { useState } from 'react';
+import EmailSetting from './EmailSetting';
+import LLMSetting from './LLMSetting';
 
 const SettingView: React.FC = () => {
   const intl = useIntl();
-  const [selectedKey, setSelectKey] = useState<string>("email");
+  const [selectedKey, setSelectKey] = useState<string>('email');
 
   const renderChildren = () => {
     switch (selectedKey) {
-      case "email":
+      case 'email':
         return <EmailSetting></EmailSetting>;
+      case 'llm':
+        return <LLMSetting></LLMSetting>;
       default:
         return null;
     }
@@ -29,8 +32,12 @@ const SettingView: React.FC = () => {
             }}
             items={[
               {
-                key: "email",
-                label: intl.formatMessage({ id: "dms.admin.setting.email" }),
+                key: 'email',
+                label: intl.formatMessage({ id: 'dms.admin.setting.email' }),
+              },
+              {
+                key: 'llm',
+                label: intl.formatMessage({ id: 'dms.admin.setting.llm' }),
               },
             ]}
           ></Menu>

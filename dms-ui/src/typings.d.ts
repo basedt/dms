@@ -1,25 +1,30 @@
-declare module "slash2";
-declare module "*.css";
-declare module "*.less";
-declare module "*.scss";
-declare module "*.sass";
-declare module "*.svg";
-declare module "*.png";
-declare module "*.jpg";
-declare module "*.jpeg";
-declare module "*.gif";
-declare module "*.bmp";
-declare module "*.tiff";
-declare module "omit.js";
-declare module "numeral";
-declare module "@antv/data-set";
-declare module "mockjs";
-declare module "react-fittext";
-declare module "bizcharts-plugin-slider";
-declare module "react-cookies";
+declare module 'slash2';
+declare module '*.css';
+declare module '*.less';
+declare module '*.scss';
+declare module '*.sass';
+declare module '*.svg';
+declare module '*.png';
+declare module '*.jpg';
+declare module '*.jpeg';
+declare module '*.gif';
+declare module '*.bmp';
+declare module '*.tiff';
+declare module 'omit.js';
+declare module 'numeral';
+declare module '@antv/data-set';
+declare module 'mockjs';
+declare module 'react-fittext';
+declare module 'bizcharts-plugin-slider';
+declare module 'react-cookies';
 
-declare const REACT_APP_ENV: "test" | "dev" | "pre" | false;
-declare module "monaco-editor/esm/vs/basic-languages/sql/sql";
+declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
+declare module 'monaco-editor/esm/vs/basic-languages/sql/sql';
+declare module '@ant-design/icons';
+declare module '@ant-design/x';
+declare module 'antd';
+declare module 'react-syntax-highlighter';
+declare module 'react-syntax-highlighter/dist/esm/styles/prism';
 declare namespace DMS {
   type QueryParam = {
     pageSize?: number;
@@ -85,7 +90,7 @@ declare namespace DMS {
 
   type TableMetaInfo = {
     databaseId: string;
-    identifier:string;
+    identifier: string;
     tableName: string;
     type?: string;
     columns?: string[];

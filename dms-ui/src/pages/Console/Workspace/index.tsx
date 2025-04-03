@@ -1,44 +1,38 @@
-import CollapsedIcon from "@/components/CollapsedIcon";
+import CollapsedIcon from '@/components/CollapsedIcon';
 import {
   DatabaseOutlined,
   DownloadOutlined,
   HistoryOutlined,
   SearchOutlined,
   UploadOutlined,
-} from "@ant-design/icons";
-import { PageContainer } from "@ant-design/pro-components";
-import { Col, Menu, Row } from "antd";
-import { useEffect, useState } from "react";
-import KeepAlive from "react-activation";
-import {
-  useAccess,
-  useIntl,
-  useModel,
-  useParams,
-  useSearchParams,
-} from "@umijs/max";
-import DataQueryView from "./DataQuery";
-import DataSourceView from "./DataSource";
-import QueryHistoryView from "./QueryHistory";
+} from '@ant-design/icons';
+import { PageContainer } from '@ant-design/pro-components';
+import { useAccess, useIntl, useModel, useParams, useSearchParams } from '@umijs/max';
+import { Col, Menu, Row } from 'antd';
+import { useEffect, useState } from 'react';
+import KeepAlive from 'react-activation';
+import DataQueryView from './DataQuery';
+import DataSourceView from './DataSource';
+import QueryHistoryView from './QueryHistory';
 
-import type { MenuProps } from "antd";
-import { PRIVILEGES } from "@/constants";
-import DataExportView from "./DataExport";
-import DataImportView from "./DataImport";
-type MenuItem = Required<MenuProps>["items"][number];
+import { PRIVILEGES } from '@/constants';
+import type { MenuProps } from 'antd';
+import DataExportView from './DataExport';
+import DataImportView from './DataImport';
+type MenuItem = Required<MenuProps>['items'][number];
 
 const WorkspaceView: React.FC = () => {
   const intl = useIntl();
   const access = useAccess();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { initialState } = useModel("@@initialState");
+  const { initialState } = useModel('@@initialState');
   const [collapsed, setCollapsed] = useState(true);
   const [siderWidth, setSiderWidth] = useState<number>(65);
-  const { setAgGridkey, menuKey, setMenuKey } = useModel("global");
+  const { setAgGridkey, menuKey, setMenuKey } = useModel('global');
 
   useEffect(() => {
-    const m = searchParams.get("m");
+    const m = searchParams.get('m');
     if (m) {
       setAgGridkey(m as string);
       setMenuKey(m as string);
@@ -53,36 +47,36 @@ const WorkspaceView: React.FC = () => {
   const getMenuItems = () => {
     const menuItems: MenuItem[] = [
       {
-        key: "query",
-        label: intl.formatMessage({ id: "menu.query" }),
+        key: 'query',
+        label: intl.formatMessage({ id: 'menu.query' }),
         icon: <SearchOutlined />,
       },
     ];
     if (access.canAccess(PRIVILEGES.wsWsdDftShow)) {
       menuItems.push({
-        key: "datasource",
-        label: intl.formatMessage({ id: "menu.datasource" }),
+        key: 'datasource',
+        label: intl.formatMessage({ id: 'menu.datasource' }),
         icon: <DatabaseOutlined />,
       });
     }
     if (access.canAccess(PRIVILEGES.wsWseDftShow)) {
       menuItems.push({
-        key: "export",
-        label: intl.formatMessage({ id: "menu.export" }),
+        key: 'export',
+        label: intl.formatMessage({ id: 'menu.export' }),
         icon: <DownloadOutlined />,
       });
     }
     if (access.canAccess(PRIVILEGES.wsWsiDftShow)) {
       menuItems.push({
-        key: "import",
-        label: intl.formatMessage({ id: "menu.import" }),
+        key: 'import',
+        label: intl.formatMessage({ id: 'menu.import' }),
         icon: <UploadOutlined />,
       });
     }
     if (access.canAccess(PRIVILEGES.wsWshDftShow)) {
       menuItems.push({
-        key: "log",
-        label: intl.formatMessage({ id: "menu.log" }),
+        key: 'log',
+        label: intl.formatMessage({ id: 'menu.log' }),
         icon: <HistoryOutlined />,
       });
     }
@@ -91,19 +85,19 @@ const WorkspaceView: React.FC = () => {
 
   const renderChildren = () => {
     switch (menuKey) {
-      case "datasource":
+      case 'datasource':
         return <DataSourceView workspaceId={id as string}></DataSourceView>;
-      case "query":
+      case 'query':
         return (
           <KeepAlive cacheId={`data-query-view`}>
             <DataQueryView workspaceId={id as string}></DataQueryView>
           </KeepAlive>
         );
-      case "log":
+      case 'log':
         return <QueryHistoryView workspaceId={id as string}></QueryHistoryView>;
-      case "export":
+      case 'export':
         return <DataExportView workspaceId={id as string}></DataExportView>;
-      case "import":
+      case 'import':
         return <DataImportView workspaceId={id as string}></DataImportView>;
       default:
         return <></>;
@@ -111,12 +105,9 @@ const WorkspaceView: React.FC = () => {
   };
 
   return (
-    <PageContainer
-      header={{ title: null, breadcrumb: {} }}
-      childrenContentStyle={{ padding: 0 }}
-    >
+    <PageContainer header={{ title: null, breadcrumb: {} }} childrenContentStyle={{ padding: 0 }}>
       <Row>
-        <Col flex={siderWidth} style={{ position: "fixed" }}>
+        <Col flex={siderWidth} style={{ position: 'fixed' }}>
           <Menu
             theme="light"
             mode="inline"
@@ -124,8 +115,8 @@ const WorkspaceView: React.FC = () => {
             inlineCollapsed={collapsed}
             style={{
               width: siderWidth,
-              height: "calc( 100vh - 112px )",
-              padding: "0px 8px",
+              height: 'calc( 100vh - 112px )',
+              padding: '0px 8px',
             }}
             onClick={({ key }) => {
               setAgGridkey(key);
@@ -133,13 +124,9 @@ const WorkspaceView: React.FC = () => {
             }}
             selectedKeys={[menuKey]}
           />
-          <CollapsedIcon
-            onToggle={toggleCollapsed}
-            type="inner"
-            collapsed={collapsed}
-          />
+          <CollapsedIcon onToggle={toggleCollapsed} type="inner" collapsed={collapsed} />
         </Col>
-        <Col flex="auto" style={{ marginLeft: siderWidth, overflow: "hidden" }}>
+        <Col flex="auto" style={{ marginLeft: siderWidth, overflow: 'hidden' }}>
           {renderChildren()}
         </Col>
       </Row>

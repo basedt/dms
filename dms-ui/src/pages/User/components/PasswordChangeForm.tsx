@@ -1,17 +1,17 @@
-import { UserService } from "@/services/admin/user.service";
-import { Form, Input, message, Modal, Select } from "antd";
-import { useState } from "react";
-import { history, useIntl } from "@umijs/max";
+import { UserService } from '@/services/admin/user.service';
+import { history, useIntl } from '@umijs/max';
+import { Form, Input, message, Modal } from 'antd';
+import { useState } from 'react';
 
 const PasswordChangeForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
   const intl = useIntl();
   const [form] = Form.useForm();
-  const { open, data, handleOk, handleCancel } = props;
+  const { open, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
   return (
     <Modal
       title={intl.formatMessage({
-        id: "dms.user.center.security.password.edit",
+        id: 'dms.user.center.security.password.edit',
       })}
       open={open}
       onOk={() => {
@@ -21,11 +21,11 @@ const PasswordChangeForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
             if (resp.success) {
               message.success(
                 intl.formatMessage({
-                  id: "dms.common.message.operate.success",
-                })
+                  id: 'dms.common.message.operate.success',
+                }),
               );
               handleOk ? handleOk(false) : null;
-              history.push("/user/login");
+              history.push('/user/login');
             }
           });
         });
@@ -37,15 +37,10 @@ const PasswordChangeForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
       styles={{ body: { paddingTop: 8 } }}
       width="540px"
     >
-      <Form
-        layout="horizontal"
-        form={form}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 16 }}
-      >
+      <Form layout="horizontal" form={form} labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.user.center.security.password.old",
+            id: 'dms.user.center.security.password.old',
           })}
           name="oldPassword"
           rules={[{ required: true }]}
@@ -54,7 +49,7 @@ const PasswordChangeForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
         </Form.Item>
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.user.center.security.password.new",
+            id: 'dms.user.center.security.password.new',
           })}
           name="password"
           rules={[{ required: true }]}
@@ -64,7 +59,7 @@ const PasswordChangeForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
 
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.user.center.security.password.confirm",
+            id: 'dms.user.center.security.password.confirm',
           })}
           name="confirmPassword"
           rules={[{ required: true }]}

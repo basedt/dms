@@ -1,8 +1,8 @@
-import { Button, Divider, Modal, Select } from "antd";
-import { useEffect, useState } from "react";
-import { DataSourceService } from "@/services/workspace/datasource.service";
-import { useIntl, Link, history } from "@umijs/max";
-import { PlusOutlined } from "@ant-design/icons";
+import { DataSourceService } from '@/services/workspace/datasource.service';
+import { PlusOutlined } from '@ant-design/icons';
+import { Link, useIntl } from '@umijs/max';
+import { Button, Divider, Modal, Select, Space } from 'antd';
+import { useEffect, useState } from 'react';
 
 interface DbSelectModalProps {
   open: boolean;
@@ -20,19 +20,17 @@ const DbSelectModal = (props: DbSelectModalProps) => {
     if (data?.defaultValue) {
       setSelectDb(data?.defaultValue);
     }
-    DataSourceService.listByWorkspace(data?.workspaceId as string).then(
-      (resp) => {
-        if (resp.success) {
-          setDbList(resp.data as DMS.Dict[]);
-        }
+    DataSourceService.listByWorkspace(data?.workspaceId as string).then((resp) => {
+      if (resp.success) {
+        setDbList(resp.data as DMS.Dict[]);
       }
-    );
+    });
   }, []);
 
   return (
     <Modal
       title={intl.formatMessage({
-        id: "dms.console.workspace.dataquery.select",
+        id: 'dms.console.workspace.dataquery.select',
       })}
       open={open}
       onOk={() => {
@@ -45,37 +43,28 @@ const DbSelectModal = (props: DbSelectModalProps) => {
       width={540}
     >
       <Select
-        style={{ width: "100%" }}
+        style={{ width: '100%' }}
         allowClear={false}
         showSearch={true}
         placeholder={intl.formatMessage({
-          id: "dms.console.workspace.dataquery.select",
+          id: 'dms.console.workspace.dataquery.select',
         })}
         defaultValue={data?.defaultValue}
-        onChange={(value) => {
+        onChange={(value: any) => {
           setSelectDb(value);
         }}
-        dropdownRender={(menu) => {
+        dropdownRender={(menu: any) => {
           return (
             <>
               {menu}
-              <Divider style={{ margin: "8px 0" }} />
+              <Divider style={{ margin: '8px 0' }} />
               <Link
-                to={`/workspace/${data?.workspaceId as string
-                  }?m=datasource&n=true`}
+                to={`/workspace/${data?.workspaceId as string}?m=datasource&n=true`}
                 reloadDocument={true}
                 onClick={() => sessionStorage.setItem('selectOpen', 'true')}
               >
-                <Button
-                  type="text"
-                  block
-                  icon={<PlusOutlined />}
-                  style={{ marginBottom: 2 }}
-                >
-                  {intl.formatMessage(
-                    { id: "dms.console.workspace.datasource.new" },
-                    { type: "" }
-                  )}
+                <Button type="text" block icon={<PlusOutlined />} style={{ marginBottom: 2 }}>
+                  {intl.formatMessage({ id: 'dms.console.workspace.datasource.new' }, { type: '' })}
                 </Button>
               </Link>
             </>
@@ -84,9 +73,18 @@ const DbSelectModal = (props: DbSelectModalProps) => {
       >
         {dbList &&
           dbList.map((item) => {
+            const label: string = item.label || 'img-db';
+            const dbinfo: string[] = label.split('-');
             return (
               <Select.Option key={item.value} value={item.value}>
-                {item.label}
+                <Space style={{ display: 'flex', alignItems: 'center' }}>
+                  <img
+                    src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}
+                    style={{ width: 16, height: 16 }}
+                    alt=""
+                  />
+                  {dbinfo[1]}
+                </Space>
               </Select.Option>
             );
           })}

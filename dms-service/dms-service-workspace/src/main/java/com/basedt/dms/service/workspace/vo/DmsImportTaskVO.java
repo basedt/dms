@@ -20,7 +20,7 @@ package com.basedt.dms.service.workspace.vo;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class DmsImportTaskVO {

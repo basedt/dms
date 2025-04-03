@@ -10,10 +10,62 @@
   }
 }
 
+.actionBar {
+  display: flex;
+  padding: 5px;
+
+  &_aiButton {
+    height: 26px;
+    margin: 0 4px 0 8px;
+  }
+}
+
+.codeEditor {
+  &_aiContent {
+    .codeAiList {
+      height: calc(100vh - 248px);
+      padding: 0 20px 0 18px;
+      overflow-y: scroll;
+
+      p {
+        margin-bottom: 0rem;
+      }
+    }
+
+    .codetext {
+      position: relative;
+
+      textarea {
+        min-height: 120px !important;
+        max-height: 120px !important;
+        padding-bottom: 30px;
+        background-color: #f3f3f3;
+        border: none;
+        box-shadow: none;
+      }
+
+      textarea:hover {
+        border: none;
+      }
+
+      &_button {
+        position: absolute;
+        bottom: 1px;
+        left: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 99%;
+        padding: 5px 10px;
+        border-bottom-right-radius: 6px;
+        border-bottom-left-radius: 6px;
+      }
+    }
+  }
+}
 
 .catalogTreeContainer {
   :global {
-
     .ant-tree-node-content-wrapper,
     .ant-tree-node-content-wrapper-close {
       display: flex;

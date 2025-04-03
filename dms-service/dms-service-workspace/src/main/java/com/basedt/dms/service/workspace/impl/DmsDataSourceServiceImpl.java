@@ -61,7 +61,7 @@ public class DmsDataSourceServiceImpl implements DmsDataSourceService {
 
     @Override
     public void deleteBatch(List<Long> idList) {
-        this.dmsDataSourceMapper.deleteBatchIds(idList);
+        this.dmsDataSourceMapper.deleteByIds(idList);
     }
 
     @Override

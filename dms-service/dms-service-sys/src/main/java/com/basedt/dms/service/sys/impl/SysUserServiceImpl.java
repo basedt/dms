@@ -74,7 +74,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public void deleteBatch(List<Long> idList) {
-        this.sysUserMapper.deleteBatchIds(idList);
+        this.sysUserMapper.deleteByIds(idList);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class SysUserServiceImpl implements SysUserService {
         if (CollectionUtil.isEmpty(userRoleList)) {
             return null;
         }
-        List<SysUser> userList = this.sysUserMapper.selectBatchIds(
+        List<SysUser> userList = this.sysUserMapper.selectByIds(
                 userRoleList.stream()
                         .map(SysUserRoleDTO::getUserId)
                         .collect(Collectors.toList()));
@@ -133,7 +133,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<SysUserDTO> listUserById(Long... idList) {
-        List<SysUser> userList = this.sysUserMapper.selectBatchIds(Arrays.stream(idList).collect(Collectors.toSet()));
+        List<SysUser> userList = this.sysUserMapper.selectByIds(Arrays.stream(idList).collect(Collectors.toSet()));
         return SysUserConvert.INSTANCE.toDto(userList);
     }
 

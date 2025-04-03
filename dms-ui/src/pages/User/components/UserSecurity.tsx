@@ -18,15 +18,16 @@ const UserSecurity: React.FC = () => {
   >({
     open: false,
   });
-  useEffect(() => {
-    refreshUserInfo();
-  }, []);
 
   const refreshUserInfo = () => {
     AuthService.getCurrentUser(true).then((resp) => {
       setUserInfo(resp.data);
     });
   };
+
+  useEffect(() => {
+    refreshUserInfo();
+  }, []);
 
   return (
     <>

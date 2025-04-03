@@ -59,7 +59,7 @@ public class DmsWorkspaceServiceImpl implements DmsWorkspaceService {
 
     @Override
     public void deleteBatch(List<Long> idList) {
-        this.dmsWorkspaceMapper.deleteBatchIds(idList);
+        this.dmsWorkspaceMapper.deleteByIds(idList);
     }
 
     @Override

@@ -7,6 +7,7 @@ const useGlobalModel = () => {
     const tableKey = useRef(1);//库表更新
     const [agGridkey, setAgGridkey] = useState('');//添加ag-grid的Key
     const [menuKey, setMenuKey] = useState('query');//添加ag-grid的Key
+    const [selectTabsActive, setSelectTabsActive]: any = useState();//存储当前选中的tabs对象
 
     return {
         tabsKey,
@@ -15,10 +16,12 @@ const useGlobalModel = () => {
         agGridkey,
         menuKey,
         upDateFile,
+        selectTabsActive,
         setTabsList,
         setAgGridkey,
         setUpDateFile,
         setMenuKey,
+        setSelectTabsActive
     };
 };
 

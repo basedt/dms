@@ -17,11 +17,15 @@
  */
 package com.basedt.dms.service.sys.impl;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.dao.entity.master.sys.SysConfig;
 import com.basedt.dms.dao.mapper.master.sys.SysConfigMapper;
 import com.basedt.dms.service.sys.SysConfigService;
 import com.basedt.dms.service.sys.convert.SysConfigConvert;
+import com.basedt.dms.service.sys.dto.LLMConfigDTO;
 import com.basedt.dms.service.sys.dto.SysConfigDTO;
 import org.springframework.stereotype.Service;
 
@@ -79,5 +83,17 @@ public class SysConfigServiceImpl implements SysConfigService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public LLMConfigDTO getLLMConfig() {
+        String llmConfig = selectValueByKey(Constants.CFG_LLM_CODE);
+        LLMConfigDTO config;
+        if (StrUtil.isNotBlank(llmConfig)) {
+            config = JSONUtil.toBean(llmConfig, LLMConfigDTO.class);
+        } else {
+            config = new LLMConfigDTO();
+        }
+        return config;
     }
 }

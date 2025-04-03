@@ -20,9 +20,13 @@ package com.basedt.dms.alert.impl;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.basedt.dms.alert.dto.EmailConfigDTO;
+import com.basedt.dms.service.sys.dto.EmailConfigDTO;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.service.sys.SysConfigService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -32,10 +36,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+
 import java.util.Properties;
 
 @Slf4j

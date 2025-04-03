@@ -17,20 +17,23 @@
  */
 package com.basedt.dms.api.config;
 
-import com.basedt.dms.service.security.SessionManagementConfigurer;
+import com.basedt.dms.service.security.SessionFilter;
 import com.basedt.dms.service.security.annotation.AnonymousAccess;
 import com.basedt.dms.service.security.handler.CustomAccessDeniedHandler;
 import com.basedt.dms.service.security.handler.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
@@ -43,21 +46,22 @@ import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
-    private final SessionManagementConfigurer sessionManagementConfigurer;
+    private final SessionFilter sessionFilter;
 
     public WebSecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
                              CustomAccessDeniedHandler customAccessDeniedHandler,
-                             RequestMappingHandlerMapping requestMappingHandlerMapping, SessionManagementConfigurer sessionManagementConfigurer) {
+                             RequestMappingHandlerMapping requestMappingHandlerMapping,
+                             SessionFilter sessionFilter) {
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
         this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
-        this.sessionManagementConfigurer = sessionManagementConfigurer;
+        this.sessionFilter = sessionFilter;
     }
 
     @Bean
@@ -80,31 +84,31 @@ public class WebSecurityConfig {
             }
         }
 
+
         http
-                .csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .and()
-                .headers()
-                .frameOptions()
-                .disable()
-                .and()
-                .authorizeRequests()
-                .antMatchers(anonymousUrls.toArray(new String[0])).permitAll()
-                .antMatchers(HttpMethod.GET, "/**/*.css", "/**/*.js", "/**/*.png",
-                        "/**/*.woff", "/**/*.woff2", "/**/*.svg", "/**/*.json", "/**/*.ttf", "/**/*.ico",
-                        "/index.html"
-                ).permitAll()
-                .antMatchers("/swagger**/**", "/doc.html", "/v3/**", "/webjars/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-                .accessDeniedHandler(customAccessDeniedHandler)
-                .and()
-                .apply(sessionManagementConfigurer)
-        ;
+                .csrf(AbstractHttpConfigurer::disable)
+                .securityContext(securityContext ->
+                        securityContext.requireExplicitSave(true))
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .headers(headers ->
+                        headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.requestMatchers(anonymousUrls.toArray(new String[0])).permitAll())
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.requestMatchers(HttpMethod.GET, "/*/*.css", "/*/*.js", "/*/*.png",
+                                "/*/*.woff", "/*/*.woff2", "/*/*.svg", "/*/*.json", "/*/*.ttf", "/*/*.ico",
+                                "/index.html").permitAll())
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.requestMatchers("/swagger**/**", "/doc.html", "/v3/**", "/webjars/**").permitAll())
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll())
+                .authorizeHttpRequests(authorizeRequests ->
+                        authorizeRequests.anyRequest().authenticated())
+                .exceptionHandling(exceptionHandler ->
+                        exceptionHandler.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler))
+                .addFilterBefore(sessionFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

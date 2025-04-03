@@ -22,6 +22,8 @@ import com.basedt.dms.api.annotation.AuditLogging;
 import com.basedt.dms.common.exception.DmsException;
 import com.basedt.dms.common.utils.I18nUtil;
 import com.basedt.dms.common.vo.ResponseVO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -33,8 +35,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import static com.basedt.dms.common.enums.ResponseCode.*;
 

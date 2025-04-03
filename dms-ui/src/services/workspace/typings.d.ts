@@ -143,7 +143,7 @@ declare namespace DMS {
   type ImportDataTaskParam = {
     workspaceId: number | string;
     datasourceId: number | string;
-    catalog?:string;
+    catalog?: string;
     schema?: string;
     tableName?: string;
     isTruncate?: boolean;
@@ -151,5 +151,10 @@ declare namespace DMS {
     fileType?: string;
     fileEncoding?: string;
     separator?: string;
+  };
+
+  type ChatMsg = {
+    cid: string;
+    messages: string[];
   };
 }

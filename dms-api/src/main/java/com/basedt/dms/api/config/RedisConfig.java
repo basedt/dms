@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -33,15 +33,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
 /**
- * redis配置类
- *
- * @author gleiyu
+ * redis config
  */
 @Configuration
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
-public class RedisConfig extends CachingConfigurerSupport {
+public class RedisConfig {
 
+    @Primary
     @Bean(name = "redisTemplate")
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         StringRedisTemplate template = new StringRedisTemplate(redisConnectionFactory);
@@ -49,7 +48,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         om.activateDefaultTyping(om.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
         GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(om);
-        template.setValueSerializer(jsonSerializer);
+        template.setDefaultSerializer(jsonSerializer);
         template.setHashValueSerializer(jsonSerializer);
         template.afterPropertiesSet();
         return template;

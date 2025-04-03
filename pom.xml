@@ -43,16 +43,16 @@
     </developers>
 
     <properties>
+        <reversion>v1.0.2</reversion>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>17</java.version>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.plugin>3.8.1</maven.compiler.plugin>
         <maven.flatten.plugin>1.2.7</maven.flatten.plugin>
         <maven.frontend.plugin>1.9.1</maven.frontend.plugin>
-        <reversion>v1.0.1</reversion>
         <spring.boot.version>3.3.9</spring.boot.version>
         <druid.spring.boot.version>1.2.24</druid.spring.boot.version>
         <mysql.version>8.0.28</mysql.version>

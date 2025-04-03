@@ -1,4 +1,4 @@
-FROM openjdk:8u342 as docker
+FROM amazoncorretto:17.0.14 as docker
 ENV DMS_HOME=/opt/app
 WORKDIR $DMS_HOME/dms
 COPY ./dms-api/target/dms-api.jar .

@@ -17,6 +17,7 @@
  */
 package com.basedt.dms.plugins.datasource.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
@@ -40,7 +41,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +66,9 @@ public class MetaDataServiceImpl implements MetaDataService {
             catalogs = dataSourcePlugin.listCatalogs();
             for (CatalogDTO catalog : catalogs) {
                 List<SchemaDTO> schemas = null;
-                if (StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POSTGRESQL.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())) {
+                if (StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POSTGRESQL.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
+                        || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.MSSQL.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
+                ) {
                     schemas = dataSourcePlugin.listSchemas(catalog.getCatalogName(), null);
                 } else {
                     schemas = dataSourcePlugin.listSchemas(catalog.getCatalogName(), dataSourcePlugin.getDatabaseName());
@@ -371,30 +373,18 @@ public class MetaDataServiceImpl implements MetaDataService {
 
     public DataSourcePlugin getDataSourcePluginInstance(DataSourceDTO dataSourceDTO) {
         if (Objects.nonNull(dataSourceDTO)) {
-            String decodePwd = Base64.decodeStr(dataSourceDTO.getPassword());
-            dataSourceDTO.setPassword(decodePwd);
+            DataSourceDTO ds = new DataSourceDTO();
+            BeanUtil.copyProperties(dataSourceDTO, ds);
+
+            String decodePwd = Base64.decodeStr(ds.getPassword());
+            ds.setPassword(decodePwd);
+
             return DataSourcePluginManager.newInstance(
-                    StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, dataSourceDTO.getDatasourceType().getValue()).toUpperCase(),
-                    dataSourceDTO.toProperties()
+                    StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, ds.getDatasourceType().getValue()).toUpperCase(),
+                    ds.toProperties()
             );
         }
         return null;
-    }
-
-    @Override
-    public List<SuggestionDTO> listSuggestion(DataSourceDTO dataSourceDTO, String keyword, String tableName) {
-        // TODO 基于缓存将最近最常用的数据表提示
-        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSourceDTO);
-        if (StrUtil.isNotBlank(tableName)) {
-            //columns  catalog schema tableName
-//            dataSourcePlugin.listColumnsByTable();
-        } else {
-            //table and views
-//            dataSourcePlugin.listTables();
-//            dataSourcePlugin.listViews();
-//            dataSourcePlugin.listMViews();
-        }
-        return Collections.emptyList();
     }
 
     @Override

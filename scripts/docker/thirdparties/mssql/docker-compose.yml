@@ -17,14 +17,26 @@
 version: '3.8'
 
 services:
-
-  oracle:
-    image: apecloud/oracle:19.3.0-ee
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - MSSQL_PID=Developer
+      - MSSQL_SA_PASSWORD=${Sa_Password:-#password123}
+      - ACCEPT_EULA=Y
     ports:
-      - "1521:1521"
-    restart: on-failure
+      - "1433:1433"
+    volumes:
+      - ./data:/var/opt/mssql
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P #password123 -Q 'SELECT 1' || exit 1" ]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
     networks:
-      - oracle_net
+      - mssql_net
+
 networks:
-  oracle_net:
+  mssql_net:
     driver: bridge

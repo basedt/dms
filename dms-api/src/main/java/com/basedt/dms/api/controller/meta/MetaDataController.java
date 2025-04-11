@@ -77,12 +77,4 @@ public class MetaDataController {
         return new ResponseEntity<>(ResponseVO.success(treeList), HttpStatus.OK);
     }
 
-    @GetMapping
-    @Operation(summary = "get code suggestions", description = "get code suggestions")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<List<SuggestionDTO>>> getSuggestions(@NotNull Long workspaceId, @NotNull Long dataSourceId, @NotNull String keyword, String tableName) {
-        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        List<SuggestionDTO> suggestions = this.metaDataService.listSuggestion(DataSourceConvert.toDataSource(dto), keyword, tableName);
-        return new ResponseEntity<>(ResponseVO.success(suggestions), HttpStatus.OK);
-    }
 }

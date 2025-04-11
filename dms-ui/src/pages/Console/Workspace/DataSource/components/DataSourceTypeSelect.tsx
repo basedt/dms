@@ -1,6 +1,6 @@
-import { useEmotionCss } from "@ant-design/use-emotion-css";
-import { Card, Col, Image, message, Modal, Row, Typography } from "antd";
-import { useIntl } from "@umijs/max";
+import { useEmotionCss } from '@ant-design/use-emotion-css';
+import { useIntl } from '@umijs/max';
+import { Card, Col, Image, Modal, Row, Typography } from 'antd';
 
 type DataSourceTypeSelectProps = {
   open?: boolean;
@@ -22,8 +22,8 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
 
   const dbCardStyle = useEmotionCss(() => {
     return {
-      width: "100%",
-      height: "100px",
+      width: '100%',
+      height: '100px',
     };
   });
 
@@ -35,23 +35,23 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
 
   const getDefaultPort = (dbType: string) => {
     switch (dbType) {
-      case "mysql":
+      case 'mysql':
         return 3306;
-      case "oracle":
+      case 'oracle':
         return 1521;
-      case "postgreSQL":
+      case 'postgreSQL':
         return 5432;
-      case "sqlServer":
+      case 'mssql':
         return 1433;
-      case "doris":
-      return 9030;
-      case "redis":
+      case 'doris':
+        return 9030;
+      case 'redis':
         return 6379;
-      case "kafka":
+      case 'kafka':
         return 9092;
-      case "hive":
+      case 'hive':
         return 10000;
-      case "hdfs":
+      case 'hdfs':
         return 9000;
       default:
         return null;
@@ -65,35 +65,30 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         hoverable
         styles={{ body: { paddingTop: 8 } }}
         cover={
-          <Image
-            src={imageSrc}
-            preview={false}
-            height={60}
-            style={{ paddingTop: 12 }}
-          ></Image>
+          <Image src={imageSrc} preview={false} height={60} style={{ paddingTop: 12 }}></Image>
         }
         onClick={() => {
           if (
-            dbType.value == "hive" ||
-            dbType.value == "hdfs" ||
-            dbType.value == "redis" ||
-            dbType.value == "kafka"
+            dbType.value == 'hive' ||
+            dbType.value == 'hdfs' ||
+            dbType.value == 'redis' ||
+            dbType.value == 'kafka'
           ) {
             // message.info("not suppor");
           } else {
             handleOk
               ? handleOk(false, {
-                workspaceId: data?.workspaceId as string,
-                datasourceType: dbType,
-                port: getDefaultPort(dbType.value as string) as number,
-              })
+                  workspaceId: data?.workspaceId as string,
+                  datasourceType: dbType,
+                  port: getDefaultPort(dbType.value as string) as number,
+                })
               : null;
           }
         }}
       >
         <Card.Meta
           description={<Typography.Text>{dbType.label}</Typography.Text>}
-          style={{ textAlign: "center" }}
+          style={{ textAlign: 'center' }}
         ></Card.Meta>
       </Card>
     );
@@ -101,70 +96,55 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
 
   return (
     <Modal
-      title={intl.formatMessage(
-        { id: "dms.console.workspace.datasource.new" },
-        { type: "" }
-      )}
+      title={intl.formatMessage({ id: 'dms.console.workspace.datasource.new' }, { type: '' })}
       open={open}
-      onOk={() => { }}
+      onOk={() => {}}
       destroyOnClose={true}
       onCancel={handleCancel}
       styles={{
         body: {
-          overflowY: "scroll",
-          maxHeight: "640px",
+          overflowY: 'scroll',
+          maxHeight: '640px',
           paddingBottom: 12,
           height: 560,
-        }
+        },
       }}
       width="780px"
       footer={false}
     >
       <Typography.Title level={5} className={groupLableStyle}>
         {intl.formatMessage({
-          id: "dms.console.workspace.datasource.type.rdbms",
+          id: 'dms.console.workspace.datasource.type.rdbms',
         })}
       </Typography.Title>
       <div className={groupContainerStyle}>
         <Row gutter={[12, 12]}>
           <Col span={6}>
-            {dbCard(
-              { value: "mysql", label: "Mysql" },
-              "/images/databases/mysql.svg"
-            )}
+            {dbCard({ value: 'mysql', label: 'Mysql' }, '/images/databases/mysql.svg')}
           </Col>
           <Col span={6}>
             {dbCard(
-              { value: "postgreSQL", label: "PostgreSQL" },
-              "/images/databases/postgresql.svg"
+              { value: 'postgreSQL', label: 'PostgreSQL' },
+              '/images/databases/postgresql.svg',
             )}
           </Col>
           <Col span={6}>
-            {dbCard(
-              { value: "oracle", label: "Oracle" },
-              "/images/databases/oracle.svg"
-            )}
+            {dbCard({ value: 'oracle', label: 'Oracle' }, '/images/databases/oracle.svg')}
           </Col>
-          {/* <Col span={6}>
-            {dbCard(
-              { value: "sqlServer", label: "SQLServer" },
-              "/images/databases/microsoftsqlserver.svg"
-            )}
-          </Col> */}
+          <Col span={6}>
+            {dbCard({ value: 'mssql', label: 'SQL Server' }, '/images/databases/mssql.svg')}
+          </Col>
         </Row>
       </div>
       <Typography.Title level={5} className={groupLableStyle}>
         {intl.formatMessage({
-          id: "dms.console.workspace.datasource.type.bigdata",
+          id: 'dms.console.workspace.datasource.type.bigdata',
         })}
       </Typography.Title>
       <div className={groupContainerStyle}>
         <Row gutter={[12, 12]}>
-        <Col span={6}>
-            {dbCard(
-              { value: "doris", label: "Doris" },
-              "/images/databases/doris.svg"
-            )}
+          <Col span={6}>
+            {dbCard({ value: 'doris', label: 'Doris' }, '/images/databases/doris.svg')}
           </Col>
           {/* <Col span={6}>
             {dbCard(

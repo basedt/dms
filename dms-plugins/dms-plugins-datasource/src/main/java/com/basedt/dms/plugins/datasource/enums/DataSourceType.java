@@ -21,6 +21,7 @@ public enum DataSourceType {
     MYSQL("mysql", "Mysql"),
     ORACLE("oracle", "Oracle"),
     POSTGRESQL("postgreSQL", "PostgreSQL"),
+    MSSQL("mssql", "SQL Server"),
     DORIS("doris", "Doris");
 
     private final String value;

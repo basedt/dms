@@ -1,34 +1,16 @@
-import { MetaDataService } from "@/services/meta/metadata.service";
-import { DataSourceService } from "@/services/workspace/datasource.service";
-import {
-  debounce,
-  findNodeByTitle,
-  searchKeysByTitle,
-} from "@/utils/ExcelUtil";
-import {
-  DownloadOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import { Icon, useIntl, useModel } from "@umijs/max";
-import {
-  Button,
-  Col,
-  Divider,
-  Dropdown,
-  Input,
-  MenuProps,
-  Row,
-  Tree,
-} from "antd";
-import { useEffect, useState } from "react";
-import styles from "../index.less";
-import DbCreateModal from "./DbCreateModal";
-import FileModal from "./FileModal";
-import DataExportModal from "@/components/DmsAgGrid/DataExportModal";
-import DataImportModal, { DataImportModalProps } from "./DataImportModal";
-import { idbAPI } from "@/idb";
+import DataExportModal from '@/components/DmsAgGrid/DataExportModal';
+import { idbAPI } from '@/idb';
+import { MetaDataService } from '@/services/meta/metadata.service';
+import { DataSourceService } from '@/services/workspace/datasource.service';
+import { debounce, findNodeByTitle, searchKeysByTitle } from '@/utils/ExcelUtil';
+import { DownloadOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { Icon, useIntl, useModel } from '@umijs/max';
+import { Button, Col, Divider, Dropdown, Input, MenuProps, Row, Tree } from 'antd';
+import { useEffect, useState } from 'react';
+import styles from '../index.less';
+import DataImportModal, { DataImportModalProps } from './DataImportModal';
+import DbCreateModal from './DbCreateModal';
+import FileModal from './FileModal';
 
 export type DbCatalogTreeViewProps = {
   workspaceId: string | number;
@@ -41,26 +23,21 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   const intl = useIntl();
   const { datasourceId, height, onCallback, workspaceId } = props;
   const [treeData, setTreeData] = useState<DMS.CatalogTreeNode<string>[]>([]);
-  const [defaultData, setDefaultData] = useState<DMS.CatalogTreeNode<string>[]>(
-    []
-  );
+  const [defaultData, setDefaultData] = useState<DMS.CatalogTreeNode<string>[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>();
-  const [expandedParentKeys, setExpandedParentKeys] =
-    useState<DMS.TreeNodeType>();
+  const [expandedParentKeys, setExpandedParentKeys] = useState<DMS.TreeNodeType>();
   const [datasource, setDataSource] = useState<DMS.DataSource>();
-  const [dbCreateData, setDbCreateData] = useState<
-    DMS.ModalProps<DMS.DataSource>
-  >({ open: false });
+  const [dbCreateData, setDbCreateData] = useState<DMS.ModalProps<DMS.DataSource>>({ open: false });
   const [fileData, setFileData] = useState<DMS.ModalProps<DMS.File>>({
     open: false,
   });
-  const [dataExportData, setDataExportData] = useState<
-    DMS.ModalProps<DMS.DataTask>
-  >({ open: false });
-  const [dataImportData, setDataImportData] = useState<
-    DMS.ModalProps<DataImportModalProps>
-  >({ open: false });
-  const { setUpDateFile } = useModel("global");
+  const [dataExportData, setDataExportData] = useState<DMS.ModalProps<DMS.DataTask>>({
+    open: false,
+  });
+  const [dataImportData, setDataImportData] = useState<DMS.ModalProps<DataImportModalProps>>({
+    open: false,
+  });
+  const { setUpDateFile } = useModel('global');
 
   useEffect(() => {
     idbAPI.cleanupOldMetadata();
@@ -85,7 +62,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   const updateTreeData = (
     originTree: DMS.CatalogTreeNode<string>[],
     key: string,
-    children: DMS.CatalogTreeNode<string>[]
+    children: DMS.CatalogTreeNode<string>[],
   ): DMS.CatalogTreeNode<string>[] =>
     originTree.map((node) => {
       if (node.key === key) {
@@ -104,61 +81,43 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     new Promise<void>((resolve) => {
       const { key, children, type, identifier } = node;
       if (type) {
-        MetaDataService.listChild(
-          datasourceId as string,
-          identifier,
-          key,
-          type
-        ).then((resp) => {
-          if (type == "G_TABLE" || type == "G_VIEW") {
+        MetaDataService.listChild(datasourceId as string, identifier, key, type).then((resp) => {
+          if (type == 'G_TABLE' || type == 'G_VIEW') {
             const tables: DMS.CatalogTreeNode<string>[] =
               resp.data as DMS.CatalogTreeNode<string>[];
-            tables.map((table) => {
+            tables?.map((table) => {
               let t: DMS.TableMetaInfo = {
                 databaseId: datasourceId as string,
                 identifier: table.identifier,
                 tableName: table.title,
-                type: type.replace("G_", ""),
+                type: type.replace('G_', ''),
                 columns: [],
                 createAt: new Date(),
               };
               idbAPI.upsertTable(t);
             });
-          } else if (type == "TABLE" || type == "VIEW") {
+          } else if (type == 'TABLE' || type == 'VIEW') {
             const childs: DMS.CatalogTreeNode<string>[] = resp.data?.filter(
-              (item) => item.type == "G_TABLE_COLUMN"
+              (item) => item.type == 'G_TABLE_COLUMN',
             ) as DMS.CatalogTreeNode<string>[];
 
             if (childs.length == 1) {
               const columns = childs[0];
-              idbAPI
-                .getTableByIdentifier(
-                  datasourceId as string,
-                  columns.identifier
-                )
-                .then((t) => {
-                  let columnList: string[] = [];
-                  childs[0].children?.map((column) => {
-                    columnList.push(column.title);
-                  });
-                  t.columns = columnList;
-                  idbAPI.upsertTable(t);
+              idbAPI.getTableByIdentifier(datasourceId as string, columns.identifier).then((t) => {
+                let columnList: string[] = [];
+                childs[0].children?.map((column) => {
+                  columnList.push(column.title);
                 });
+                t.columns = columnList;
+                idbAPI.upsertTable(t);
+              });
             }
           }
           setTreeData((origin) =>
-            updateTreeData(
-              origin,
-              key,
-              resp.data as DMS.CatalogTreeNode<string>[]
-            )
+            updateTreeData(origin, key, resp.data as DMS.CatalogTreeNode<string>[]),
           );
           setDefaultData((origin) =>
-            updateTreeData(
-              origin,
-              key,
-              resp.data as DMS.CatalogTreeNode<string>[]
-            )
+            updateTreeData(origin, key, resp.data as DMS.CatalogTreeNode<string>[]),
           );
           resolve();
         });
@@ -200,7 +159,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   function getTreeObj(
     obj: { type: any; parentId: string },
     objList: { id: any; child: any },
-    targetType: string[]
+    targetType: string[],
   ) {
     if (targetType.includes(obj.type)) {
       return obj;
@@ -215,62 +174,54 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   }
 
   const refreshTreeData = (node: DMS.CatalogTreeNode<string>) => {
-    if (["SCHEMA", "CATALOG", "G_SCHEMA"].includes(node.type)) {
+    if (['SCHEMA', 'CATALOG', 'G_SCHEMA'].includes(node.type)) {
       initTreeData(datasourceId as string);
-      setExpandedParentKeys(
-        updateTree({ ...node, expanded: true }, expandedParentKeys)
-      );
-      setExpandedKeys(
-        getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys))
-      );
+      setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
+      setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));
     } else {
       // 定义一个包含特定字符串的常量数组
       const typeArray: string[] = [
-        "G_TABLE",
-        "TABLE",
-        "G_VIEW",
-        "VIEW",
-        "G_MATERIALIZED_VIEW",
-        "MATERIALIZED_VIEW",
-        "G_INDEX",
-        "INDEX",
-        "G_FUNCTION",
-        "FUNCTION",
-        "G_SEQUENCE",
-        "SEQUENCE",
-        "G_FOREIGN_TABLE",
-        "FOREIGN_TABLE",
+        'G_TABLE',
+        'TABLE',
+        'G_VIEW',
+        'VIEW',
+        'G_MATERIALIZED_VIEW',
+        'MATERIALIZED_VIEW',
+        'G_INDEX',
+        'INDEX',
+        'G_FUNCTION',
+        'FUNCTION',
+        'G_SEQUENCE',
+        'SEQUENCE',
+        'G_FOREIGN_TABLE',
+        'FOREIGN_TABLE',
       ];
 
       let targetList = getTreeObj(
         findObjectById(updateTree(node, expandedParentKeys), node.key),
         updateTree(node, expandedParentKeys),
-        typeArray
+        typeArray,
       );
       onLoadData(targetList);
-      setExpandedParentKeys(
-        updateTree({ ...node, expanded: true }, expandedParentKeys)
-      );
-      setExpandedKeys(
-        getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys))
-      );
+      setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
+      setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));
     }
   };
 
   const nodeTitleContextmenuItems = (node: DMS.CatalogTreeNode<string>) => {
     // TODO 根据不同节点，分别实现右键菜单，新建、删除、刷新、重命名、编辑数据、详情
-    const menuItems: MenuProps["items"] = [];
+    const menuItems: MenuProps['items'] = [];
 
-    if (node.type === "TABLE") {
+    if (node.type === 'TABLE') {
       tableMenuItems(node, menuItems);
-    } else if (node.type === "VIEW") {
+    } else if (node.type === 'VIEW') {
       viewMenuItems(node, menuItems);
     }
     //add default refresh menu
     menuItems.push({
-      key: node.key + "refresh",
+      key: node.key + 'refresh',
       label: intl.formatMessage({
-        id: "dms.console.workspace.dataquery.refresh",
+        id: 'dms.console.workspace.dataquery.refresh',
       }),
       onClick: () => {
         // console.log("refresh", node);
@@ -280,18 +231,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     return menuItems;
   };
 
-  const tableMenuItems = (
-    node: DMS.CatalogTreeNode<string>,
-    menuItems: MenuProps["items"]
-  ) => {
+  const tableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
     menuItems?.push({
-      key: node.key + "io",
-      label: intl.formatMessage({ id: "dms.console.workspace.dataquery.io" }),
+      key: node.key + 'io',
+      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.io' }),
       children: [
         {
-          key: node.key + "export",
+          key: node.key + 'export',
           label: intl.formatMessage({
-            id: "dms.console.workspace.dataquery.io.export",
+            id: 'dms.console.workspace.dataquery.io.export',
           }),
           icon: <DownloadOutlined />,
           onClick: () => {
@@ -299,9 +247,9 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           },
         },
         {
-          key: node.key + "import",
+          key: node.key + 'import',
           label: intl.formatMessage({
-            id: "dms.console.workspace.dataquery.io.import",
+            id: 'dms.console.workspace.dataquery.io.import',
           }),
           icon: <UploadOutlined />,
           onClick: () => {
@@ -313,18 +261,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     return menuItems;
   };
 
-  const viewMenuItems = (
-    node: DMS.CatalogTreeNode<string>,
-    menuItems: MenuProps["items"]
-  ) => {
+  const viewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
     menuItems?.push({
-      key: node.key + "",
-      label: intl.formatMessage({ id: "dms.console.workspace.dataquery.io" }),
+      key: node.key + '',
+      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.io' }),
       children: [
         {
-          key: node.key + "export",
+          key: node.key + 'export',
           label: intl.formatMessage({
-            id: "dms.console.workspace.dataquery.io.export",
+            id: 'dms.console.workspace.dataquery.io.export',
           }),
           icon: <DownloadOutlined />,
           onClick: () => {
@@ -342,14 +287,14 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       data: {
         workspaceId: workspaceId,
         datasourceId: datasourceId,
-        sqlScript: "select * from " + node.title,
+        sqlScript: 'select * from ' + node.title,
         fileName: node.title,
       },
     });
   };
 
   const dataImport = (node: DMS.CatalogTreeNode<string>) => {
-    let tableInfo: string[] = node.identifier.split(".");
+    let tableInfo: string[] = node.identifier.split('.');
     setDataImportData({
       open: true,
       data: {
@@ -364,39 +309,36 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   const nodeTitleRender = (node: DMS.CatalogTreeNode<string>) => {
     return (
-      <Dropdown
-        menu={{ items: nodeTitleContextmenuItems(node) }}
-        trigger={["contextMenu"]}
-      >
-        <div style={{ width: "100%" }}>{node.title}</div>
+      <Dropdown menu={{ items: nodeTitleContextmenuItems(node) }} trigger={['contextMenu']}>
+        <div style={{ width: '100%' }}>{node.title}</div>
       </Dropdown>
     );
   };
 
   const nodeTitleIconRender = (nodeType: string) => {
-    if (nodeType.startsWith("G_")) {
+    if (nodeType.startsWith('G_')) {
       return <Icon icon="local:folder" height="16" width="16"></Icon>;
     }
     switch (nodeType) {
-      case "CATALOG":
+      case 'CATALOG':
         return <Icon icon="local:database" height="16" width="16"></Icon>;
-      case "SCHEMA":
+      case 'SCHEMA':
         return <Icon icon="local:schema" height="16" width="16"></Icon>;
-      case "TABLE":
-      case "FOREIGN_TABLE":
+      case 'TABLE':
+      case 'FOREIGN_TABLE':
         return <Icon icon="local:table" height="16" width="16"></Icon>;
-      case "VIEW":
-      case "MATERIALIZED_VIEW":
+      case 'VIEW':
+      case 'MATERIALIZED_VIEW':
         return <Icon icon="local:view" height="16" width="16"></Icon>;
-      case "COLUMN":
+      case 'COLUMN':
         return <Icon icon="local:column" height="16" width="16"></Icon>;
-      case "INDEX":
-      case "PK":
-      case "FK":
+      case 'INDEX':
+      case 'PK':
+      case 'FK':
         return <Icon icon="local:index" height="16" width="16"></Icon>;
-      case "SEQUENCE":
+      case 'SEQUENCE':
         return <Icon icon="local:sequence" height="16" width="16"></Icon>;
-      case "FUNCTION":
+      case 'FUNCTION':
         return <Icon icon="local:function" height="16" width="16"></Icon>;
       default:
         return <Icon icon="local:file" height="16" width="16"></Icon>;
@@ -406,13 +348,13 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   function updateTree(
     obj: DMS.CatalogTreeNode<string>,
     tree: DMS.TreeNodeType = {
-      id: "",
+      id: '',
       child: [],
-      type: "",
-      identifier: "",
-      key: "",
-      parentId: "",
-    }
+      type: '',
+      identifier: '',
+      key: '',
+      parentId: '',
+    },
   ): DMS.TreeNodeType {
     const { key, expanded, parentId, type, identifier } = obj;
     function findAndUpdateNode(node: DMS.TreeNodeType): boolean {
@@ -459,7 +401,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   const onExpand = (
     newExpandedKeys: React.Key[],
-    expanded: { node: DMS.CatalogTreeNode<string> }
+    expanded: { node: DMS.CatalogTreeNode<string> },
   ) => {
     setExpandedParentKeys(updateTree(expanded.node, expandedParentKeys));
     setExpandedKeys(newExpandedKeys);
@@ -471,13 +413,13 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   }, 500);
 
   const plusMenuItems = () => {
-    const menuItems: MenuProps["items"] = [];
+    const menuItems: MenuProps['items'] = [];
     menuItems.push({
-      key: "newQueryConsle",
+      key: 'newQueryConsle',
       label: (
         <a>
           {intl.formatMessage({
-            id: "dms.console.workspace.dataquery.database.newQueryConsle",
+            id: 'dms.console.workspace.dataquery.database.newQueryConsle',
           })}
         </a>
       ),
@@ -487,7 +429,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           data: {
             workspaceId: workspaceId,
             datasourceId: datasourceId,
-            fileType: { value: "sql" },
+            fileType: { value: 'sql' },
           },
         });
       },
@@ -505,7 +447,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
             size="small"
             style={{ height: 20, fontSize: 12 }}
             placeholder={intl.formatMessage({
-              id: "dms.common.operate.search.placeholder",
+              id: 'dms.common.operate.search.placeholder',
             })}
             suffix={<SearchOutlined />}
           />
@@ -539,11 +481,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         loadData={onLoadData}
         height={height}
         icon={(props: any) => {
-          return (
-            <div style={{ paddingTop: 3 }}>
-              {nodeTitleIconRender(props.data.type)}
-            </div>
-          );
+          return <div style={{ paddingTop: 3 }}>{nodeTitleIconRender(props.data.type)}</div>;
         }}
         showIcon={true}
         titleRender={nodeTitleRender}
@@ -571,12 +509,12 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           handleOk={(isOpen: boolean, value: DMS.File) => {
             setUpDateFile((res) => ++res);
             setFileData({ open: isOpen });
-            onCallback(value.fileName + "", {
-              title: value.fileName + "",
+            onCallback(value.fileName + '', {
+              title: value.fileName + '',
               parentId: value.fileCatalog as string,
               type: value.fileType?.value as string,
-              key: "",
-              identifier: "",
+              key: '',
+              identifier: '',
             });
           }}
         />

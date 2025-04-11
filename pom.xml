@@ -71,6 +71,7 @@
         <google.auto.service.version>1.0.1</google.auto.service.version>
         <!--        <apache.beam.version>2.49.0</apache.beam.version>-->
         <oracle.jdbc.version>19.9.0.0</oracle.jdbc.version>
+        <mssql.jdbc.version>11.2.3.jre17</mssql.jdbc.version>
         <socket.io.version>2.0.3</socket.io.version>
         <st.antlr.version>4.3.4</st.antlr.version>
         <minio.version>8.5.9</minio.version>
@@ -224,6 +225,12 @@
                 <groupId>com.oracle.database.jdbc</groupId>
                 <artifactId>ojdbc8</artifactId>
                 <version>${oracle.jdbc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${mssql.jdbc.version}</version>
             </dependency>
 
             <dependency>

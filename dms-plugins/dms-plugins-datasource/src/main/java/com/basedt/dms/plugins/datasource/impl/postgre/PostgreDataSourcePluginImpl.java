@@ -82,7 +82,6 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        List<TableDTO> tableList = new ArrayList<>();
         String sql = "select " +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -109,30 +108,11 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(tablePattern)) {
             sql += " and c.relname like '%" + tablePattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            TableDTO tableDTO = new TableDTO();
-            tableDTO.setCatalogName(rs.getString("catalog_name"));
-            tableDTO.setSchemaName(rs.getString("schema_name"));
-            tableDTO.setObjectName(rs.getString("object_name"));
-            tableDTO.setObjectType(rs.getString("object_type"));
-            tableDTO.setRemark(rs.getString("remark"));
-            tableDTO.setDataBytes(rs.getLong("data_bytes"));
-            tableDTO.setTableRows(rs.getLong("table_rows"));
-            tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            tableDTO.setLastAccessTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_access_Time")));
-            tableList.add(tableDTO);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return tableList;
+        return super.listTableDetails(sql);
     }
 
     @Override
     public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ViewDTO> viewList = new ArrayList<>();
         String sql = " select " +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -159,23 +139,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(viewPattern)) {
             sql += " and c.relname like '%" + viewPattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ViewDTO view = new ViewDTO();
-            view.setCatalogName(rs.getString("catalog_name"));
-            view.setSchemaName(rs.getString("schema_name"));
-            view.setObjectName(rs.getString("object_name"));
-            view.setObjectType(rs.getString("object_type"));
-            view.setRemark(rs.getString("remark"));
-            view.setQuerySql(rs.getString("query_sql"));
-            view.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            view.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(view);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listViewDetails(sql);
     }
 
     @Override
@@ -190,7 +154,6 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<IndexDTO> indexList = new ArrayList<>();
         String sql = " select" +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -198,7 +161,10 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " 'INDEX'as object_type," +
                 " i.tablename as table_name," +
                 " pg_relation_size(pgi.indexrelid::regclass) as index_bytes," +
-                " pgi.indisunique as is_uniqueness" +
+                " pgi.indisunique as is_uniqueness," +
+                " null as index_type," +
+                " null as create_time," +
+                " null as last_ddl_time" +
                 " from pg_catalog.pg_namespace n" +
                 " join pg_catalog.pg_class c" +
                 " on n.oid = c.relnamespace" +
@@ -214,22 +180,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and i.tablename = '" + tableName + "'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            IndexDTO index = new IndexDTO();
-            index.setCatalogName(rs.getString("catalog_name"));
-            index.setSchemaName(rs.getString("schema_name"));
-            index.setObjectName(rs.getString("object_name"));
-            index.setObjectType(rs.getString("object_type"));
-            index.setTableName(rs.getString("table_name"));
-            index.setIndexBytes(rs.getLong("index_bytes"));
-            index.setIsUniqueness(rs.getBoolean("is_uniqueness"));
-            indexList.add(index);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return indexList;
+        return super.listIndexDetails(sql);
     }
 
     @Override
@@ -267,24 +218,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(mViewPattern)) {
             sql += " and c.relname like '%" + mViewPattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            MaterializedViewDTO matView = new MaterializedViewDTO();
-            matView.setCatalogName(rs.getString("catalog_name"));
-            matView.setSchemaName(rs.getString("schema_name"));
-            matView.setObjectName(rs.getString("object_name"));
-            matView.setObjectType(rs.getString("object_type"));
-            matView.setRemark(rs.getString("remark"));
-            matView.setQuerySql(rs.getString("query_sql"));
-            matView.setDataBytes(rs.getLong("data_bytes"));
-            matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(matView);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listMViewDetails(sql);
     }
 
     @Override
@@ -294,7 +228,6 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        List<SequenceDTO> sequenceList = new ArrayList<>();
         String sql = " select " +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -304,8 +237,10 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " s.min_value," +
                 " s.max_value," +
                 " s.increment_by," +
-                " s.cycle," +
-                " s.last_value" +
+                " s.cycle as is_cycle," +
+                " s.last_value," +
+                " null as create_time," +
+                " null as last_ddl_time" +
                 " from pg_catalog.pg_namespace n" +
                 " join pg_catalog.pg_class c " +
                 " on n.oid = c.relnamespace  " +
@@ -319,25 +254,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(sequencePattern)) {
             sql += " and c.relname like '%" + sequencePattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            SequenceDTO sequence = new SequenceDTO();
-            sequence.setCatalogName(rs.getString("catalog_name"));
-            sequence.setSchemaName(rs.getString("schema_name"));
-            sequence.setObjectName(rs.getString("object_name"));
-            sequence.setObjectType(rs.getString("object_type"));
-            sequence.setStartValue(rs.getLong("start_value"));
-            sequence.setMinValue(rs.getLong("min_value"));
-            sequence.setMaxValue(rs.getLong("max_value"));
-            sequence.setIncrementBy(rs.getLong("increment_by"));
-            sequence.setIsCycle(rs.getBoolean("cycle"));
-            sequence.setLastValue(rs.getLong("last_value"));
-            sequenceList.add(sequence);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return sequenceList;
+        return super.listSequenceDetails(sql);
     }
 
     @Override
@@ -347,13 +264,14 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        List<FunctionDTO> functionList = new ArrayList<>();
         String sql = "select" +
                 "    catalog_name," +
                 "    schema_name," +
-                "    function_name," +
+                "    function_name as object_name," +
                 "    object_type," +
-                "    source_code" +
+                "    source_code," +
+                "    null as create_time," +
+                "    null as last_ddl_time" +
                 " from" +
                 "    (" +
                 "        select" +
@@ -375,20 +293,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(functionPattern)) {
             sql += " and tt.function_name like '%" + functionPattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            FunctionDTO function = new FunctionDTO();
-            function.setCatalogName(rs.getString("catalog_name"));
-            function.setSchemaName(rs.getString("schema_name"));
-            function.setObjectName(rs.getString("function_name"));
-            function.setObjectType(rs.getString("object_type"));
-            function.setSourceCode(rs.getString("source_code"));
-            functionList.add(function);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return functionList;
+        return super.listFunctionDetails(sql);
     }
 
     @Override
@@ -403,7 +308,6 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<ColumnDTO> columnList = new ArrayList<>();
         String sql = "select" +
                 " t.table_catalog as catalog_name," +
                 " t.table_schema as schema_name," +
@@ -437,27 +341,7 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and t.table_name = '" + tableName + "'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ColumnDTO column = new ColumnDTO();
-            column.setCatalogName(rs.getString("catalog_name"));
-            column.setSchemaName(rs.getString("schema_name"));
-            column.setTableName(rs.getString("table_name"));
-            column.setColumnName(rs.getString("column_name"));
-            column.setDataType(rs.getString("data_type"));
-            column.setDataLength(rs.getInt("data_length"));
-            column.setDataPrecision(rs.getInt("data_precision"));
-            column.setDataScale(rs.getInt("data_scale"));
-            column.setDefaultValue(rs.getString("default_value"));
-            column.setColumnOrdinal(rs.getInt("column_ordinal"));
-            column.setRemark(rs.getString("remark"));
-            column.setIsNullable(rs.getBoolean("is_nullable"));
-            columnList.add(column);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return columnList;
+        return super.listColumnDetails(sql);
     }
 
     @Override
@@ -564,12 +448,20 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 ps.setBigDecimal(columnIndex, StrUtil.isBlank(value) ? null : BigDecimal.valueOf(Double.parseDouble(value)));
                 break;
             case "timestamp with time zone":
-                Long tValue = DateTimeUtil.toTimeStamp(value);
-                ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.TIMESTAMP);
+                } else {
+                    Long tValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                }
                 break;
             case "date":
-                Long dValue = DateTimeUtil.toTimeStamp(value);
-                ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.DATE);
+                } else {
+                    Long dValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                }
                 break;
             case "double precision":
                 if (StrUtil.isBlank(value)) {

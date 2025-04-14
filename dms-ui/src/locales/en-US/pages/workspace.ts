@@ -35,6 +35,7 @@ export default {
   'dms.console.workspace.datasource.type.bigdata': 'BigData',
   'dms.console.workspace.datasource.type.mq': 'MQ',
   'dms.console.workspace.datasource.type.nosql': 'NoSQL',
+  'dms.console.workspace.datasource.type.mpp': 'MPP Database',
   'dms.console.workspace.datasource.test': 'Test Connection',
   'dms.console.workspace.datasource.test.success': 'Connection Successful',
   'dms.console.workspace.dataquery.exec': 'Run',

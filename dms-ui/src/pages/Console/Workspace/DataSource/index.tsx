@@ -365,7 +365,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
             <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
-                  queryForm.validateFields().then((values) => {
+                  queryForm.validateFields().then((values: any) => {
                     setQueryFormData({
                       ...queryForm.getFieldsValue(),
                       workspaceId: workspaceId,
@@ -402,7 +402,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
               showSearch={true}
               allowClear={true}
               optionFilterProp="label"
-              filterOption={(input, option) =>
+              filterOption={(input: any, option: any) =>
                 (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
             >
@@ -453,7 +453,8 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
           dataSourceData.data?.datasourceType?.value == 'mysql' ||
           dataSourceData.data?.datasourceType?.value == 'mssql' ||
           dataSourceData.data?.datasourceType?.value == 'postgreSQL' ||
-          dataSourceData.data?.datasourceType?.value == 'doris') && (
+          dataSourceData.data?.datasourceType?.value == 'doris' ||
+          dataSourceData.data?.datasourceType?.value == 'hologres') && (
           <GenericDataSourceForm
             open={dataSourceData.open}
             data={dataSourceData.data}

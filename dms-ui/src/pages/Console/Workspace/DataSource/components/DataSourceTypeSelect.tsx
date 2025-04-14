@@ -45,6 +45,8 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 1433;
       case 'doris':
         return 9030;
+      case 'hologres':
+        return 80;
       case 'redis':
         return 6379;
       case 'kafka':
@@ -138,7 +140,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
       </div>
       <Typography.Title level={5} className={groupLableStyle}>
         {intl.formatMessage({
-          id: 'dms.console.workspace.datasource.type.bigdata',
+          id: 'dms.console.workspace.datasource.type.mpp',
         })}
       </Typography.Title>
       <div className={groupContainerStyle}>
@@ -146,6 +148,10 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard({ value: 'doris', label: 'Doris' }, '/images/databases/doris.svg')}
           </Col>
+          <Col span={6}>
+            {dbCard({ value: 'hologres', label: 'Hologres' }, '/images/databases/hologres.svg')}
+          </Col>
+
           {/* <Col span={6}>
             {dbCard(
               { value: "hive", label: "Hive" },

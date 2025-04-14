@@ -34,6 +34,7 @@ export default {
   'dms.console.workspace.datasource.type.bigdata': '大数据',
   'dms.console.workspace.datasource.type.mq': '消息队列',
   'dms.console.workspace.datasource.type.nosql': 'NoSQL',
+  'dms.console.workspace.datasource.type.mpp': '分布式数据库',
   'dms.console.workspace.datasource.test': '测试连接',
   'dms.console.workspace.datasource.test.success': '连接成功',
   'dms.console.workspace.dataquery.exec': '运行',

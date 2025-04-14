@@ -124,6 +124,8 @@ values ('datasource_type', 'mssql', 'SQL Server', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'doris', 'Doris', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
+values ('datasource_type', 'hologres', 'Hologres', '', 'sys', 'sys');
+insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('sql_status', '01', 'dms.common.operate.sql.success', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('sql_status', '02', 'dms.common.operate.sql.failure', '', 'sys', 'sys');

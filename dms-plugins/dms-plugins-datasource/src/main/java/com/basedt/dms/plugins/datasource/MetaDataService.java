@@ -43,6 +43,4 @@ public interface MetaDataService {
 
     DataSourcePlugin getDataSourcePluginInstance(DataSourceDTO dataSourceDTO);
 
-    List<SuggestionDTO> listSuggestion(DataSourceDTO dataSourceDTO, String keyword, String tableName);
-
 }

@@ -1,13 +1,22 @@
 # Introduction
-Based DMS is a free, simple, and easy-to-use data management system that supports operations and management of databases through a Web SQL editor in a browser. It currently supports MySQL, Oracle, PostgreSQL, and Apache Doris databases.
 
-![sql-ide.png](https://basedt.github.io/dms-web/static/image/sql-ide.7d1dc40f.png)
+Base DMS is an open-source, free, and AI-powered intelligent data management system. It provides a web-based SQL editor for querying and managing database objects, and supports AI assisted development. Currently, it is compatible with multiple databases including MySQL, Oracle, PostgreSQL, Apache Doris, and more.
+
+![sql-ide.png](https://basedt.github.io/dms-web/static/image/sql-ide.d1a00530.png)
+
 ## Features
-- Simple and Easy to Use: Provides a graphical WEB interface, making operations convenient and straightforward.
-- Database Management: Supports various common databases including MySQL, Oracle, and PostgreSQL.
-- SQL Query: Web based SQL editor, with features for managing SQL files and exporting query results.
-- SQL Audit: Supports tracking of historical SQL execution records, facilitating audit trails for administrators.
-- One-click Deployment: Offers Docker images, allowing for installation and deployment with a single command.
+
+- **User-friendly**: Provides a graphical web interface for intuitive and simple operation
+- **Database Management**: Supports common databases such as MySQL, Oracle, PostgreSQL, and more
+- **SQL Editor**: Offers a web-based SQL editor for online querying, with code suggestions and SQL file management
+- **AI Integration**: Enables AI LLM configuration and provides conversational AI assistance for development
+- **Import/Export**: Supports data import/export operations, with split configuration for exporting large tables
+- **SQL Auditing**: Tracks historical SQL execution records for administrator auditing and traceability
 
 ## Try DMS
+
 [Get Started](https://basedt.github.io/dms-web/document/start/quickStart.html) Quickly to Learn How to Use DMS
+
+## WeChat
+
+![qrcode_wechat.jpg](https://basedt.github.io/dms-web/static/image/qrcode_wechat.cfe6b758.jpg)

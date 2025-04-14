@@ -21,7 +21,9 @@ public enum DataSourceType {
     MYSQL("mysql", "Mysql"),
     ORACLE("oracle", "Oracle"),
     POSTGRESQL("postgreSQL", "PostgreSQL"),
-    DORIS("doris", "Doris");
+    MSSQL("mssql", "SQL Server"),
+    DORIS("doris", "Doris"),
+    HOLOGRES("hologres", "Hologres");
 
     private final String value;
     private final String label;

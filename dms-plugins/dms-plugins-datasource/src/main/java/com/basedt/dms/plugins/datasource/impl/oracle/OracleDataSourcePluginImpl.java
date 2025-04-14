@@ -106,7 +106,6 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        List<TableDTO> tableList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    o.owner as schema_name," +
@@ -116,7 +115,8 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 "    d.total_data_bytes + i.total_index_bytes as data_bytes," +
                 "    nvl(p.num_rows,t.num_rows) as table_rows," +
                 "    o.created as create_time," +
-                "    o.last_ddl_time as last_ddl_time" +
+                "    o.last_ddl_time as last_ddl_time," +
+                "    null as last_access_time" +
                 " from all_objects o" +
                 " join all_tables t" +
                 " on o.owner = t.owner" +
@@ -184,29 +184,11 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 "         group by table_owner, table_name) p" +
                 " on t.table_name = p.table_name" +
                 " and t.owner = p.owner" +
-                " where o.owner in (?)";
+                " where o.owner ='" + schemaPattern.toUpperCase() + "' ";
         if (StrUtil.isNotEmpty(tablePattern)) {
             sql += " and o.object_name like '%" + tablePattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            TableDTO tableDTO = new TableDTO();
-            tableDTO.setCatalogName(rs.getString("catalog_name"));
-            tableDTO.setSchemaName(rs.getString("schema_name"));
-            tableDTO.setObjectName(rs.getString("object_name"));
-            tableDTO.setObjectType(rs.getString("object_type"));
-            tableDTO.setRemark(rs.getString("remark"));
-            tableDTO.setDataBytes(rs.getLong("data_bytes"));
-            tableDTO.setTableRows(rs.getLong("table_rows"));
-            tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            tableList.add(tableDTO);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return tableList;
+        return super.listTableDetails(sql);
     }
 
     @Override
@@ -218,7 +200,6 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ViewDTO> viewList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    t.owner as schema_name," +
@@ -235,33 +216,15 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " left join all_objects o" +
                 " on t.owner = o.owner" +
                 " and t.view_name = o.object_name" +
-                " where t.owner = ?";
+                " where t.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(viewPattern)) {
             sql += " and t.view_name like '%" + viewPattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ViewDTO view = new ViewDTO();
-            view.setCatalogName(rs.getString("catalog_name"));
-            view.setSchemaName(rs.getString("schema_name"));
-            view.setObjectName(rs.getString("object_name"));
-            view.setObjectType(rs.getString("object_type"));
-            view.setRemark(rs.getString("remark"));
-            view.setQuerySql(rs.getString("query_sql"));
-            view.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            view.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(view);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listViewDetails(sql);
     }
 
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        List<TableDTO> tableList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    t.owner as schema_name," +
@@ -276,27 +239,11 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " left join all_tab_comments c" +
                 " on t.owner = c.owner" +
                 " and t.object_name = c.table_name" +
-                " where t.owner = ?";
+                " where t.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(tablePattern)) {
             sql += " and t.object_name like '%" + tablePattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            TableDTO tableDTO = new TableDTO();
-            tableDTO.setCatalogName(rs.getString("catalog_name"));
-            tableDTO.setSchemaName(rs.getString("schema_name"));
-            tableDTO.setObjectName(rs.getString("object_name"));
-            tableDTO.setObjectType(rs.getString("object_type"));
-            tableDTO.setRemark(rs.getString("remark"));
-            tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            tableList.add(tableDTO);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return tableList;
+        return super.listForeignTables(sql);
     }
 
     @Override
@@ -306,7 +253,6 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<IndexDTO> indexList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    i.owner as schema_name," +
@@ -326,34 +272,15 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " left join dba_segments d" +
                 " on o.owner = d.owner" +
                 " and o.object_name = d.segment_name " +
-                " where o.owner = ?";
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and o.object_name like '%" + tableName.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            IndexDTO index = new IndexDTO();
-            index.setCatalogName(rs.getString("catalog_name"));
-            index.setSchemaName(rs.getString("schema_name"));
-            index.setObjectName(rs.getString("object_name"));
-            index.setObjectType(rs.getString("object_type"));
-            index.setTableName(rs.getString("table_name"));
-            index.setIndexBytes(rs.getLong("index_bytes"));
-            index.setIsUniqueness(rs.getBoolean("is_uniqueness"));
-            index.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            index.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            indexList.add(index);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return indexList;
+        return super.listIndexDetails(sql);
     }
 
     @Override
     public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> viewList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    o.owner as schema_name," +
@@ -361,38 +288,23 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 "    'MATERIALIZED_VIEW' as object_type," +
                 "    t.mview_name as table_name," +
                 "    t.query as query_sql," +
+                "    null as remark," +
+                "    null as data_bytes," +
                 "    o.created as create_time," +
                 "    o.last_ddl_time as last_ddl_time" +
                 " from all_objects o" +
                 " join all_mviews t" +
                 " on o.owner = t.owner" +
                 " and o.object_name = t.mview_name" +
-                " where o.owner = ? ";
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(mViewPattern)) {
             sql += " and o.object_name like '%" + mViewPattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            MaterializedViewDTO matView = new MaterializedViewDTO();
-            matView.setCatalogName(rs.getString("catalog_name"));
-            matView.setSchemaName(rs.getString("schema_name"));
-            matView.setObjectName(rs.getString("object_name"));
-            matView.setObjectType(rs.getString("object_type"));
-            matView.setQuerySql(rs.getString("query_sql"));
-            matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(matView);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listMViewDetails(sql);
     }
 
     @Override
     public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> viewList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    o.owner as schema_name," +
@@ -414,70 +326,41 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " left join all_tab_comments c" +
                 " on t.owner = c.owner" +
                 " and t.mview_name = c.table_name " +
-                " where o.owner = ? ";
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(mViewPattern)) {
             sql += " and o.object_name like '%" + mViewPattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            MaterializedViewDTO matView = new MaterializedViewDTO();
-            matView.setCatalogName(rs.getString("catalog_name"));
-            matView.setSchemaName(rs.getString("schema_name"));
-            matView.setObjectName(rs.getString("object_name"));
-            matView.setObjectType(rs.getString("object_type"));
-            matView.setRemark(rs.getString("remark"));
-            matView.setQuerySql(rs.getString("query_sql"));
-            matView.setDataBytes(rs.getLong("data_bytes"));
-            matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(matView);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listMViewDetails(sql);
     }
 
     @Override
     public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        List<SequenceDTO> sequenceList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    o.owner as schema_name," +
                 "    o.object_name as object_name," +
                 "    'SEQUENCE' as object_type," +
+                "    null as start_value," +
+                "    null as min_value," +
+                "    null as max_value," +
+                "    null as increment_by," +
+                "    null as is_cycle," +
+                "    null as last_value," +
                 "    o.created as create_time," +
                 "    o.last_ddl_time as last_ddl_time" +
                 " from all_objects o" +
                 " join all_sequences s" +
                 " on o.owner = s.sequence_owner" +
                 " and o.object_name = s.sequence_name" +
-                " where o.owner = ? ";
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(sequencePattern)) {
             sql += " and o.object_name like '%" + sequencePattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            SequenceDTO sequence = new SequenceDTO();
-            sequence.setCatalogName(rs.getString("catalog_name"));
-            sequence.setSchemaName(rs.getString("schema_name"));
-            sequence.setObjectName(rs.getString("object_name"));
-            sequence.setObjectType(rs.getString("object_type"));
-            sequence.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            sequence.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            sequenceList.add(sequence);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return sequenceList;
+        return super.listSequenceDetails(sql);
     }
 
     @Override
     public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        List<SequenceDTO> sequenceList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    o.owner as schema_name," +
@@ -495,74 +378,37 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " join all_sequences s" +
                 " on o.owner = s.sequence_owner" +
                 " and o.object_name = s.sequence_name" +
-                " where o.owner = ? ";
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(sequencePattern)) {
             sql += " and o.object_name like '%" + sequencePattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            SequenceDTO sequence = new SequenceDTO();
-            sequence.setCatalogName(rs.getString("catalog_name"));
-            sequence.setSchemaName(rs.getString("schema_name"));
-            sequence.setObjectName(rs.getString("object_name"));
-            sequence.setObjectType(rs.getString("object_type"));
-            sequence.setStartValue(rs.getLong("start_value"));
-            sequence.setMinValue(rs.getLong("min_value"));
-            try {
-                sequence.setMaxValue(rs.getLong("max_value"));
-            } catch (Exception e) {
-                sequence.setMaxValue(Long.MAX_VALUE);
-            }
-            sequence.setIncrementBy(rs.getLong("increment_by"));
-            sequence.setIsCycle(rs.getBoolean("is_cycle"));
-            sequence.setLastValue(rs.getLong("last_value"));
-            sequence.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            sequence.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            sequenceList.add(sequence);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return sequenceList;
+        return super.listSequenceDetails(sql);
     }
 
     @Override
     public List<FunctionDTO> listFunctions(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        List<FunctionDTO> functionList = new ArrayList<>();
         String sql = "select" +
                 "     null as catalog_name," +
                 "     o.owner as schema_name," +
                 "     o.object_name as object_name," +
-                "     'FUNCTION' as object_type" +
+                "     'FUNCTION' as object_type," +
+                "     null as source_code," +
+                "     o.created as create_time," +
+                "     o.last_ddl_time as last_ddl_time" +
                 " from all_objects o" +
                 " join all_procedures s" +
                 " on o.owner = s.owner" +
                 " and o.object_name = s.object_name" +
-                " where o.owner = ? " +
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'" +
                 " and o.object_type = 'FUNCTION'";
         if (StrUtil.isNotEmpty(functionPattern)) {
             sql += " and o.object_name like '%" + functionPattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            FunctionDTO function = new FunctionDTO();
-            function.setCatalogName(rs.getString("catalog_name"));
-            function.setSchemaName(rs.getString("schema_name"));
-            function.setObjectName(rs.getString("object_name"));
-            function.setObjectType(rs.getString("object_type"));
-            functionList.add(function);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return functionList;
+        return super.listFunctionDetails(sql);
     }
 
     @Override
     public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        List<FunctionDTO> functionList = new ArrayList<>();
         String sql = "select" +
                 "     null as catalog_name," +
                 "     o.owner as schema_name," +
@@ -585,28 +431,12 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 "     ) source" +
                 " on o.owner = source.owner" +
                 " and o.object_name = source.name" +
-                " where o.owner = ? " +
+                " where o.owner = '" + schemaPattern.toUpperCase() + "'" +
                 " and o.object_type = 'FUNCTION'";
         if (StrUtil.isNotEmpty(functionPattern)) {
             sql += " and o.object_name like '%" + functionPattern.toUpperCase() + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            FunctionDTO function = new FunctionDTO();
-            function.setCatalogName(rs.getString("catalog_name"));
-            function.setSchemaName(rs.getString("schema_name"));
-            function.setObjectName(rs.getString("object_name"));
-            function.setObjectType(rs.getString("object_type"));
-            function.setSourceCode(rs.getString("source_code"));
-            function.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            function.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            functionList.add(function);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return functionList;
+        return super.listFunctionDetails(sql);
     }
 
     @Override
@@ -621,7 +451,6 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<ColumnDTO> columnList = new ArrayList<>();
         String sql = "select" +
                 "    null as catalog_name," +
                 "    t.owner as schema_name," +
@@ -640,31 +469,9 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " on t.owner = c.owner" +
                 " and t.table_name = c.table_name" +
                 " and t.column_name = c.table_name" +
-                " where t.owner = ? " +
-                " and t.table_name = ? ";
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        pstm.setString(1, schemaPattern.toUpperCase());
-        pstm.setString(2, tableName.toUpperCase());
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ColumnDTO column = new ColumnDTO();
-            column.setCatalogName(rs.getString("catalog_name"));
-            column.setSchemaName(rs.getString("schema_name"));
-            column.setTableName(rs.getString("table_name"));
-            column.setColumnName(rs.getString("column_name"));
-            column.setDataType(rs.getString("data_type"));
-            column.setDataLength(rs.getInt("data_length"));
-            column.setDataPrecision(rs.getInt("data_precision"));
-            column.setDataScale(rs.getInt("data_scale"));
-            column.setDefaultValue(rs.getString("default_value"));
-            column.setColumnOrdinal(rs.getInt("column_ordinal"));
-            column.setRemark(rs.getString("remark"));
-            column.setIsNullable(rs.getBoolean("is_nullable"));
-            columnList.add(column);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return columnList;
+                " where t.owner = '" + schemaPattern.toUpperCase() + "'" +
+                " and t.table_name = '" + tableName.toUpperCase() + "'";
+        return super.listColumnDetails(sql);
     }
 
     @Override
@@ -703,13 +510,21 @@ public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 }
                 break;
             case "DATE":
-                Long dValue = DateTimeUtil.toTimeStamp(value);
-                ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.DATE);
+                } else {
+                    Long dValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                }
                 break;
             case "TIMESTAMP":
             case "TIMESTAMP WITH TIME ZONE":
-                Long tValue = DateTimeUtil.toTimeStamp(value);
-                ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.TIMESTAMP);
+                } else {
+                    Long tValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                }
                 break;
             case "BINARY_FLOAT":
                 if (StrUtil.isBlank(value)) {

@@ -28,6 +28,7 @@ import com.basedt.dms.plugins.datasource.MetaDataService;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import com.basedt.dms.service.log.LogSqlHistoryService;
 import com.basedt.dms.service.log.dto.LogSqlHistoryDTO;
+import com.basedt.dms.service.security.utils.SecurityUtil;
 import com.basedt.dms.service.workspace.DmsDataSourceService;
 import com.basedt.dms.service.workspace.convert.DataSourceConvert;
 import com.basedt.dms.service.workspace.dto.DmsDataSourceDTO;
@@ -117,6 +118,9 @@ public class SqlScriptHandler {
                     sqlLog.setWorkspaceId(data.getWorkspaceId());
                     sqlLog.setDatasourceId(data.getDataSourceId());
                     sqlLog.setSqlScript(sql);
+                    String currentUser = SecurityUtil.getCurrentUserName();
+                    sqlLog.setCreator(currentUser);
+                    sqlLog.setEditor(currentUser);
                     sqlLog.setStartTime(LocalDateTime.now());
                     sendMsgEvent(client, StrUtil.format("[{}] execute sql : {}",
                             DateTimeUtil.toChar(sqlLog.getStartTime(), DateTimeUtil.NORMAL_DATETIME_PATTERN),

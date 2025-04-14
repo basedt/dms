@@ -60,7 +60,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     protected String getJdbcUrl() {
-        return "jdbc:mysql://" + getHostName() + ":" + getPort() + "/" + getDatabaseName() + formatJdbcProps();
+        return "jdbc:mysql://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + "/" + getDatabaseName() + formatJdbcProps();
     }
 
     private void init() {
@@ -106,23 +106,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    protected List<ObjectDTO> listTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
-        List<TableDTO> tables = listTables(catalog, schemaPattern, tableNamePattern, TABLE);
-        List<ObjectDTO> result = new ArrayList<>();
-        for (TableDTO tableDTO : tables) {
-            ObjectDTO table = new ObjectDTO();
-            table.setCatalogName(tableDTO.getCatalogName());
-            table.setSchemaName(tableDTO.getSchemaName());
-            table.setObjectName(tableDTO.getObjectName());
-            table.setObjectType(tableDTO.getObjectType());
-            result.add(table);
-        }
-        return result;
-    }
-
-    @Override
     public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        List<TableDTO> tableList = new ArrayList<>();
         String sql = "select " +
                 " null as catalog_name," +
                 " t.table_schema as schema_name," +
@@ -133,34 +117,16 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " t.table_comment as remark," +
                 " t.create_time as create_time, " +
                 " t.create_time as last_ddl_time," +
-                " t.update_time as last_access_Time" +
+                " t.update_time as last_access_time" +
                 " from information_schema.tables t " +
                 " where t.table_type = 'BASE TABLE'";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and t.table_schema = '" + schemaPattern + "'";
         }
         if (StrUtil.isNotEmpty(tablePattern)) {
-            sql += " and t.table_schema like '%" + tablePattern + "%'";
+            sql += " and t.table_name like '%" + tablePattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            TableDTO table = new TableDTO();
-            table.setCatalogName(rs.getString("catalog_name"));
-            table.setSchemaName(rs.getString("schema_name"));
-            table.setObjectName(rs.getString("object_name"));
-            table.setObjectType(rs.getString("object_type"));
-            table.setTableRows(rs.getLong("table_rows"));
-            table.setDataBytes(rs.getLong("data_bytes"));
-            table.setRemark(rs.getString("remark"));
-            table.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            table.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            table.setLastAccessTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_access_Time")));
-            tableList.add(table);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return tableList;
+        return super.listTableDetails(sql);
     }
 
     @Override
@@ -170,7 +136,6 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ViewDTO> viewList = new ArrayList<>();
         String sql = "select" +
                 " null as catalog_name," +
                 " v.table_schema as schema_name," +
@@ -191,28 +156,12 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(viewPattern)) {
             sql += " and v.table_name like '%" + viewPattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ViewDTO view = new ViewDTO();
-            view.setCatalogName(rs.getString("catalog_name"));
-            view.setSchemaName(rs.getString("schema_name"));
-            view.setObjectName(rs.getString("object_name"));
-            view.setObjectType(rs.getString("object_type"));
-            view.setRemark(rs.getString("remark"));
-            view.setQuerySql(rs.getString("query_sql"));
-            view.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            view.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            viewList.add(view);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return viewList;
+        return super.listViewDetails(sql);
     }
 
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        return null;
+        return List.of();
     }
 
     @Override
@@ -222,7 +171,6 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<IndexDTO> indexList = new ArrayList<>();
         String sql = "select " +
                 " null as catalog_name," +
                 " t.index_schema as schema_name," +
@@ -231,7 +179,9 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " t.index_type as index_type," +
                 " t.table_name as table_name, " +
                 " t.non_unique as is_uniqueness," +
-                " null as index_bytes" +
+                " null as index_bytes," +
+                " null as create_time," +
+                " null as last_ddl_time" +
                 " from information_schema.statistics t" +
                 " where t.seq_in_index = 1";
         if (StrUtil.isNotEmpty(schemaPattern)) {
@@ -240,24 +190,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and t.table_name = '" + tableName + "'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            IndexDTO index = new IndexDTO();
-            index.setCatalogName(rs.getString("catalog_name"));
-            index.setSchemaName(rs.getString("schema_name"));
-            index.setObjectName(rs.getString("object_name"));
-            index.setObjectType(rs.getString("object_type"));
-            index.setIndexType(rs.getString("index_type"));
-            index.setTableName(rs.getString("table_name"));
-            int isUniqueness = rs.getInt("is_uniqueness");
-            index.setIsUniqueness(isUniqueness == 1);
-            index.setIndexBytes(rs.getLong("index_bytes"));
-            indexList.add(index);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return indexList;
+        return super.listIndexDetails(sql);
     }
 
     @Override
@@ -282,11 +215,10 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        List<FunctionDTO> functionList = new ArrayList<>();
         String sql = "select " +
                 " null as catalog_name," +
                 " r.routine_schema as schema_name," +
-                " r.routine_name as function_name," +
+                " r.routine_name as object_name," +
                 " 'FUNCTION' as object_type," +
                 " r.routine_definition as source_code," +
                 " r.created as create_time," +
@@ -300,23 +232,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(functionPattern)) {
             sql += " and r.routine_name like '%" + functionPattern + "%'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            FunctionDTO function = new FunctionDTO();
-            function.setCatalogName(rs.getString("catalog_name"));
-            function.setSchemaName(rs.getString("schema_name"));
-            function.setObjectName(rs.getString("function_name"));
-            function.setObjectType(rs.getString("object_type"));
-            function.setSourceCode(rs.getString("source_code"));
-            function.setRemark(rs.getString("remark"));
-            function.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
-            function.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
-            functionList.add(function);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return functionList;
+        return super.listFunctionDetails(sql);
     }
 
     @Override
@@ -331,7 +247,6 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<ColumnDTO> columnList = new ArrayList<>();
         String sql = "select " +
                 " null as catalog_name," +
                 " t.table_schema as schema_name," +
@@ -353,28 +268,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and t.table_name = '" + tableName + "'";
         }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ColumnDTO column = new ColumnDTO();
-            column.setCatalogName(rs.getString("catalog_name"));
-            column.setSchemaName(rs.getString("schema_name"));
-            column.setTableName(rs.getString("table_name"));
-            column.setColumnName(rs.getString("column_name"));
-            column.setDataType(rs.getString("data_type"));
-            column.setDataLength(rs.getInt("data_length"));
-            column.setDataPrecision(rs.getInt("data_precision"));
-            column.setDataScale(rs.getInt("data_scale"));
-            column.setDefaultValue(rs.getString("default_value"));
-            column.setColumnOrdinal(rs.getInt("column_ordinal"));
-            column.setRemark(rs.getString("remark"));
-            int isNullable = rs.getInt("is_nullable");
-            column.setIsNullable(isNullable == 1);
-            columnList.add(column);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return columnList;
+        return super.listColumnDetails(sql);
     }
 
     @Override
@@ -454,17 +348,29 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 ps.setBigDecimal(columnIndex, StrUtil.isBlank(value) ? null : BigDecimal.valueOf(Double.parseDouble(value)));
                 break;
             case "timestamp":
-                Long tValue = DateTimeUtil.toTimeStamp(value);
-                ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.TIMESTAMP);
+                } else {
+                    Long tValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setTimestamp(columnIndex, Objects.isNull(tValue) ? null : new Timestamp(tValue));
+                }
                 break;
             case "date":
             case "datetime":
-                Long dValue = DateTimeUtil.toTimeStamp(value);
-                ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.DATE);
+                } else {
+                    Long dValue = DateTimeUtil.toTimeStamp(value);
+                    ps.setDate(columnIndex, Objects.isNull(dValue) ? null : new Date(dValue));
+                }
                 break;
             case "time":
-                Long t = DateTimeUtil.toTimeStamp(value);
-                ps.setTime(columnIndex, Objects.isNull(t) ? null : new Time(t));
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.TIME);
+                } else {
+                    Long t = DateTimeUtil.toTimeStamp(value);
+                    ps.setTime(columnIndex, Objects.isNull(t) ? null : new Time(t));
+                }
                 break;
             default:
                 ps.setString(columnIndex, value);

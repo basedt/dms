@@ -189,7 +189,7 @@ public class DataSourceController {
             return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
         }
         for (DmsDataSourceDTO ds : list) {
-            DictVO vo = new DictVO(String.valueOf(ds.getId()), ds.getDatasourceType().getLabel() + Constants.SEPARATOR_DASHED + ds.getDatasourceName());
+            DictVO vo = new DictVO(String.valueOf(ds.getId()), ds.getDatasourceType().getValue() + Constants.SEPARATOR_DASHED + ds.getDatasourceName());
             dsList.add(vo);
         }
         return new ResponseEntity<>(ResponseVO.success(dsList), HttpStatus.OK);

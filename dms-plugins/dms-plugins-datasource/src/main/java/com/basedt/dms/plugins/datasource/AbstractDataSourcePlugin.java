@@ -22,6 +22,7 @@ import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.dto.*;
@@ -305,7 +306,7 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     /**
      * TABLE_TYPE String => table type. Typical types are "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
      */
-    protected List<ObjectDTO> listTables(String catalog, String schemaPattern, String tableNamePattern, String types[]) throws SQLException {
+    private List<ObjectDTO> listTables(String catalog, String schemaPattern, String tableNamePattern, String types[]) throws SQLException {
         Connection conn = getConnection();
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet rs = metaData.getTables(catalog, schemaPattern, tableNamePattern, types);
@@ -321,6 +322,214 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
         JdbcUtil.close(conn, rs);
         return result;
     }
+
+    protected List<TableDTO> listTableDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<TableDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            TableDTO tableDTO = new TableDTO();
+            tableDTO.setCatalogName(rs.getString("catalog_name"));
+            tableDTO.setSchemaName(rs.getString("schema_name"));
+            tableDTO.setObjectName(rs.getString("object_name"));
+            tableDTO.setObjectType(rs.getString("object_type"));
+            tableDTO.setRemark(rs.getString("remark"));
+            tableDTO.setDataBytes(rs.getLong("data_bytes"));
+            tableDTO.setTableRows(rs.getLong("table_rows"));
+            tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            tableDTO.setLastAccessTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_access_time")));
+            result.add(tableDTO);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<ViewDTO> listViewDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<ViewDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            ViewDTO view = new ViewDTO();
+            view.setCatalogName(rs.getString("catalog_name"));
+            view.setSchemaName(rs.getString("schema_name"));
+            view.setObjectName(rs.getString("object_name"));
+            view.setObjectType(rs.getString("object_type"));
+            view.setRemark(rs.getString("remark"));
+            view.setQuerySql(rs.getString("query_sql"));
+            view.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            view.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(view);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<TableDTO> listForeignTables(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<TableDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            TableDTO tableDTO = new TableDTO();
+            tableDTO.setCatalogName(rs.getString("catalog_name"));
+            tableDTO.setSchemaName(rs.getString("schema_name"));
+            tableDTO.setObjectName(rs.getString("object_name"));
+            tableDTO.setObjectType(rs.getString("object_type"));
+            tableDTO.setRemark(rs.getString("remark"));
+            tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(tableDTO);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<IndexDTO> listIndexDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<IndexDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            IndexDTO index = new IndexDTO();
+            index.setCatalogName(rs.getString("catalog_name"));
+            index.setSchemaName(rs.getString("schema_name"));
+            index.setObjectName(rs.getString("object_name"));
+            index.setObjectType(rs.getString("object_type"));
+            index.setTableName(rs.getString("table_name"));
+            index.setIndexBytes(rs.getLong("index_bytes"));
+            index.setIndexType(rs.getString("index_type"));
+            index.setIsUniqueness(rs.getBoolean("is_uniqueness"));
+            index.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            index.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(index);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<MaterializedViewDTO> listMViewDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<MaterializedViewDTO> result = new ArrayList<>();
+        Connection conn = this.getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            MaterializedViewDTO matView = new MaterializedViewDTO();
+            matView.setCatalogName(rs.getString("catalog_name"));
+            matView.setSchemaName(rs.getString("schema_name"));
+            matView.setObjectName(rs.getString("object_name"));
+            matView.setObjectType(rs.getString("object_type"));
+            matView.setRemark(rs.getString("remark"));
+            matView.setQuerySql(rs.getString("query_sql"));
+            matView.setDataBytes(rs.getLong("data_bytes"));
+            matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(matView);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<SequenceDTO> listSequenceDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<SequenceDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            SequenceDTO sequence = new SequenceDTO();
+            sequence.setCatalogName(rs.getString("catalog_name"));
+            sequence.setSchemaName(rs.getString("schema_name"));
+            sequence.setObjectName(rs.getString("object_name"));
+            sequence.setObjectType(rs.getString("object_type"));
+            sequence.setStartValue(rs.getLong("start_value"));
+            sequence.setMinValue(rs.getLong("min_value"));
+            try {
+                sequence.setMaxValue(rs.getLong("max_value"));
+            } catch (Exception e) {
+                sequence.setMaxValue(Long.MAX_VALUE);
+            }
+            sequence.setIncrementBy(rs.getLong("increment_by"));
+            sequence.setIsCycle(rs.getBoolean("is_cycle"));
+            sequence.setLastValue(rs.getLong("last_value"));
+            sequence.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            sequence.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(sequence);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<FunctionDTO> listFunctionDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<FunctionDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            FunctionDTO function = new FunctionDTO();
+            function.setCatalogName(rs.getString("catalog_name"));
+            function.setSchemaName(rs.getString("schema_name"));
+            function.setObjectName(rs.getString("object_name"));
+            function.setObjectType(rs.getString("object_type"));
+            function.setSourceCode(rs.getString("source_code"));
+            function.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            function.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(function);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
+    protected List<ColumnDTO> listColumnDetails(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<ColumnDTO> result = new ArrayList<>();
+        Connection conn = getConnection();
+        PreparedStatement pstm = conn.prepareStatement(sql);
+        ResultSet rs = pstm.executeQuery();
+        while (rs.next()) {
+            ColumnDTO column = new ColumnDTO();
+            column.setCatalogName(rs.getString("catalog_name"));
+            column.setSchemaName(rs.getString("schema_name"));
+            column.setTableName(rs.getString("table_name"));
+            column.setColumnName(rs.getString("column_name"));
+            column.setDataType(rs.getString("data_type"));
+            column.setDataLength(rs.getInt("data_length"));
+            column.setDataPrecision(rs.getInt("data_precision"));
+            column.setDataScale(rs.getInt("data_scale"));
+            column.setDefaultValue(rs.getString("default_value"));
+            column.setColumnOrdinal(rs.getInt("column_ordinal"));
+            column.setRemark(rs.getString("remark"));
+            column.setIsNullable(rs.getBoolean("is_nullable"));
+            result.add(column);
+        }
+        JdbcUtil.close(conn, pstm, rs);
+        return result;
+    }
+
 
     @Override
     public TableDTO getTableDetail(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
@@ -520,5 +729,6 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     }
 
     protected abstract void setColumnValue(PreparedStatement ps, ColumnDTO column, String value, int columnIndex) throws SQLException, ParseException;
+
 
 }

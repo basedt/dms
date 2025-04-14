@@ -18,10 +18,13 @@
 package com.basedt.dms.plugins.datasource.dto;
 
 import cn.hutool.json.JSONUtil;
+import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.common.vo.DictVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -62,7 +65,13 @@ public class DataSourceDTO {
         props.put("databaseName", this.databaseName);
         props.put("userName", this.userName);
         props.put("password", this.password);
-        props.put("attrs", JSONUtil.toJsonStr(this.attrs));
+        Map<String, String> attrMap = new HashMap<>();
+        String attrs = (String) this.getAttrs().get(Constants.DATASOURCE_ATTR_JDBC);
+        Map<String, Object> map = PropertiesUtil.formatToMap(attrs, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
+        map.forEach((k, v) -> {
+            attrMap.put(k, (String) v);
+        });
+        props.put("attrs", JSONUtil.toJsonStr(attrMap));
         return props;
     }
 }

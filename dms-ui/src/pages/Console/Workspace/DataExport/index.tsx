@@ -66,7 +66,18 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
       fixed: 'left',
       render: (dom, entity) => {
         const value = dbList.filter((item) => item.value == entity.datasourceId);
-        return value[0].label;
+        const label: string = value[0].label || 'img-db';
+        const dbinfo: string[] = label.split('-');
+        return (
+          <Space style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}
+              style={{ width: 16, height: 16 }}
+              alt=""
+            />
+            {dbinfo[1]}
+          </Space>
+        );
       },
     },
     {

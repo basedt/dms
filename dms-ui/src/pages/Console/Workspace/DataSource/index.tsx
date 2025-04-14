@@ -1,19 +1,10 @@
-import { DICT_TYPE, PRIVILEGES } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { DataSourceService } from "@/services/workspace/datasource.service";
-import {
-  FilterOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
-import { useEmotionCss } from "@ant-design/use-emotion-css";
+import { DICT_TYPE, PRIVILEGES } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { DataSourceService } from '@/services/workspace/datasource.service';
+import { FilterOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
+import { useAccess, useIntl, useSearchParams } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -30,15 +21,12 @@ import {
   Table,
   Tooltip,
   Typography,
-} from "antd";
-import { useEffect, useRef, useState } from "react";
-import { useAccess, useIntl, useSearchParams } from "@umijs/max";
-import DataSourceTypeSelect from "./components/DataSourceTypeSelect";
-import GenericDataSourceForm from "./components/GenericDataSourceForm";
+} from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import DataSourceTypeSelect from './components/DataSourceTypeSelect';
+import GenericDataSourceForm from './components/GenericDataSourceForm';
 
-const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
-  workspaceId,
-}) => {
+const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceId }) => {
   const intl = useIntl();
   const access = useAccess();
   const [queryForm] = Form.useForm();
@@ -49,14 +37,10 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
     workspaceId: workspaceId,
   });
   const [datasourceTypeList, setDatasourceTypeList] = useState<DMS.Dict[]>([]);
-  const [dataSourceData, setDataSourceData] = useState<
-    DMS.ModalProps<DMS.DataSource>
-  >({
+  const [dataSourceData, setDataSourceData] = useState<DMS.ModalProps<DMS.DataSource>>({
     open: false,
   });
-  const [dataSourceType, setDataSourceType] = useState<
-    DMS.ModalProps<DMS.DataSource>
-  >({
+  const [dataSourceType, setDataSourceType] = useState<DMS.ModalProps<DMS.DataSource>>({
     open: false,
   });
 
@@ -66,7 +50,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
         setDatasourceTypeList(resp.data as DMS.Dict[]);
       }
     });
-    if (searchParams.get("n")) {
+    if (searchParams.get('n')) {
       setDataSourceType({
         open: true,
         data: { workspaceId: workspaceId },
@@ -76,33 +60,33 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
 
   const connPropsStyle = useEmotionCss(() => {
     return {
-      color: "#096dd9",
+      color: '#096dd9',
     };
   });
 
   const columns: ProColumns<DMS.DataSource>[] = [
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.datasource.datasourceName",
+        id: 'dms.console.workspace.datasource.datasourceName',
       }),
-      dataIndex: "datasourceName",
+      dataIndex: 'datasourceName',
       width: 140,
-      fixed: "left",
+      fixed: 'left',
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.datasource.datasourceType",
+        id: 'dms.console.workspace.datasource.datasourceType',
       }),
-      dataIndex: "datasourceType",
+      dataIndex: 'datasourceType',
       width: 120,
-      align: "center",
+      align: 'center',
       render: (dom, entity) => {
         return entity.datasourceType?.label;
       },
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.datasource.info",
+        id: 'dms.console.workspace.datasource.info',
       }),
       width: 240,
       render: (dom, entity) => {
@@ -110,60 +94,60 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
           <>
             <Typography.Text strong className={connPropsStyle}>
               {intl.formatMessage({
-                id: "dms.console.workspace.datasource.hostName",
+                id: 'dms.console.workspace.datasource.hostName',
               })}
             </Typography.Text>
-            {" : " + entity.hostName}
+            {' : ' + entity.hostName}
             <br />
             <Typography.Text strong className={connPropsStyle}>
               {intl.formatMessage({
-                id: "dms.console.workspace.datasource.databaseName",
+                id: 'dms.console.workspace.datasource.databaseName',
               })}
             </Typography.Text>
-            {" : " + entity.databaseName}
+            {' : ' + entity.databaseName}
             <br />
             <Typography.Text strong className={connPropsStyle}>
               {intl.formatMessage({
-                id: "dms.console.workspace.datasource.port",
+                id: 'dms.console.workspace.datasource.port',
               })}
             </Typography.Text>
-            {" : " + entity.port}
+            {' : ' + entity.port}
             <br />
             <Typography.Text strong className={connPropsStyle}>
               {intl.formatMessage({
-                id: "dms.console.workspace.datasource.userName",
+                id: 'dms.console.workspace.datasource.userName',
               })}
             </Typography.Text>
-            {" : " + entity.userName}
+            {' : ' + entity.userName}
           </>
         );
       },
     },
     {
       title: intl.formatMessage({
-        id: "dms.console.workspace.datasource.remark",
+        id: 'dms.console.workspace.datasource.remark',
       }),
-      dataIndex: "remark",
+      dataIndex: 'remark',
       width: 240,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.updateTime" }),
-      dataIndex: "updateTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.updateTime' }),
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 120,
       render: (_, record) => (
         <Space>
@@ -174,30 +158,30 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
                 setDataSourceData({ data: record, open: true });
               }}
             >
-              {intl.formatMessage({ id: "dms.common.operate.update" })}
+              {intl.formatMessage({ id: 'dms.common.operate.update' })}
             </a>
           )}
           {access.canAccess(PRIVILEGES.wsWsdWdlDelete) && (
             <Popconfirm
               key="delete"
               title={intl.formatMessage({
-                id: "dms.common.operate.delete.confirm.title",
+                id: 'dms.common.operate.delete.confirm.title',
               })}
               onConfirm={() => {
                 DataSourceService.delete(record).then((resp) => {
                   if (resp.success) {
                     message.success(
                       intl.formatMessage({
-                        id: "dms.common.message.operate.delete.success",
-                      })
+                        id: 'dms.common.message.operate.delete.success',
+                      }),
                     );
                     actionRef.current?.reload();
                   }
                 });
               }}
             >
-              <a href="#" style={{ color: "red" }}>
-                {intl.formatMessage({ id: "dms.common.operate.delete" })}
+              <a href="#" style={{ color: 'red' }}>
+                {intl.formatMessage({ id: 'dms.common.operate.delete' })}
               </a>
             </Popconfirm>
           )}
@@ -220,7 +204,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
   return (
     <PageContainer
       header={{
-        title: intl.formatMessage({ id: "dms.console.workspace.datasource" }),
+        title: intl.formatMessage({ id: 'dms.console.workspace.datasource' }),
         breadcrumb: {},
       }}
       extra={[
@@ -229,15 +213,12 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onPressEnter={onSearchInputChange}
           onChange={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
           <Badge
             dot={
               queryFormData.databaseName ||
@@ -257,10 +238,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -281,10 +259,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
               });
             }}
           >
-            {intl.formatMessage(
-              { id: "dms.console.workspace.datasource.new" },
-              { type: "" }
-            )}
+            {intl.formatMessage({ id: 'dms.console.workspace.datasource.new' }, { type: '' })}
           </Button>
         ),
       ]}
@@ -311,50 +286,44 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
         rowSelection={{
           selections: [Table.SELECTION_INVERT, Table.SELECTION_ALL],
         }}
-        tableAlertOptionRender={({
-          selectedRowKeys,
-          selectedRows,
-          onCleanSelected,
-        }) => {
+        tableAlertOptionRender={({ selectedRowKeys, selectedRows, onCleanSelected }) => {
           return (
             <Space size={16}>
               {access.canAccess(PRIVILEGES.wsWsdWdlDelete) && (
                 <a
                   key="deleteBatch"
-                  style={{ color: "red" }}
+                  style={{ color: 'red' }}
                   onClick={() => {
                     Modal.confirm({
                       title: intl.formatMessage({
-                        id: "dms.common.operate.delete.confirm.title",
+                        id: 'dms.common.operate.delete.confirm.title',
                       }),
                       content: intl.formatMessage({
-                        id: "dms.common.operate.delete.confirm.content",
+                        id: 'dms.common.operate.delete.confirm.content',
                       }),
                       onOk: () => {
-                        DataSourceService.deleteBatch(selectedRowKeys).then(
-                          (resp) => {
-                            if (resp.success) {
-                              message.success(
-                                intl.formatMessage({
-                                  id: "dms.common.message.operate.delete.success",
-                                })
-                              );
-                              onCleanSelected();
-                              actionRef.current?.reload();
-                            }
+                        DataSourceService.deleteBatch(selectedRowKeys).then((resp) => {
+                          if (resp.success) {
+                            message.success(
+                              intl.formatMessage({
+                                id: 'dms.common.message.operate.delete.success',
+                              }),
+                            );
+                            onCleanSelected();
+                            actionRef.current?.reload();
                           }
-                        );
+                        });
                       },
                     });
                   }}
                 >
                   {intl.formatMessage({
-                    id: "dms.common.operate.delete.batch",
+                    id: 'dms.common.operate.delete.batch',
                   })}
                 </a>
               )}
               <a onClick={onCleanSelected} key="cancelSelect">
-                {intl.formatMessage({ id: "dms.common.operate.cancel.select" })}
+                {intl.formatMessage({ id: 'dms.common.operate.cancel.select' })}
               </a>
             </Space>
           );
@@ -362,7 +331,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
       ></ProTable>
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -376,27 +345,27 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
               <Button
                 onClick={() => {
                   queryForm.setFieldsValue({
-                    datasourceName: "",
-                    datasourceType: "",
-                    hostName: "",
-                    databaseName: "",
+                    datasourceName: '',
+                    datasourceType: '',
+                    hostName: '',
+                    databaseName: '',
                   });
                   setQueryFormData({
-                    datasourceName: "",
-                    datasourceType: "",
-                    hostName: "",
-                    databaseName: "",
+                    datasourceName: '',
+                    datasourceType: '',
+                    hostName: '',
+                    databaseName: '',
                     workspaceId: workspaceId,
                   });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
-                  queryForm.validateFields().then((values) => {
+                  queryForm.validateFields().then((values: any) => {
                     setQueryFormData({
                       ...queryForm.getFieldsValue(),
                       workspaceId: workspaceId,
@@ -408,22 +377,17 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          form={queryForm}
-        >
+        <Form layout="horizontal" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={queryForm}>
           <Form.Item
             name="datasourceName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.datasource.datasourceName",
+              id: 'dms.console.workspace.datasource.datasourceName',
             })}
           >
             <Input allowClear></Input>
@@ -431,17 +395,15 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
           <Form.Item
             name="datasourceType"
             label={intl.formatMessage({
-              id: "dms.console.workspace.datasource.datasourceType",
+              id: 'dms.console.workspace.datasource.datasourceType',
             })}
           >
             <Select
               showSearch={true}
               allowClear={true}
               optionFilterProp="label"
-              filterOption={(input, option) =>
-                (option!.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
+              filterOption={(input: any, option: any) =>
+                (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
             >
               {datasourceTypeList.map((item) => {
@@ -456,7 +418,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
           <Form.Item
             name="hostName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.datasource.hostName",
+              id: 'dms.console.workspace.datasource.hostName',
             })}
           >
             <Input allowClear></Input>
@@ -464,7 +426,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
           <Form.Item
             name="databaseName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.datasource.databaseName",
+              id: 'dms.console.workspace.datasource.databaseName',
             })}
           >
             <Input allowClear></Input>
@@ -487,11 +449,12 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({
       )}
 
       {dataSourceData.open &&
-        (dataSourceData.data?.datasourceType?.value == "oracle" ||
-          dataSourceData.data?.datasourceType?.value == "mysql" ||
-          dataSourceData.data?.datasourceType?.value == "sqlServer" ||
-          dataSourceData.data?.datasourceType?.value == "postgreSQL" ||
-          dataSourceData.data?.datasourceType?.value == "doris") && (
+        (dataSourceData.data?.datasourceType?.value == 'oracle' ||
+          dataSourceData.data?.datasourceType?.value == 'mysql' ||
+          dataSourceData.data?.datasourceType?.value == 'mssql' ||
+          dataSourceData.data?.datasourceType?.value == 'postgreSQL' ||
+          dataSourceData.data?.datasourceType?.value == 'doris' ||
+          dataSourceData.data?.datasourceType?.value == 'hologres') && (
           <GenericDataSourceForm
             open={dataSourceData.open}
             data={dataSourceData.data}

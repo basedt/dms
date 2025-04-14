@@ -142,22 +142,22 @@ public class DorisDataSourcePluginImpl extends MysqlDataSourcePluginImpl {
 
     @Override
     public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return null;
+        return List.of();
     }
 
     @Override
     public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return null;
+        return List.of();
     }
 
     @Override
     public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return null;
+        return List.of();
     }
 
     @Override
     public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return null;
+        return List.of();
     }
 
     @Override

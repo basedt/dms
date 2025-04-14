@@ -351,10 +351,18 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
         for (DynaProperty col : cols) {
             if (col.getType().getName().equals(Timestamp.class.getName())) {
                 Timestamp value = (Timestamp) bean.get(col.getName());
-                list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATETIME_MS_PATTERN));
+                if (value != null) {
+                    list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATETIME_MS_PATTERN));
+                }else {
+                    list.add(null);
+                }
             } else if (col.getType().getName().equals(Date.class.getName())) {
                 Date value = (Date) bean.get(col.getName());
-                list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
+                if (value != null) {
+                    list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
+                }else {
+                    list.add(null);
+                }
             } else {
                 Object value = bean.get(col.getName());
                 list.add(value);

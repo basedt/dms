@@ -120,9 +120,11 @@ values ('datasource_type', 'oracle', 'Oracle', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'postgreSQL', 'PostgreSQL', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
-values ('datasource_type', 'sqlServer', 'SQLServer', '', 'sys', 'sys');
+values ('datasource_type', 'mssql', 'SQL Server', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'doris', 'Doris', '', 'sys', 'sys');
+insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
+values ('datasource_type', 'hologres', 'Hologres', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('sql_status', '01', 'dms.common.operate.sql.success', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)

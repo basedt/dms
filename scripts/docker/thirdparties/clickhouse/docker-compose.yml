@@ -16,22 +16,22 @@
 # under the License.
 
 services:
-  mongo:
-    image: mongo:8.0
-    ports:
-      - "27017:27017"
-    restart: always
+  ck:
+    image: bitnami/clickhouse:25.3.2
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-
-  mongo-express:
-    image: mongo-express
-    restart: always
+      - ALLOW_EMPTY_PASSWORD=no
+      - CLICKHOUSE_ADMIN_USER=admin
+      - CLICKHOUSE_ADMIN_PASSWORD=Passwd@123
     ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
-      ME_CONFIG_MONGODB_URL: mongodb://root:123456@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
+      - "8123:8123"
+      - "9002:9000"
+      - "9004:9004"
+      - "9005:9005"
+      - "9009:9009"
+    volumes:
+      - ./data:/bitnami/clickhouse
+    networks:
+      - ck_net
+networks:
+  ck_net:
+    driver: bridge

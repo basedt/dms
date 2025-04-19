@@ -233,20 +233,20 @@ public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
                 " n.nspname as schema_name," +
                 " c.relname as object_name," +
                 " 'SEQUENCE'as object_type," +
-                " s.start_value," +
-                " s.min_value," +
-                " s.max_value," +
-                " s.increment_by," +
-                " s.cycle as is_cycle," +
-                " s.last_value," +
+                " s.start_value as start_value," +
+                " s.minimum_value as min_value," +
+                " s.maximum_value as max_value," +
+                " s.increment as increment_by," +
+                " case when cycle_option = 'YES' then 1 else 0 end as is_cycle," +
+                " null as last_value," +
                 " null as create_time," +
                 " null as last_ddl_time" +
                 " from pg_catalog.pg_namespace n" +
                 " join pg_catalog.pg_class c " +
                 " on n.oid = c.relnamespace  " +
-                " join pg_catalog.pg_sequences s" +
-                " on n.nspname = s.schemaname " +
-                " and c.relname = s.sequencename " +
+                " join information_schema.sequences s" +
+                " on n.nspname = s.sequence_schema " +
+                " and c.relname = s.sequence_name " +
                 " where c.relkind in ('" + PostgreObjectTypeMapper.mapToOrigin(SEQUENCE) + "')";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and n.nspname = '" + schemaPattern + "'";

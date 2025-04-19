@@ -47,6 +47,8 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 9030;
       case 'hologres':
         return 80;
+      case 'gaussdb':
+        return 5432;
       case 'redis':
         return 6379;
       case 'kafka':
@@ -150,6 +152,9 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           </Col>
           <Col span={6}>
             {dbCard({ value: 'hologres', label: 'Hologres' }, '/images/databases/hologres.svg')}
+          </Col>
+          <Col span={6}>
+            {dbCard({ value: 'gaussdb', label: 'GaussDB' }, '/images/databases/gaussdb.svg')}
           </Col>
 
           {/* <Col span={6}>

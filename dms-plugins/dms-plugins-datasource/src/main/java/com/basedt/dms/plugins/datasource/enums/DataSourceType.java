@@ -23,7 +23,9 @@ public enum DataSourceType {
     POSTGRESQL("postgreSQL", "PostgreSQL"),
     MSSQL("mssql", "SQL Server"),
     DORIS("doris", "Doris"),
-    HOLOGRES("hologres", "Hologres");
+    HOLOGRES("hologres", "Hologres"),
+    GAUSSDB("gaussdb", "GaussDB"),
+    CLICKHOUSE("clickhouse", "ClickHouse");
 
     private final String value;
     private final String label;

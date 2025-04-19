@@ -25,7 +25,10 @@ public enum DataSourceType {
     DORIS("doris", "Doris"),
     HOLOGRES("hologres", "Hologres"),
     GAUSSDB("gaussdb", "GaussDB"),
-    CLICKHOUSE("clickhouse", "ClickHouse");
+    CLICKHOUSE("clickhouse", "ClickHouse"),
+    MARIADB("mariadb", "MariaDB"),
+    POLARDB("polardb", "PolarDB"),
+    GREENPLUM("greenplum", "Greenplum");
 
     private final String value;
     private final String label;

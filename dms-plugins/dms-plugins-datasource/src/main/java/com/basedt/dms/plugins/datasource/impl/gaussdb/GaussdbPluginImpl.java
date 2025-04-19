@@ -25,7 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreDataSourcePluginImpl;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgreObjectTypeMapper;
 import com.google.auto.service.AutoService;
 
@@ -38,19 +38,19 @@ import java.util.Properties;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.MATERIALIZED_VIEW;
 
 @AutoService(DataSourcePlugin.class)
-public class GaussdbDataSourcePluginImpl extends PostgreDataSourcePluginImpl {
+public class GaussdbPluginImpl extends PostgrePluginImpl {
 
-    public GaussdbDataSourcePluginImpl() {
+    public GaussdbPluginImpl() {
         super();
         init();
     }
 
-    public GaussdbDataSourcePluginImpl(Properties properties) {
+    public GaussdbPluginImpl(Properties properties) {
         super(properties);
         init();
     }
 
-    public GaussdbDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public GaussdbPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

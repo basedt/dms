@@ -49,6 +49,8 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 80;
       case 'gaussdb':
         return 5432;
+      case 'clickhouse':
+        return 8123;
       case 'redis':
         return 6379;
       case 'kafka':
@@ -155,6 +157,12 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           </Col>
           <Col span={6}>
             {dbCard({ value: 'gaussdb', label: 'GaussDB' }, '/images/databases/gaussdb.svg')}
+          </Col>
+          <Col span={6}>
+            {dbCard(
+              { value: 'clickhouse', label: 'ClickHouse' },
+              '/images/databases/clickhouse.svg',
+            )}
           </Col>
 
           {/* <Col span={6}>

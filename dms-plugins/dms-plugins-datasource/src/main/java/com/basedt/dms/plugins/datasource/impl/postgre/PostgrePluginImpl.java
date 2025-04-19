@@ -40,18 +40,18 @@ import java.util.stream.Collectors;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
-public class PostgreDataSourcePluginImpl extends AbstractDataSourcePlugin {
+public class PostgrePluginImpl extends AbstractDataSourcePlugin {
 
-    public PostgreDataSourcePluginImpl() {
+    public PostgrePluginImpl() {
         init();
     }
 
-    public PostgreDataSourcePluginImpl(Properties props) {
+    public PostgrePluginImpl(Properties props) {
         super(props);
         init();
     }
 
-    public PostgreDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public PostgrePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

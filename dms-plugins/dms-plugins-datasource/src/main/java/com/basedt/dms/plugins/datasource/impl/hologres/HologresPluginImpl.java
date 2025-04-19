@@ -24,26 +24,26 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreDataSourcePluginImpl;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;
 import java.util.Properties;
 
 @AutoService(DataSourcePlugin.class)
-public class HologresDataSourcePluginImpl extends PostgreDataSourcePluginImpl {
+public class HologresPluginImpl extends PostgrePluginImpl {
 
-    public HologresDataSourcePluginImpl() {
+    public HologresPluginImpl() {
         super();
         init();
     }
 
-    public HologresDataSourcePluginImpl(Properties properties) {
+    public HologresPluginImpl(Properties properties) {
         super(properties);
         init();
     }
 
-    public HologresDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public HologresPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

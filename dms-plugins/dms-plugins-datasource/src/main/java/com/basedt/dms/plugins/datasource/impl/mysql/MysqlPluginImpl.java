@@ -41,19 +41,19 @@ import java.util.stream.Collectors;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
-public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
+public class MysqlPluginImpl extends AbstractDataSourcePlugin {
 
-    public MysqlDataSourcePluginImpl() {
+    public MysqlPluginImpl() {
         super();
         init();
     }
 
-    public MysqlDataSourcePluginImpl(Properties props) {
+    public MysqlPluginImpl(Properties props) {
         super(props);
         init();
     }
 
-    public MysqlDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public MysqlPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }
@@ -80,7 +80,7 @@ public class MysqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException {
-        List<CatalogDTO> schemaList = super.listCatalogs();
+        List<CatalogDTO> schemaList = listCatalogs();
         List<SchemaDTO> resultList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(schemaList)) {
             for (CatalogDTO catalogDTO : schemaList) {

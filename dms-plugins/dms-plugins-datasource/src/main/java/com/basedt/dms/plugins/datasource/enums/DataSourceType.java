@@ -23,7 +23,13 @@ public enum DataSourceType {
     POSTGRESQL("postgreSQL", "PostgreSQL"),
     MSSQL("mssql", "SQL Server"),
     DORIS("doris", "Doris"),
-    HOLOGRES("hologres", "Hologres");
+    HOLOGRES("hologres", "Hologres"),
+    GAUSSDB("gaussdb", "GaussDB"),
+    CLICKHOUSE("clickhouse", "ClickHouse"),
+    MARIADB("mariadb", "MariaDB"),
+    POLARDB_MYSQL("polardb_mysql", "PolarDB"),
+    POLARDB_POSTGRE("polardb_postgre", "PolarDB"),
+    GREENPLUM("greenplum", "Greenplum");
 
     private final String value;
     private final String label;

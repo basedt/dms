@@ -40,18 +40,18 @@ import java.util.stream.Collectors;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
-public class OracleDataSourcePluginImpl extends AbstractDataSourcePlugin {
+public class OraclePluginImpl extends AbstractDataSourcePlugin {
 
-    public OracleDataSourcePluginImpl() {
+    public OraclePluginImpl() {
         init();
     }
 
-    public OracleDataSourcePluginImpl(Properties props) {
+    public OraclePluginImpl(Properties props) {
         super(props);
         init();
     }
 
-    public OracleDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public OraclePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

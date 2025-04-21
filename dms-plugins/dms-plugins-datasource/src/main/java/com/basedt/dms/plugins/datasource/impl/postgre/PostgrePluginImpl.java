@@ -310,36 +310,36 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
     public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         String sql = "select" +
                 " t.table_catalog as catalog_name," +
-                " t.table_schema as schema_name," +
-                " t.table_name as table_name," +
-                " t.column_name as column_name," +
-                " t.data_type as data_type," +
+                " coalesce(t.table_schema,n.nspname) as schema_name," +
+                " coalesce(t.table_name,c.relname) as table_name," +
+                " coalesce(t.column_name,attr.attname) as column_name," +
+                " coalesce(t.data_type,format_type(attr.atttypid,null)) as data_type," +
                 " t.character_maximum_length as data_length," +
                 " t.numeric_precision as data_precision," +
                 " t.numeric_scale as data_scale," +
                 " t.column_default as default_value," +
-                " t.ordinal_position as column_ordinal," +
+                " coalesce(t.ordinal_position,attr.attnum) as column_ordinal," +
                 " col_description(attr.attrelid, attr.attnum) as remark," +
                 " t.is_nullable as is_nullable" +
                 " from pg_catalog.pg_class c" +
                 " join pg_catalog.pg_namespace n" +
                 " on n.oid = c.relnamespace" +
-                " join pg_catalog.pg_attribute attr" +
+                " left join pg_catalog.pg_attribute attr" +
                 " on attr.attrelid = c.oid" +
-                " join information_schema.columns t" +
+                " left join information_schema.columns t" +
                 " on n.nspname = t.table_schema" +
                 " and c.relname = t.table_name" +
                 " and attr.attname = t.column_name" +
-                " where c.relkind in ('r','v')" +
+                " where c.relkind in ('r','v','m')" +
                 " and attr.attnum > 0";
-        if (StrUtil.isNotEmpty(catalog)) {
-            sql += " and t.table_catalog ='" + catalog + "'";
-        }
+//        if (StrUtil.isNotEmpty(catalog)) {
+//            sql += " and t.table_catalog ='" + catalog + "'";
+//        }
         if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
+            sql += " and coalesce(t.table_schema,n.nspname) = '" + schemaPattern + "'";
         }
         if (StrUtil.isNotEmpty(tableName)) {
-            sql += " and t.table_name = '" + tableName + "'";
+            sql += " and coalesce(t.table_name,c.relname) = '" + tableName + "'";
         }
         return super.listColumnDetails(sql);
     }

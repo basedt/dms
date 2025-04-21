@@ -90,3 +90,22 @@ VALUES ('John Smith', 'M', '1998-04-25'),
        ('Sophia Martinez', NULL, NULL);
 
 ```
+### Greenplum 
+启动docker容器
+
+```shell
+cd scripts/docker/thirdparties/greenplum
+docker compose up -d
+```
+
+创建用户和数据库
+
+```shell
+cd /usr/local/gpdb/bin
+./psql -h localhost -p 5432 -U gpadmin -d postgres
+```
+```sql
+create user gptest with password 'Passwd@123';
+create database sample;
+grant all privileges on database sample to gptest;
+```

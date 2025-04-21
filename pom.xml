@@ -72,6 +72,7 @@
         <clickhouse.jdbc.version>0.8.3</clickhouse.jdbc.version>
         <oracle.jdbc.version>19.9.0.0</oracle.jdbc.version>
         <mssql.jdbc.version>11.2.3.jre17</mssql.jdbc.version>
+        <mariadb.jdbc.version>3.5.2</mariadb.jdbc.version>
         <socket.io.version>2.0.3</socket.io.version>
         <st.antlr.version>4.3.4</st.antlr.version>
         <minio.version>8.5.9</minio.version>
@@ -237,6 +238,12 @@
                 <groupId>com.clickhouse</groupId>
                 <artifactId>clickhouse-jdbc</artifactId>
                 <version>${clickhouse.jdbc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>${mariadb.jdbc.version}</version>
             </dependency>
 
             <dependency>

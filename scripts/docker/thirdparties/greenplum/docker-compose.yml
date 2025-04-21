@@ -16,13 +16,13 @@
 # under the License.
 
 services:
-  mariadb:
-    image: mariadb:11.7
-    restart: always
-    environment:
-      - MARIADB_ROOT_PASSWORD=Passwd@123
-      - MARIADB_DATABASE=sample
+  greenplum:
+    image: andruche/greenplum:7
     ports:
-      - "3306:3306"
+      - "25432:5432"
+    expose:
+      - '25432'
     volumes:
-      - ./data:/var/lib/mysql
+      - ./data/master:/data/master
+      - ./data/primary:/data/primary
+      - ./data/backups:/data/backups

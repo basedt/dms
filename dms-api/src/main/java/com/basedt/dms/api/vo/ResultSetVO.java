@@ -135,6 +135,13 @@ public class ResultSetVO {
                     } else {
                         node.set(col.getName(), DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
                     }
+                } else if (col.getType().getName().equals(java.sql.Array.class.getName())) {
+                    Object value = bean.get(col.getName());
+                    if (Objects.isNull(value)) {
+                        node.set(col.getName(), null);
+                    } else {
+                        node.set(col.getName(), String.valueOf(value));
+                    }
                 } else {
                     Object value = bean.get(col.getName());
                     node.set(col.getName(), value);

@@ -456,7 +456,10 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
           dataSourceData.data?.datasourceType?.value == 'doris' ||
           dataSourceData.data?.datasourceType?.value == 'hologres' ||
           dataSourceData.data?.datasourceType?.value == 'gaussdb' ||
-          dataSourceData.data?.datasourceType?.value == 'clickhouse') && (
+          dataSourceData.data?.datasourceType?.value == 'clickhouse' ||
+          dataSourceData.data?.datasourceType?.value == 'mariadb' ||
+          dataSourceData.data?.datasourceType?.value == 'polardb' ||
+          dataSourceData.data?.datasourceType?.value == 'greenplum') && (
           <GenericDataSourceForm
             open={dataSourceData.open}
             data={dataSourceData.data}

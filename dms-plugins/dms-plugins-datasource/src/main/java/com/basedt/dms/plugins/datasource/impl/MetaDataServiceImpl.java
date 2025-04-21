@@ -71,6 +71,7 @@ public class MetaDataServiceImpl implements MetaDataService {
                         || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.HOLOGRES.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
                         || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.GAUSSDB.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
                         || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.GREENPLUM.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
+                        || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POLARDB_POSTGRE.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
                 ) {
                     schemas = dataSourcePlugin.listSchemas(catalog.getCatalogName(), null);
                 } else {

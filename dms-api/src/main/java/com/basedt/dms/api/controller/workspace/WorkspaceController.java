@@ -29,6 +29,7 @@ import com.basedt.dms.service.workspace.dto.DmsWorkspaceDTO;
 import com.basedt.dms.service.workspace.param.DmsWorkspaceParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -95,7 +96,7 @@ public class WorkspaceController {
     @Transactional(rollbackFor = Exception.class)
     @Operation(summary = "delete workspace", description = "delete workspace with id")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SPACE_LIST_DELETE)")
-    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotBlank Long id) {
+    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotNull Long id) {
         //TODO delete cascade objects
         this.dmsWorkspaceService.deleteById(id);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);

@@ -117,7 +117,7 @@ public class DataSourceController {
     @Transactional(rollbackFor = Exception.class)
     @Operation(summary = "delete datasource", description = "delete datasource with id")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_WS_DATASOURCE_DELETE)")
-    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotBlank Long id) {
+    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotNull Long id) {
         //TODO check if datasource is used
         this.dmsDataSourceService.deleteById(id);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);

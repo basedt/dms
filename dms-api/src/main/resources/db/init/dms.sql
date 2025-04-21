@@ -132,7 +132,9 @@ values ('datasource_type', 'clickhouse', 'ClickHouse', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'mariadb', 'MariaDB', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
-values ('datasource_type', 'polardb', 'PolarDB', '', 'sys', 'sys');
+values ('datasource_type', 'polardb_mysql', 'PolarDB Mysql', '', 'sys', 'sys');
+insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
+values ('datasource_type', 'polardb_postgre', 'PolarDB Postgre', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'greenplum', 'Greenplum', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)

@@ -27,7 +27,8 @@ public enum DataSourceType {
     GAUSSDB("gaussdb", "GaussDB"),
     CLICKHOUSE("clickhouse", "ClickHouse"),
     MARIADB("mariadb", "MariaDB"),
-    POLARDB("polardb", "PolarDB"),
+    POLARDB_MYSQL("polardb_mysql", "PolarDB"),
+    POLARDB_POSTGRE("polardb_postgre", "PolarDB"),
     GREENPLUM("greenplum", "Greenplum");
 
     private final String value;

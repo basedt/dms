@@ -37,12 +37,14 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
     switch (dbType) {
       case 'mysql':
       case 'mariadb':
+      case 'polardb_mysql':
         return 3306;
       case 'oracle':
         return 1521;
       case 'postgreSQL':
       case 'greenplum':
       case 'gaussdb':
+      case 'polardb_postgre':
         return 5432;
       case 'mssql':
         return 1433;
@@ -50,7 +52,6 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 9030;
       case 'hologres':
         return 80;
-
       case 'clickhouse':
         return 8123;
       case 'redis':
@@ -146,7 +147,16 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
             {dbCard({ value: 'mariadb', label: 'MariaDB' }, '/images/databases/mariadb.svg')}
           </Col>
           <Col span={6}>
-            {dbCard({ value: 'polardb', label: 'PolarDB' }, '/images/databases/polardb.svg')}
+            {dbCard(
+              { value: 'polardb_mysql', label: 'PolarDB Mysql' },
+              '/images/databases/polardb.svg',
+            )}
+          </Col>
+          <Col span={6}>
+            {dbCard(
+              { value: 'polardb_postgre', label: 'PolarDB Postgre' },
+              '/images/databases/polardb.svg',
+            )}
           </Col>
         </Row>
       </div>

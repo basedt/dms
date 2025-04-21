@@ -6,32 +6,32 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.mysql.MysqlPluginImpl;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
 import com.google.auto.service.AutoService;
 
 import java.util.Map;
 import java.util.Properties;
 
 @AutoService(DataSourcePlugin.class)
-public class PolardbPluginImpl extends MysqlPluginImpl {
+public class PolardbPostgrePluginImpl extends PostgrePluginImpl {
 
-    public PolardbPluginImpl() {
+    public PolardbPostgrePluginImpl() {
         init();
     }
 
-    public PolardbPluginImpl(Properties props) {
+    public PolardbPostgrePluginImpl(Properties props) {
         super(props);
         init();
     }
 
-    public PolardbPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public PolardbPostgrePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }
 
     private void init() {
-        setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POLARDB.getValue()).toUpperCase(),
+        setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POLARDB_POSTGRE.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
-        setDriverClassName("com.mysql.cj.jdbc.Driver");
+        setDriverClassName("org.postgresql.Driver");
     }
 }

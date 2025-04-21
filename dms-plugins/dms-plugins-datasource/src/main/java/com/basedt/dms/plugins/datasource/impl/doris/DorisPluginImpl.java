@@ -25,7 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.mysql.MysqlDataSourcePluginImpl;
+import com.basedt.dms.plugins.datasource.impl.mysql.MysqlPluginImpl;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import com.google.auto.service.AutoService;
 
@@ -42,19 +42,19 @@ import java.util.stream.Collectors;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
-public class DorisDataSourcePluginImpl extends MysqlDataSourcePluginImpl {
+public class DorisPluginImpl extends MysqlPluginImpl {
 
-    public DorisDataSourcePluginImpl() {
+    public DorisPluginImpl() {
         super();
         init();
     }
 
-    public DorisDataSourcePluginImpl(Properties properties) {
+    public DorisPluginImpl(Properties properties) {
         super(properties);
         init();
     }
 
-    public DorisDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public DorisPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

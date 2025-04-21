@@ -96,7 +96,7 @@ public class RoleController {
     @Transactional(rollbackFor = Exception.class)
     @Operation(summary = "delete role", description = "delete role with id")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).SYS_SYS_ROLE_DELETE)")
-    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotBlank Long id) {
+    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotNull Long id) {
         this.sysRoleService.deleteById(id);
         dmsSecurityService.clearPrivilegeByRole(id);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);

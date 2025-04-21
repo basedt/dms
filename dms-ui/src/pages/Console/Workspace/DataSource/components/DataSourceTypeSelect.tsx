@@ -36,10 +36,15 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
   const getDefaultPort = (dbType: string) => {
     switch (dbType) {
       case 'mysql':
+      case 'mariadb':
+      case 'polardb_mysql':
         return 3306;
       case 'oracle':
         return 1521;
       case 'postgreSQL':
+      case 'greenplum':
+      case 'gaussdb':
+      case 'polardb_postgre':
         return 5432;
       case 'mssql':
         return 1433;
@@ -47,6 +52,8 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 9030;
       case 'hologres':
         return 80;
+      case 'clickhouse':
+        return 8123;
       case 'redis':
         return 6379;
       case 'kafka':
@@ -136,6 +143,21 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard({ value: 'mssql', label: 'SQL Server' }, '/images/databases/mssql.svg')}
           </Col>
+          <Col span={6}>
+            {dbCard({ value: 'mariadb', label: 'MariaDB' }, '/images/databases/mariadb.svg')}
+          </Col>
+          <Col span={6}>
+            {dbCard(
+              { value: 'polardb_mysql', label: 'PolarDB Mysql' },
+              '/images/databases/polardb.svg',
+            )}
+          </Col>
+          <Col span={6}>
+            {dbCard(
+              { value: 'polardb_postgre', label: 'PolarDB Postgre' },
+              '/images/databases/polardb.svg',
+            )}
+          </Col>
         </Row>
       </div>
       <Typography.Title level={5} className={groupLableStyle}>
@@ -150,6 +172,18 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           </Col>
           <Col span={6}>
             {dbCard({ value: 'hologres', label: 'Hologres' }, '/images/databases/hologres.svg')}
+          </Col>
+          <Col span={6}>
+            {dbCard({ value: 'gaussdb', label: 'GaussDB' }, '/images/databases/gaussdb.svg')}
+          </Col>
+          <Col span={6}>
+            {dbCard(
+              { value: 'clickhouse', label: 'ClickHouse' },
+              '/images/databases/clickhouse.svg',
+            )}
+          </Col>
+          <Col span={6}>
+            {dbCard({ value: 'greenplum', label: 'Greenplum' }, '/images/databases/greenplum.svg')}
           </Col>
 
           {/* <Col span={6}>

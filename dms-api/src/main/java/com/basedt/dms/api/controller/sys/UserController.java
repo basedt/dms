@@ -260,7 +260,7 @@ public class UserController {
     @Transactional(rollbackFor = Exception.class)
     @Operation(summary = "delete a user", description = "disable a user")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).SYS_SYS_USER_DELETE)")
-    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotBlank Long id) {
+    public ResponseEntity<ResponseVO<Object>> delete(@PathVariable("id") @NotNull Long id) {
         SysUserDTO userDTO = new SysUserDTO();
         userDTO.setId(id);
         userDTO.setUserStatus(UserStatus.FORBIDDEN.toDict());

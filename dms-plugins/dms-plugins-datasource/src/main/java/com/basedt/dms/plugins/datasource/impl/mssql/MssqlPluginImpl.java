@@ -41,19 +41,19 @@ import java.util.stream.Collectors;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
-public class MssqlDataSourcePluginImpl extends AbstractDataSourcePlugin {
+public class MssqlPluginImpl extends AbstractDataSourcePlugin {
 
-    public MssqlDataSourcePluginImpl() {
+    public MssqlPluginImpl() {
         super();
         init();
     }
 
-    public MssqlDataSourcePluginImpl(Properties props) {
+    public MssqlPluginImpl(Properties props) {
         super(props);
         init();
     }
 
-    public MssqlDataSourcePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public MssqlPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         super(hostName, port, databaseName, userName, password, attributes);
         init();
     }

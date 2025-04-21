@@ -30,6 +30,7 @@ hs_err_pid*
 
 # docker
 /scripts/docker/data/
+/scripts/docker/thirdparties/**/data/
 # macos
 .DS_Store
-/scripts/docker/thirdparties/mssql/data/
+

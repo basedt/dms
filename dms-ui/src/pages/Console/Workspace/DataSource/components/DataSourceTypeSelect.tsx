@@ -185,19 +185,21 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard({ value: 'greenplum', label: 'Greenplum' }, '/images/databases/greenplum.svg')}
           </Col>
-
-          {/* <Col span={6}>
-            {dbCard(
-              { value: "hive", label: "Hive" },
-              "/images/databases/apachehive.svg"
-            )}
-          </Col>
+        </Row>
+      </div>
+      <Typography.Title level={5} className={groupLableStyle}>
+        {intl.formatMessage({
+          id: 'dms.console.workspace.datasource.type.bigdata',
+        })}
+      </Typography.Title>
+      <div className={groupContainerStyle}>
+        <Row gutter={[12, 12]}>
           <Col span={6}>
             {dbCard(
-              { value: "hdfs", label: "HDFS" },
-              "/images/databases/apachehadoop.svg"
+              { value: 'apachehive', label: 'Apache Hive' },
+              '/images/databases/apachehive.svg',
             )}
-          </Col> */}
+          </Col>
         </Row>
       </div>
       {/* <Typography.Title level={5} className={groupLableStyle}>

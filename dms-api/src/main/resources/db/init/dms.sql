@@ -138,6 +138,8 @@ values ('datasource_type', 'polardb_postgre', 'PolarDB Postgre', '', 'sys', 'sys
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('datasource_type', 'greenplum', 'Greenplum', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
+values ('datasource_type', 'apachehive', 'Apache Hive', '', 'sys', 'sys');
+insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('sql_status', '01', 'dms.common.operate.sql.success', '', 'sys', 'sys');
 insert into sys_dict(dict_type_code, dict_code, dict_value, remark, creator, editor)
 values ('sql_status', '02', 'dms.common.operate.sql.failure', '', 'sys', 'sys');

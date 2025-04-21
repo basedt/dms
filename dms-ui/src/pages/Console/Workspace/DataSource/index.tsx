@@ -460,7 +460,8 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
           dataSourceData.data?.datasourceType?.value == 'mariadb' ||
           dataSourceData.data?.datasourceType?.value == 'polardb_postgre' ||
           dataSourceData.data?.datasourceType?.value == 'polardb_mysql' ||
-          dataSourceData.data?.datasourceType?.value == 'greenplum') && (
+          dataSourceData.data?.datasourceType?.value == 'greenplum' ||
+          dataSourceData.data?.datasourceType?.value == 'apachehive') && (
           <GenericDataSourceForm
             open={dataSourceData.open}
             data={dataSourceData.data}

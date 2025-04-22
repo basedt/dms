@@ -58,7 +58,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 6379;
       case 'kafka':
         return 9092;
-      case 'hive':
+      case 'apachehive':
         return 10000;
       case 'hdfs':
         return 9000;
@@ -77,12 +77,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Image src={imageSrc} preview={false} height={60} style={{ paddingTop: 12 }}></Image>
         }
         onClick={() => {
-          if (
-            dbType.value == 'hive' ||
-            dbType.value == 'hdfs' ||
-            dbType.value == 'redis' ||
-            dbType.value == 'kafka'
-          ) {
+          if (dbType.value == 'hdfs' || dbType.value == 'redis' || dbType.value == 'kafka') {
             // message.info("not suppor");
           } else {
             handleOk

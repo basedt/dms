@@ -22,6 +22,7 @@ import java.util.Properties;
 public class HivePluginImpl extends AbstractDataSourcePlugin {
 
     public HivePluginImpl() {
+        super();
         init();
     }
 
@@ -41,11 +42,9 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         setDriverClassName("org.apache.hive.jdbc.HiveDriver");
     }
 
-
-
     @Override
     protected String getJdbcUrl() {
-        return "";
+        return "jdbc:hive2://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + "/" + getDatabaseName();
     }
 
     @Override

@@ -144,13 +144,13 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard(
               { value: 'polardb_mysql', label: 'PolarDB Mysql' },
-              '/images/databases/polardb.svg',
+              '/images/databases/polardb_mysql.svg',
             )}
           </Col>
           <Col span={6}>
             {dbCard(
               { value: 'polardb_postgre', label: 'PolarDB Postgre' },
-              '/images/databases/polardb.svg',
+              '/images/databases/polardb_postgre.svg',
             )}
           </Col>
         </Row>

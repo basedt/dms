@@ -21,6 +21,7 @@ import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.common.vo.DictVO;
+import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -66,7 +67,7 @@ public class DataSourceDTO {
         props.put("userName", this.userName);
         props.put("password", this.password);
         Map<String, String> attrMap = new HashMap<>();
-        String attrs = (String) this.getAttrs().get(Constants.DATASOURCE_ATTR_JDBC);
+        String attrs = (String) this.getAttrs().get(DataSourcePlugin.JDBC);
         Map<String, Object> map = PropertiesUtil.formatToMap(attrs, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
         map.forEach((k, v) -> {
             attrMap.put(k, (String) v);

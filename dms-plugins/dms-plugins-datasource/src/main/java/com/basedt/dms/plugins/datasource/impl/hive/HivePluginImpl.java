@@ -27,16 +27,26 @@ import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.google.auto.service.AutoService;
+import lombok.SneakyThrows;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
+import org.apache.hadoop.hive.metastore.api.MetaException;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
+import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
 public class HivePluginImpl extends AbstractDataSourcePlugin {
+
+    public static final String METASTORE_URIS = "hmsUris";
 
     public HivePluginImpl() {
         super();
@@ -53,6 +63,11 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         init();
     }
 
+    @Override
+    protected String getJdbcUrl() {
+        return "jdbc:hive2://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + "/" + getDatabaseName() + formatJdbcProps();
+    }
+
     private void init() {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.APACHEHIVE.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
@@ -60,17 +75,14 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    protected String getJdbcUrl() {
-        return "jdbc:hive2://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + "/" + getDatabaseName();
+    public Boolean isSupportRowEdit() {
+        return false;
     }
 
-    @Override
-    protected void setColumnValue(PreparedStatement ps, ColumnDTO column, String value, int columnIndex) throws SQLException, ParseException {
-
-    }
-
+    @SneakyThrows
     @Override
     public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
+        HiveMetaStoreClient client = getHmsClient();
         return List.of();
     }
 
@@ -127,5 +139,43 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         return List.of();
+    }
+
+    @Override
+    protected void setColumnValue(PreparedStatement ps, ColumnDTO column, String value, int columnIndex) throws SQLException, ParseException {
+
+    }
+
+    @Override
+    protected String formatJdbcProps() {
+        Properties props = getJdbcProps();
+        StringBuilder builder = new StringBuilder();
+        if (props != null) {
+            props.forEach((k, v) -> {
+                builder.append(Constants.SEPARATOR_SEMICOLON).append(k).append(Constants.SEPARATOR_EQUAL).append(v);
+            });
+            return builder.toString();
+        } else {
+            return builder.toString();
+        }
+    }
+
+    @Override
+    public List<String> listObjectTypes() throws SQLException {
+        List<String> list = new ArrayList<String>() {{
+            add(TABLE.name());
+            add(VIEW.name());
+            add(MATERIALIZED_VIEW.name());
+        }};
+        return list.stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    private HiveMetaStoreClient getHmsClient() throws MetaException {
+        String uris = this.attributes.get(METASTORE_URIS);
+        Configuration conf = new Configuration();
+        conf.set("hive.metastore.uris",uris);
+        HiveMetaStoreClient client = new HiveMetaStoreClient(conf);
+        client.close();
+        return client;
     }
 }

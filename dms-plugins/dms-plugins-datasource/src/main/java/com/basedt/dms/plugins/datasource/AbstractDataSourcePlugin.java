@@ -40,10 +40,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
@@ -239,6 +236,9 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
             result.add(catalog);
         }
         JdbcUtil.close(conn, rs);
+        if (CollectionUtil.isEmpty(result)) {
+            result.add(new CatalogDTO(getDatabaseName()));
+        }
         return result;
     }
 

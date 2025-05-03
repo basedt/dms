@@ -25,6 +25,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import DataSourceTypeSelect from './components/DataSourceTypeSelect';
 import GenericDataSourceForm from './components/GenericDataSourceForm';
+import HiveDataSourceForm from './components/HiveDataSourceForm';
 
 const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceId }) => {
   const intl = useIntl();
@@ -480,6 +481,25 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
             }}
           ></GenericDataSourceForm>
         )}
+      {dataSourceData.open && dataSourceData.data?.datasourceType?.value == 'apachehive' && (
+        <HiveDataSourceForm
+          open={dataSourceData.open}
+          data={dataSourceData.data}
+          handleOk={(isOpen: boolean) => {
+            setDataSourceData({ open: isOpen });
+            actionRef.current?.reload();
+          }}
+          handleCancel={() => {
+            if (!dataSourceData.data?.id) {
+              setDataSourceType({
+                open: true,
+                data: { workspaceId: workspaceId },
+              });
+            }
+            setDataSourceData({ open: false });
+          }}
+        ></HiveDataSourceForm>
+      )}
     </PageContainer>
   );
 };

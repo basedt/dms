@@ -29,6 +29,8 @@ export default {
     '按key=value格式 , 每行一个属性 \n例如: characterEncoding=utf-8',
   'dms.console.workspace.datasource.attrs.value': '值',
   'dms.console.workspace.datasource.attrs.key': '名称',
+  'dms.console.workspace.datasource.attrs.hmsUris.tooltip':
+    '通过hive配置项 hive.metastore.uris 获取',
   'dms.console.workspace.datasource.info': '连接信息',
   'dms.console.workspace.datasource.type.rdbms': '关系型数据库',
   'dms.console.workspace.datasource.type.bigdata': '大数据',

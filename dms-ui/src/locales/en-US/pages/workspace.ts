@@ -30,6 +30,8 @@ export default {
     'Format: key=value, one attribute per line\nExample: characterEncoding=utf-8',
   'dms.console.workspace.datasource.attrs.value': 'Value',
   'dms.console.workspace.datasource.attrs.key': 'Key',
+  'dms.console.workspace.datasource.attrs.hmsUris.tooltip':
+    'Obtain via the Hive configuration item hive.metastore.uris',
   'dms.console.workspace.datasource.info': 'Connection Information',
   'dms.console.workspace.datasource.type.rdbms': 'RDBMS',
   'dms.console.workspace.datasource.type.bigdata': 'BigData',

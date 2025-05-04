@@ -50,6 +50,8 @@ import jakarta.validation.constraints.NotNull;
 import java.sql.SQLException;
 import java.util.*;
 
+import static com.basedt.dms.plugins.datasource.DataSourcePlugin.JDBC;
+
 @RestController
 @RequestMapping(path = "/api/workspace/ds")
 @Tag(name = "DATASOURCE")
@@ -149,8 +151,8 @@ public class DataSourceController {
                 dataSourceDTO.setPassword(Base64.decodeStr(ds.getPassword()));
             }
             Map<String, String> attrs = new HashMap<>();
-            if (CollectionUtil.isNotEmpty(dataSourceDTO.getAttrs()) && dataSourceDTO.getAttrs().containsKey(Constants.DATASOURCE_ATTR_JDBC)) {
-                String jdbcAttr = (String) dataSourceDTO.getAttrs().get(Constants.DATASOURCE_ATTR_JDBC);
+            if (CollectionUtil.isNotEmpty(dataSourceDTO.getAttrs()) && dataSourceDTO.getAttrs().containsKey(JDBC)) {
+                String jdbcAttr = (String) dataSourceDTO.getAttrs().get(JDBC);
                 Map<String, Object> map = PropertiesUtil.formatToMap(jdbcAttr, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
                 map.forEach((k, v) -> {
                     attrs.put(k, (String) v);
@@ -197,10 +199,10 @@ public class DataSourceController {
 
     private void formatJdbcProps(DmsDataSourceDTO dataSourceDTO) {
         Map<String, Object> attrs = dataSourceDTO.getAttrs();
-        if (CollectionUtil.isNotEmpty(attrs) && attrs.containsKey(Constants.DATASOURCE_ATTR_JDBC)) {
-            String jdbcProps = (String) attrs.get(Constants.DATASOURCE_ATTR_JDBC);
+        if (CollectionUtil.isNotEmpty(attrs) && attrs.containsKey(JDBC)) {
+            String jdbcProps = (String) attrs.get(JDBC);
             Properties props = PropertiesUtil.format(jdbcProps, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
-            attrs.put(Constants.DATASOURCE_ATTR_JDBC, PropertiesUtil.toFormatStr(props, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL));
+            attrs.put(JDBC, PropertiesUtil.toFormatStr(props, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL));
         }
     }
 }

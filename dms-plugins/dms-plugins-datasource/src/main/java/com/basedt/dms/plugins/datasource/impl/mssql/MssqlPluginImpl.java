@@ -401,11 +401,17 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
                 ps.setBigDecimal(columnIndex, StrUtil.isBlank(value) ? null : BigDecimal.valueOf(Double.parseDouble(value)));
                 break;
             case "float":
+                if (StrUtil.isBlank(value)) {
+                    ps.setNull(columnIndex, Types.FLOAT);
+                } else {
+                    ps.setFloat(columnIndex, Float.parseFloat(value));
+                }
+                break;
             case "real":
                 if (StrUtil.isBlank(value)) {
                     ps.setNull(columnIndex, Types.REAL);
                 } else {
-                    ps.setFloat(columnIndex, Float.parseFloat(value));
+                    ps.setDouble(columnIndex, Double.parseDouble(value));
                 }
                 break;
             case "sysname":

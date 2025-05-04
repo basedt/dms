@@ -171,7 +171,7 @@ const DmsAgent: React.FC<DmsAgentProps> = (props) => {
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (!e.shiftKey && e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
         e.preventDefault();
         handleSubmit();
       }

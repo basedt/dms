@@ -1,28 +1,17 @@
 import { PATTERNS } from '@/constants';
 import { DataSourceService } from '@/services/workspace/datasource.service';
 import { useIntl, useModel } from '@umijs/max';
-import {
-  Button,
-  Col,
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Row,
-  Space,
-  Tabs,
-  TabsProps,
-} from 'antd';
-import { useState } from 'react';
+import { Button, Col, Form, Input, InputNumber, message, Modal, Row, Space, Tabs } from 'antd';
+import React, { useState } from 'react';
 
-const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => {
+const HiveDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const [isPasswordChange, setPasswordChange] = useState<boolean>(false);
   const { tableKey } = useModel('global');
+
   const items: TabsProps['items'] = [
     {
       key: 'general',
@@ -91,6 +80,16 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
             ></Input.Password>
           </Form.Item>
           <Form.Item
+            name="hmsUris"
+            label="hive.metastore.uris"
+            rules={[{ required: true }]}
+            tooltip={intl.formatMessage({
+              id: 'dms.console.workspace.datasource.attrs.hmsUris.tooltip',
+            })}
+          >
+            <Input placeholder="thrift://ip1:port1,thrift://ip2:port2"></Input>
+          </Form.Item>
+          <Form.Item
             label={intl.formatMessage({
               id: 'dms.console.workspace.datasource.remark',
             })}
@@ -129,6 +128,7 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
               checked={data?.attrs?.meta}
             />
           </Form.Item> */}
+
           <Form.Item
             label={intl.formatMessage({
               id: 'dms.console.workspace.datasource.attrs',
@@ -193,7 +193,7 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
                   password: form.getFieldValue('password'),
                   isPasswordChange: isPasswordChange,
                   attrs: {
-                    // meta: form.getFieldValue('meta') ? form.getFieldValue('meta') : null,
+                    hmsUris: form.getFieldValue('hmsUris') ? form.getFieldValue('hmsUris') : null,
                     jdbc: form.getFieldValue('jdbc') ? form.getFieldValue('jdbc') : null,
                   },
                 };
@@ -238,7 +238,7 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
                       password: values.password,
                       remark: values.remark,
                       attrs: {
-                        // meta: values.meta ? values.meta : null,
+                        hmsUris: values.hmsUris ? values.hmsUris : null,
                         jdbc: values.jdbc ? values.jdbc : null,
                       },
                     };
@@ -290,6 +290,7 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
         initialValues={{
           ...data,
           jdbc: data?.attrs?.jdbc,
+          hmsUris: data?.attrs?.hmsUris,
           password: data?.id ? '***' : '',
         }}
       >
@@ -299,4 +300,4 @@ const GenericDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) 
   );
 };
 
-export default GenericDataSourceForm;
+export default HiveDataSourceForm;

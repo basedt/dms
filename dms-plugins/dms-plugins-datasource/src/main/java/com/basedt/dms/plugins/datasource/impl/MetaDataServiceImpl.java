@@ -379,10 +379,8 @@ public class MetaDataServiceImpl implements MetaDataService {
         if (Objects.nonNull(dataSourceDTO)) {
             DataSourceDTO ds = new DataSourceDTO();
             BeanUtil.copyProperties(dataSourceDTO, ds);
-
             String decodePwd = Base64.decodeStr(ds.getPassword());
             ds.setPassword(decodePwd);
-
             return DataSourcePluginManager.newInstance(
                     StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, ds.getDatasourceType().getValue()).toUpperCase(),
                     ds.toProperties()

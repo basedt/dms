@@ -2,10 +2,10 @@ name: DMS CI
 
 on:
   push:
-    branches: [ 'main','feature/**','releases/**' ]
+    branches: [ 'main','dev','feature/**','releases/**' ]
     paths-ignore: [ '**/*.md', '**/*.svg','**/*.png' ]
   pull_request:
-    branches: [ 'main','feature/**','releases/**' ]
+    branches: [ 'main','dev','feature/**','releases/**' ]
     paths-ignore: [ '**/*.md', '**/*.svg','**/*.png' ]
   workflow_dispatch:
 

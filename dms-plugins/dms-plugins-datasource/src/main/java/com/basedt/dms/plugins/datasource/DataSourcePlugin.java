@@ -31,7 +31,7 @@ import java.util.Map;
 
 public interface DataSourcePlugin extends Plugin {
 
-    public static final String JDBC = "jdbc";
+    String JDBC = "jdbc";
 
     String getHostName();
 

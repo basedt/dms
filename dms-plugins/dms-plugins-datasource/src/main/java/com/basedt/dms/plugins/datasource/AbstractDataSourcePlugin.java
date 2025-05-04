@@ -23,6 +23,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
+import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.dto.*;
@@ -198,11 +199,15 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     protected abstract String getJdbcUrl();
 
     protected Properties getJdbcProps() {
-        if (this.attributes == null) {
+        if (CollectionUtil.isEmpty(this.attributes) || !this.attributes.containsKey(JDBC)) {
             return null;
         }
         Properties props = new Properties();
-        props.putAll(this.attributes);
+        String attrs = this.attributes.get(JDBC);
+        Map<String, Object> map = PropertiesUtil.formatToMap(attrs, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
+        map.forEach((k, v) -> {
+            props.put(k, (String) v);
+        });
         return props;
     }
 
@@ -638,7 +643,8 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
             column.setSchemaName(rs.getString("TABLE_SCHEM"));
             column.setTableName(rs.getString("TABLE_NAME"));
             column.setColumnName(rs.getString("COLUMN_NAME"));
-            column.setDataType(String.valueOf(rs.getInt("DATA_TYPE")));
+            column.setSqlType(rs.getInt("DATA_TYPE"));
+            column.setDataType(rs.getString("TYPE_NAME"));
             column.setDataLength(rs.getInt("COLUMN_SIZE"));
             column.setRemark(rs.getString("REMARKS"));
             column.setDefaultValue(rs.getString("COLUMN_DEF"));

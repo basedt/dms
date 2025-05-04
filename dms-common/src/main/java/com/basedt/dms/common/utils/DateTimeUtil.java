@@ -76,6 +76,11 @@ public class DateTimeUtil {
         return timestamp.toLocalDateTime();
     }
 
+    public static LocalDateTime toLocalDateTime(int seconds) {
+        Instant instant = Instant.ofEpochSecond(seconds);
+        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
     public static LocalDateTime toLocalDateTime(String dateStr, String... patterns) {
         if (Objects.isNull(dateStr)) {
             return null;

@@ -69,10 +69,6 @@ public class Constants {
 
     public static final String CODEC_STR_PREFIX = "Encrypted:";
 
-    public static final String DATASOURCE_ATTR_JDBC = "jdbc";
-
-    public static final String DATASOURCE_ATTR_POOL = "pool";
-
     public static final String JOB_PREFIX = "JOB_";
 
     public static final String JOB_GROUP_PREFIX = "JOB_GRP_";

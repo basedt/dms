@@ -109,3 +109,20 @@ create user gptest with password 'Passwd@123';
 create database sample;
 grant all privileges on database sample to gptest;
 ```
+
+### Hive
+启动docker容器,连接beeline
+```shell
+cd scripts/docker/thirdparties/hive
+export MYSQL_JDBC_LOCAL_PATH=your_local_path_to_mysql_driver
+docker compose up -d
+docker exec -it hiveserver2 beeline -u 'jdbc:hive2://hiveserver2:10000'
+```
+```sql
+show tables;
+create table hive_example(a string, b int) partitioned by(c int);
+alter table hive_example add partition(c=1);
+insert into hive_example partition(c=1) values('a', 1), ('a', 2),('b',3);
+select count(distinct a) from hive_example;
+select sum(b) from hive_example;
+```

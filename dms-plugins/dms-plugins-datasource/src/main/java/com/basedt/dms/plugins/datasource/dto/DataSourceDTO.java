@@ -17,10 +17,12 @@
  */
 package com.basedt.dms.plugins.datasource.dto;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.common.vo.DictVO;
+import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -66,11 +68,11 @@ public class DataSourceDTO {
         props.put("userName", this.userName);
         props.put("password", this.password);
         Map<String, String> attrMap = new HashMap<>();
-        String attrs = (String) this.getAttrs().get(Constants.DATASOURCE_ATTR_JDBC);
-        Map<String, Object> map = PropertiesUtil.formatToMap(attrs, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
-        map.forEach((k, v) -> {
-            attrMap.put(k, (String) v);
-        });
+        if (CollectionUtil.isNotEmpty(attrs)){
+            for (Map.Entry<String, Object> entry : this.attrs.entrySet()) {
+                attrMap.put(entry.getKey(),entry.getValue().toString());
+            }
+        }
         props.put("attrs", JSONUtil.toJsonStr(attrMap));
         return props;
     }

@@ -332,9 +332,6 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
                 " and attr.attname = t.column_name" +
                 " where c.relkind in ('r','v','m')" +
                 " and attr.attnum > 0";
-//        if (StrUtil.isNotEmpty(catalog)) {
-//            sql += " and t.table_catalog ='" + catalog + "'";
-//        }
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and coalesce(t.table_schema,n.nspname) = '" + schemaPattern + "'";
         }

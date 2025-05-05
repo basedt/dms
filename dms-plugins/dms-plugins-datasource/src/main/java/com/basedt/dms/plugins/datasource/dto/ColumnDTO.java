@@ -37,6 +37,8 @@ public class ColumnDTO {
 
     private String dataType;
 
+    private Integer sqlType;
+
     private Integer dataLength;
 
     private Integer dataPrecision;

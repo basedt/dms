@@ -58,7 +58,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
         return 6379;
       case 'kafka':
         return 9092;
-      case 'hive':
+      case 'apachehive':
         return 10000;
       case 'hdfs':
         return 9000;
@@ -77,12 +77,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Image src={imageSrc} preview={false} height={60} style={{ paddingTop: 12 }}></Image>
         }
         onClick={() => {
-          if (
-            dbType.value == 'hive' ||
-            dbType.value == 'hdfs' ||
-            dbType.value == 'redis' ||
-            dbType.value == 'kafka'
-          ) {
+          if (dbType.value == 'hdfs' || dbType.value == 'redis' || dbType.value == 'kafka') {
             // message.info("not suppor");
           } else {
             handleOk
@@ -149,13 +144,13 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard(
               { value: 'polardb_mysql', label: 'PolarDB Mysql' },
-              '/images/databases/polardb.svg',
+              '/images/databases/polardb_mysql.svg',
             )}
           </Col>
           <Col span={6}>
             {dbCard(
               { value: 'polardb_postgre', label: 'PolarDB Postgre' },
-              '/images/databases/polardb.svg',
+              '/images/databases/polardb_postgre.svg',
             )}
           </Col>
         </Row>
@@ -185,19 +180,21 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           <Col span={6}>
             {dbCard({ value: 'greenplum', label: 'Greenplum' }, '/images/databases/greenplum.svg')}
           </Col>
-
-          {/* <Col span={6}>
-            {dbCard(
-              { value: "hive", label: "Hive" },
-              "/images/databases/apachehive.svg"
-            )}
-          </Col>
+        </Row>
+      </div>
+      <Typography.Title level={5} className={groupLableStyle}>
+        {intl.formatMessage({
+          id: 'dms.console.workspace.datasource.type.bigdata',
+        })}
+      </Typography.Title>
+      <div className={groupContainerStyle}>
+        <Row gutter={[12, 12]}>
           <Col span={6}>
             {dbCard(
-              { value: "hdfs", label: "HDFS" },
-              "/images/databases/apachehadoop.svg"
+              { value: 'apachehive', label: 'Apache Hive' },
+              '/images/databases/apachehive.svg',
             )}
-          </Col> */}
+          </Col>
         </Row>
       </div>
       {/* <Typography.Title level={5} className={groupLableStyle}>

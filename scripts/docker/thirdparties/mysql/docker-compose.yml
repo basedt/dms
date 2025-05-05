@@ -26,7 +26,7 @@ services:
       - MYSQL_AUTHENTICATION_PLUGIN=mysql_native_password
       - MYSQL_DATABASE=sample
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - ./my_custom.cnf:/opt/bitnami/mysql/conf/my_custom.cnf
       - ./init.d:/docker-entrypoint-initdb.d

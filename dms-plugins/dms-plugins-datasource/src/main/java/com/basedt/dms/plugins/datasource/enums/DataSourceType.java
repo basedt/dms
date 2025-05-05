@@ -29,7 +29,8 @@ public enum DataSourceType {
     MARIADB("mariadb", "MariaDB"),
     POLARDB_MYSQL("polardb_mysql", "PolarDB"),
     POLARDB_POSTGRE("polardb_postgre", "PolarDB"),
-    GREENPLUM("greenplum", "Greenplum");
+    GREENPLUM("greenplum", "Greenplum"),
+    APACHEHIVE("apachehive", "Apache Hive");
 
     private final String value;
     private final String label;

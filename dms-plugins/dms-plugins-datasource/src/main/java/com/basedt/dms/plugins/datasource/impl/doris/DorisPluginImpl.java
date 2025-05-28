@@ -172,8 +172,9 @@ public class DorisPluginImpl extends MysqlPluginImpl {
             index.setCatalogName(catalog);
             index.setSchemaName(schemaPattern);
             index.setTableName(tableName);
-            index.setObjectName(rs.getString("Key_name"));
-            index.setIndexType(rs.getString("Index_type"));
+            index.setObjectName(rs.getString("key_name"));
+            index.setIndexType(rs.getString("index_type"));
+            index.setColumns(rs.getString("column_name"));
             index.setIsUniqueness(false);
             indexList.add(index);
         }

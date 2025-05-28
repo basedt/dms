@@ -178,18 +178,20 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
                 " 'INDEX' as object_type," +
                 " t.index_type as index_type," +
                 " t.table_name as table_name, " +
-                " t.non_unique as is_uniqueness," +
+                " case when max(t.non_unique) >=1 then 0 else 1 end as is_uniqueness," +
+                " group_concat(t.column_name order by t.seq_in_index) as columns,"+
                 " null as index_bytes," +
                 " null as create_time," +
                 " null as last_ddl_time" +
                 " from information_schema.statistics t" +
-                " where t.seq_in_index = 1";
+                " where 1 = 1";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and t.index_schema = '" + schemaPattern + "'";
         }
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and t.table_name = '" + tableName + "'";
         }
+        sql += " group by t.index_schema,t.index_name,t.index_type,t.table_name";
         return super.listIndexDetails(sql);
     }
 
@@ -414,4 +416,9 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
         return constraints;
     }
 
+    @Override
+    public String renameTable(String catalog, String schemaPattern, String tableName, String newTableName) {
+        String originName = schemaPattern + Constants.SEPARATOR_DOT + tableName;
+        return StrUtil.format("rename table {} to {}", originName, newTableName);
+    }
 }

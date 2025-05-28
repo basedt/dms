@@ -324,7 +324,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
                 </a>
               )}
               <a onClick={onCleanSelected} key="cancelSelect">
-                {intl.formatMessage({ id: 'dms.common.operate.cancel.select' })}
+                {intl.formatMessage({ id: 'dms.common.operate.select.cancel' })}
               </a>
             </Space>
           );

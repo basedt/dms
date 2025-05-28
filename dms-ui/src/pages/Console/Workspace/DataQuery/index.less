@@ -6,7 +6,18 @@
   border: 1px solid #f3f3f3 !important;
 
   &:hover {
-    border: 3px solid #e6f4ff !important;
+    position: relative;
+    border: 1px solid rgba(230, 244, 255,0) !important;
+    &::after{
+      position: absolute;
+      content: "";
+      left: -3px;
+      top: -3px;
+      z-index: 9999; // 此处防止after中的内容被其他DOM元素遮盖
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      border: 3px solid #e6f4ff !important;
+    }
   }
 }
 
@@ -92,6 +103,24 @@
     .ant-tree-list-holder {
       scrollbar-width: none;
       /* Firefox 浏览器中隐藏滚动条 */
+    }
+  }
+}
+
+.dbtabs {
+  .ant-tabs-nav {
+    height: 36px;
+    margin: 0 0 6px 0;
+
+    .ant-tabs-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px;
+      height: 100%;
+      margin: 0;
+      padding: 0 10px;
+      font-size: 14px;
     }
   }
 }

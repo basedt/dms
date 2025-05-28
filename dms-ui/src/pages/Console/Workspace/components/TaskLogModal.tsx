@@ -1,17 +1,15 @@
-import { DataTaskService } from "@/services/workspace/data.task";
-import { Editor } from "@monaco-editor/react";
-import { useIntl } from "@umijs/max";
-import { Button, Modal } from "antd";
-import moment from "moment";
-import { useEffect, useState } from "react";
+import { DataTaskService } from '@/services/workspace/data.task';
+import { Editor } from '@monaco-editor/react';
+import { useIntl } from '@umijs/max';
+import { Button, Modal } from 'antd';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 
-const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
-  props
-) => {
+const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (props) => {
   const intl = useIntl();
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
-  const [logInfo, setLogInfo] = useState<string>("");
+  const [logInfo, setLogInfo] = useState<string>('');
 
   useEffect(() => {
     refreshLog();
@@ -19,15 +17,15 @@ const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
 
   const refreshLog = () => {
     DataTaskService.viewLog(data?.taskId as string).then((resp) => {
-      let log = "";
+      let log = '';
       if (resp.success) {
         resp.data?.forEach((item) => {
           log +=
-            "[" +
-            moment(item.createTime).format("YYYY-MM-DD HH:mm:ss") +
-            "] " +
+            '[' +
+            moment(item.createTime).format('YYYY-MM-DD HH:mm:ss') +
+            '] ' +
             item.logInfo +
-            "\n";
+            '\n';
         });
       }
       setLogInfo(log);
@@ -37,7 +35,7 @@ const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
   return (
     <Modal
       title={intl.formatMessage({
-        id: "dms.console.workspace.export.taskLog",
+        id: 'dms.console.workspace.export.taskLog',
       })}
       open={open}
       onOk={() => {
@@ -45,7 +43,7 @@ const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
         refreshLog();
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -53,7 +51,7 @@ const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
       footer={
         <>
           <Button onClick={handleCancel}>
-            {intl.formatMessage({ id: "dms.common.operate.close" })}
+            {intl.formatMessage({ id: 'dms.common.operate.close' })}
           </Button>
           <Button
             type="primary"
@@ -61,12 +59,12 @@ const TaskLogModal: React.FC<DMS.ModalProps<{ taskId: number | string }>> = (
               refreshLog();
             }}
           >
-            {intl.formatMessage({ id: "dms.common.operate.refresh" })}
+            {intl.formatMessage({ id: 'dms.common.operate.refresh' })}
           </Button>
         </>
       }
     >
-      <Editor height={"500px"} width={"100%"} value={logInfo} />
+      <Editor height={'500px'} width={'100%'} value={logInfo} />
     </Modal>
   );
 };

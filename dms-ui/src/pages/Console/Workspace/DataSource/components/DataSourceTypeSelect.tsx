@@ -80,13 +80,11 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
           if (dbType.value == 'hdfs' || dbType.value == 'redis' || dbType.value == 'kafka') {
             // message.info("not suppor");
           } else {
-            handleOk
-              ? handleOk(false, {
-                  workspaceId: data?.workspaceId as string,
-                  datasourceType: dbType,
-                  port: getDefaultPort(dbType.value as string) as number,
-                })
-              : null;
+            handleOk?.(false, {
+              workspaceId: data?.workspaceId as string,
+              datasourceType: dbType,
+              port: getDefaultPort(dbType.value as string) as number,
+            });
           }
         }}
       >
@@ -103,7 +101,7 @@ const DataSourceTypeSelect: React.FC<DataSourceTypeSelectProps> = (props) => {
       title={intl.formatMessage({ id: 'dms.console.workspace.datasource.new' }, { type: '' })}
       open={open}
       onOk={() => {}}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       onCancel={handleCancel}
       styles={{
         body: {

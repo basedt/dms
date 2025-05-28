@@ -1,17 +1,8 @@
-import { PRIVILEGES } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import {
-  FilterOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
+import { PRIVILEGES } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { FilterOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { history, useAccess, useIntl, useLocation } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -26,10 +17,9 @@ import {
   Space,
   Table,
   Tooltip,
-} from "antd";
-import { useRef, useState } from "react";
-import { history, useAccess, useIntl, useLocation } from "@umijs/max";
-import DictDataForm from "./DictDataForm";
+} from 'antd';
+import { useRef, useState } from 'react';
+import DictDataForm from './DictDataForm';
 
 const DmsDictDataView: React.FC = () => {
   const intl = useIntl();
@@ -41,49 +31,48 @@ const DmsDictDataView: React.FC = () => {
   });
   const [queryFormData, setQueryFormData] = useState<DMS.SysDictDataParam>({});
   const [queryFormOpen, setQueryFormOpen] = useState(false);
-  const dictTypeParams: DMS.SysDictType = useLocation()
-    .state as DMS.SysDictType;
+  const dictTypeParams: DMS.SysDictType = useLocation().state as DMS.SysDictType;
 
   const columns: ProColumns<DMS.SysDictData>[] = [
     {
-      title: intl.formatMessage({ id: "dms.admin.dict.data.dictCode" }),
-      dataIndex: "dictCode",
+      title: intl.formatMessage({ id: 'dms.admin.dict.data.dictCode' }),
+      dataIndex: 'dictCode',
       width: 180,
-      fixed: "left",
+      fixed: 'left',
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.dict.type" }),
-      dataIndex: "sysDictType",
+      title: intl.formatMessage({ id: 'dms.admin.dict.type' }),
+      dataIndex: 'sysDictType',
       hideInTable: true,
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.dict.data.dictValue" }),
-      dataIndex: "dictValue",
+      title: intl.formatMessage({ id: 'dms.admin.dict.data.dictValue' }),
+      dataIndex: 'dictValue',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.dict.data.remark" }),
-      dataIndex: "remark",
+      title: intl.formatMessage({ id: 'dms.admin.dict.data.remark' }),
+      dataIndex: 'remark',
       width: 240,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.updateTime" }),
-      dataIndex: "updateTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.updateTime' }),
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 100,
       render: (_, record) => (
         <Space>
@@ -94,30 +83,30 @@ const DmsDictDataView: React.FC = () => {
                 setDictData({ data: record, open: true });
               }}
             >
-              {intl.formatMessage({ id: "dms.common.operate.update" })}
+              {intl.formatMessage({ id: 'dms.common.operate.update' })}
             </a>
           )}
           {access.canAccess(PRIVILEGES.sysDicDcdDelete) && (
             <Popconfirm
               key="delete"
               title={intl.formatMessage({
-                id: "dms.common.operate.delete.confirm.title",
+                id: 'dms.common.operate.delete.confirm.title',
               })}
               onConfirm={() => {
                 DictDataService.delete(record).then((resp) => {
                   if (resp.success) {
                     message.success(
                       intl.formatMessage({
-                        id: "dms.common.message.operate.delete.success",
-                      })
+                        id: 'dms.common.message.operate.delete.success',
+                      }),
                     );
                     actionRef.current?.reload();
                   }
                 });
               }}
             >
-              <a href="#" style={{ color: "red" }}>
-                {intl.formatMessage({ id: "dms.common.operate.delete" })}
+              <a href="#" style={{ color: 'red' }}>
+                {intl.formatMessage({ id: 'dms.common.operate.delete' })}
               </a>
             </Popconfirm>
           )}
@@ -138,9 +127,7 @@ const DmsDictDataView: React.FC = () => {
     <PageContainer
       header={{
         title:
-          intl.formatMessage({ id: "dms.admin.dict.data" }) +
-          " - " +
-          dictTypeParams.dictTypeCode,
+          intl.formatMessage({ id: 'dms.admin.dict.data' }) + ' - ' + dictTypeParams.dictTypeCode,
         breadcrumb: {},
       }}
       onBack={() => {
@@ -152,20 +139,13 @@ const DmsDictDataView: React.FC = () => {
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onChange={onSearchInputChange}
           onPressEnter={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
-          <Badge
-            dot={
-              queryFormData.dictCode || queryFormData.dictValue ? true : false
-            }
-          >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
+          <Badge dot={queryFormData.dictCode || queryFormData.dictValue ? true : false}>
             <Button
               icon={<FilterOutlined />}
               type="text"
@@ -175,10 +155,7 @@ const DmsDictDataView: React.FC = () => {
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -199,7 +176,7 @@ const DmsDictDataView: React.FC = () => {
               });
             }}
           >
-            {intl.formatMessage({ id: "dms.common.operate.new" })}
+            {intl.formatMessage({ id: 'dms.common.operate.new' })}
           </Button>
         ),
       ]}
@@ -227,51 +204,45 @@ const DmsDictDataView: React.FC = () => {
         rowSelection={{
           selections: [Table.SELECTION_INVERT, Table.SELECTION_ALL],
         }}
-        tableAlertOptionRender={({
-          selectedRowKeys,
-          selectedRows,
-          onCleanSelected,
-        }) => {
+        tableAlertOptionRender={({ selectedRowKeys, selectedRows, onCleanSelected }) => {
           return (
             <Space size={16}>
               {access.canAccess(PRIVILEGES.sysDicDcdDelete) && (
                 <a
                   key="deleteBatch"
-                  style={{ color: "red" }}
+                  style={{ color: 'red' }}
                   onClick={() => {
                     Modal.confirm({
                       title: intl.formatMessage({
-                        id: "dms.common.operate.delete.confirm.title",
+                        id: 'dms.common.operate.delete.confirm.title',
                       }),
                       content: intl.formatMessage({
-                        id: "dms.common.operate.delete.confirm.content",
+                        id: 'dms.common.operate.delete.confirm.content',
                       }),
                       onOk: () => {
-                        DictDataService.deleteBatch(selectedRowKeys).then(
-                          (resp) => {
-                            if (resp.success) {
-                              message.success(
-                                intl.formatMessage({
-                                  id: "dms.common.message.operate.delete.success",
-                                })
-                              );
-                              onCleanSelected();
-                              actionRef.current?.reload();
-                            }
+                        DictDataService.deleteBatch(selectedRowKeys).then((resp) => {
+                          if (resp.success) {
+                            message.success(
+                              intl.formatMessage({
+                                id: 'dms.common.message.operate.delete.success',
+                              }),
+                            );
+                            onCleanSelected();
+                            actionRef.current?.reload();
                           }
-                        );
+                        });
                       },
                     });
                   }}
                 >
                   {intl.formatMessage({
-                    id: "dms.common.operate.delete.batch",
+                    id: 'dms.common.operate.delete.batch',
                   })}
                 </a>
               )}
 
               <a onClick={onCleanSelected} key="cancelSelect">
-                {intl.formatMessage({ id: "dms.common.operate.cancel.select" })}
+                {intl.formatMessage({ id: 'dms.common.operate.select.cancel' })}
               </a>
             </Space>
           );
@@ -279,7 +250,7 @@ const DmsDictDataView: React.FC = () => {
       ></ProTable>
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -293,16 +264,16 @@ const DmsDictDataView: React.FC = () => {
               <Button
                 onClick={() => {
                   queryForm.setFieldsValue({
-                    dictCode: "",
-                    dictValue: "",
+                    dictCode: '',
+                    dictValue: '',
                   });
-                  setQueryFormData({ dictCode: "", dictValue: "" });
+                  setQueryFormData({ dictCode: '', dictValue: '' });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
                   setQueryFormData(queryForm.getFieldsValue());
@@ -311,27 +282,22 @@ const DmsDictDataView: React.FC = () => {
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          form={queryForm}
-        >
+        <Form layout="horizontal" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={queryForm}>
           <Form.Item
             name="dictCode"
-            label={intl.formatMessage({ id: "dms.admin.dict.data.dictCode" })}
+            label={intl.formatMessage({ id: 'dms.admin.dict.data.dictCode' })}
           >
             <Input allowClear></Input>
           </Form.Item>
           <Form.Item
             name="dictValue"
-            label={intl.formatMessage({ id: "dms.admin.dict.data.dictValue" })}
+            label={intl.formatMessage({ id: 'dms.admin.dict.data.dictValue' })}
           >
             <Input allowClear></Input>
           </Form.Item>

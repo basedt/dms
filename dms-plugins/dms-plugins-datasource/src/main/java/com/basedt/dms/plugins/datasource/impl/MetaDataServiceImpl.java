@@ -37,12 +37,16 @@ import com.basedt.dms.plugins.datasource.MetaDataService;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
+import com.basedt.dms.plugins.datasource.enums.DmlType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.basedt.dms.common.enums.ResponseCode.ERROR_INVALID_ARGUMENT;
 import static com.basedt.dms.plugins.datasource.enums.DbGroupType.*;
@@ -388,6 +392,147 @@ public class MetaDataServiceImpl implements MetaDataService {
         }
         return null;
     }
+
+    @Override
+    public List<TypeInfoDTO> listTypeInfo(DataSourceDTO dataSourceDTO) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSourceDTO);
+        if (Objects.isNull(dataSourcePlugin)) {
+            return null;
+        }
+        try {
+            return dataSourcePlugin.listDataType().values().stream().sorted().collect(Collectors.toList());
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
+        }
+    }
+
+    @Override
+    public TableDTO getTableInfo(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        if (Objects.isNull(dataSourcePlugin)) {
+            return null;
+        }
+        try {
+            List<TableDTO> tables = dataSourcePlugin.listTableDetails(catalog, schemaName, tableName, TABLE);
+            if (CollectionUtils.isEmpty(tables)) {
+                return null;
+            } else {
+                TableDTO table = tables.get(0);
+                List<ColumnDTO> columnList = dataSourcePlugin.listColumnsByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                columnList.sort(Comparator.comparing(ColumnDTO::getColumnOrdinal));
+                table.setColumns(columnList);
+                List<IndexDTO> indexes = dataSourcePlugin.listIndexes(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                table.setIndexes(indexes);
+                List<ObjectDTO> pks = dataSourcePlugin.listPkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                List<ObjectDTO> fks = dataSourcePlugin.listFkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                table.setPks(pks);
+                table.setFks(fks);
+                //todo list partitions
+                return table;
+            }
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
+        }
+    }
+
+    @Override
+    public void renameTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String newTableName) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        try {
+            String sql = dataSourcePlugin.renameTable(catalog, schemaName, tableName, newTableName);
+            dataSourcePlugin.execute(sql);
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void dropTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        try {
+            String sql = StrUtil.format("drop table {}", schemaName + Constants.SEPARATOR_DOT + tableName);
+            dataSourcePlugin.execute(sql);
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
+    @Override
+    public String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
+        //TODO
+        return "";
+    }
+
+    @Override
+    public String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException {
+        if (DmlType.DELETE.equals(type)) {
+            return StrUtil.format("delete from {} \nwhere ;", schemaName + Constants.SEPARATOR_DOT + tableName);
+        } else {
+            try {
+                DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+                List<ColumnDTO> columns = dataSourcePlugin.listColumnsByTable(catalog, schemaName, tableName);
+                TableDTO table = new TableDTO();
+                table.setCatalogName(catalog);
+                table.setSchemaName(schemaName);
+                table.setObjectName(tableName);
+                table.setColumns(columns);
+                return switch (type) {
+                    case INSERT -> generateInsert(table);
+                    case UPDATE -> generateUpdate(table);
+                    case SELECT -> generateSelect(table);
+                    default -> "";
+                };
+            } catch (Exception e) {
+                throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+            }
+        }
+    }
+
+    private String generateSelect(TableDTO table) {
+        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())) {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("select \n");
+            for (ColumnDTO column : table.getColumns()) {
+                buffer.append("\t").append(column.getColumnName()).append(",\n");
+            }
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+            buffer.append("from ").append(table.getSchemaName()).append(".").append(table.getTableName()).append("\nwhere ;");
+            return buffer.toString();
+        }else {
+            return "";
+        }
+    }
+
+    private String generateUpdate(TableDTO table) {
+        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())){
+            StringBuilder buffer = new StringBuilder("update ");
+            buffer.append(table.getSchemaName()).append(".").append(table.getTableName()).append("\nset\n");
+            for (ColumnDTO column : table.getColumns()) {
+                buffer.append("\t").append(column.getColumnName()).append("= ?,\n");
+            }
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+            buffer.append("where ;");
+            return buffer.toString();
+        }else {
+            return "";
+        }
+    }
+
+    private String generateInsert(TableDTO table) {
+        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())){
+            StringBuilder buffer = new StringBuilder("insert into ");
+            buffer.append(table.getSchemaName()).append(".").append(table.getTableName()).append(" \n(");
+            for (ColumnDTO column : table.getColumns()) {
+                buffer.append("\n\t").append(column.getColumnName()).append(", ");
+            }
+            buffer.deleteCharAt(buffer.lastIndexOf(","));
+            buffer.append("\n) \nvalues\n();");
+            return buffer.toString();
+        }else {
+            return "";
+        }
+    }
+
 
     @Override
     public List<String> listObjectType(DataSourceDTO dataSourceDTO) throws DmsException {

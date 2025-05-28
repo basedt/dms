@@ -36,7 +36,7 @@ const DbSelectModal = (props: DbSelectModalProps) => {
       onOk={() => {
         handleOk ? handleOk(false, selectDb) : null;
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       maskClosable={false}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}

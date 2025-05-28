@@ -24,12 +24,14 @@ import com.basedt.dms.common.vo.TreeNodeVO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 public class ObjectDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String catalogName;

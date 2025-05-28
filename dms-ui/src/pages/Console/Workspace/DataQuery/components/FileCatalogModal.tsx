@@ -1,27 +1,24 @@
-import { PATTERNS } from "@/constants";
-import { FileCatalogService } from "@/services/workspace/file.catalog.service";
-import { useIntl } from "@umijs/max";
-import { Form, Input, Modal, TreeSelect, message } from "antd";
-import { useEffect, useState } from "react";
+import { PATTERNS } from '@/constants';
+import { FileCatalogService } from '@/services/workspace/file.catalog.service';
+import { useIntl } from '@umijs/max';
+import { Form, Input, Modal, TreeSelect, message } from 'antd';
+import { useEffect, useState } from 'react';
 
 const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
-  const [catalogTreeData, setCatalogTreeData] = useState<
-    DMS.FileTreeNode<string>[]
-  >([]);
+  const [catalogTreeData, setCatalogTreeData] = useState<DMS.FileTreeNode<string>[]>([]);
 
   useEffect(() => {
-    FileCatalogService.listCatalogTree(
-      data?.workspaceId as string,
-      data?.id as number
-    ).then((resp) => {
-      if (resp.success) {
-        setCatalogTreeData(resp.data as DMS.FileTreeNode<string>[]);
-      }
-    });
+    FileCatalogService.listCatalogTree(data?.workspaceId as string, data?.id as number).then(
+      (resp) => {
+        if (resp.success) {
+          setCatalogTreeData(resp.data as DMS.FileTreeNode<string>[]);
+        }
+      },
+    );
   }, []);
 
   return (
@@ -29,17 +26,17 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
       title={
         data?.id
           ? intl.formatMessage({
-              id: "dms.console.workspace.dataquery.move",
+              id: 'dms.console.workspace.dataquery.move',
             })
           : intl.formatMessage(
               {
-                id: "dms.console.workspace.dataquery.new",
+                id: 'dms.console.workspace.dataquery.new',
               },
               {
                 type: intl.formatMessage({
-                  id: "dms.console.workspace.dataquery.file.catalog",
+                  id: 'dms.console.workspace.dataquery.file.catalog',
                 }),
-              }
+              },
             )
       }
       open={open}
@@ -56,8 +53,8 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
                 if (resp.success) {
                   message.success(
                     intl.formatMessage({
-                      id: "dms.common.message.operate.update.success",
-                    })
+                      id: 'dms.common.message.operate.update.success',
+                    }),
                   );
                   handleOk ? handleOk(false) : null;
                 }
@@ -66,8 +63,8 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
                 if (resp.success) {
                   message.success(
                     intl.formatMessage({
-                      id: "dms.common.message.operate.new.success",
-                    })
+                      id: 'dms.common.message.operate.new.success',
+                    }),
                   );
                   handleOk ? handleOk(false) : null;
                 }
@@ -75,7 +72,7 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -90,7 +87,7 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
       >
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.file.catalog",
+            id: 'dms.console.workspace.dataquery.file.catalog',
           })}
           name="name"
           rules={[
@@ -99,7 +96,7 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
             {
               pattern: PATTERNS.excludeSpecialChar,
               message: intl.formatMessage({
-                id: "dms.common.validate.excludeSpecialChar",
+                id: 'dms.common.validate.excludeSpecialChar',
               }),
             },
           ]}
@@ -108,19 +105,19 @@ const FileCatalogModal: React.FC<DMS.ModalProps<DMS.FileCatalog>> = (props) => {
         </Form.Item>
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.file.tgtCatalog",
+            id: 'dms.console.workspace.dataquery.file.tgtCatalog',
           })}
           name="pid"
           rules={[{ required: true }]}
         >
           <TreeSelect
             showSearch
-            style={{ width: "100%" }}
-            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+            style={{ width: '100%' }}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
             allowClear
             treeDefaultExpandAll
             treeData={catalogTreeData}
-            fieldNames={{ label: "title", value: "key", children: "children" }}
+            fieldNames={{ label: 'title', value: 'key', children: 'children' }}
           />
         </Form.Item>
       </Form>

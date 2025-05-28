@@ -1,17 +1,17 @@
-import { useIntl, useModel } from "@umijs/max";
-import { Form, Input, Modal, message } from "antd";
-import { useState } from "react";
-import { FileCatalogService } from "@/services/workspace/file.catalog.service";
-import { FileService } from "@/services/workspace/file.service";
+import { FileCatalogService } from '@/services/workspace/file.catalog.service';
+import { FileService } from '@/services/workspace/file.service';
+import { useIntl, useModel } from '@umijs/max';
+import { Form, Input, Modal, message } from 'antd';
+import { useState } from 'react';
 
-export type RenameModalProps = {
-  type: "file" | "catalog";
+export type FileRenameModalProps = {
+  type: 'file' | 'catalog';
   originNode: DMS.FileTreeNode<string>;
   originName: string;
   workspaceId: string | number;
 };
 
-const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
+const FileRenameModal: React.FC<DMS.ModalProps<FileRenameModalProps>> = (props) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { open, data, handleOk, handleCancel } = props;
@@ -20,13 +20,13 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
   return (
     <Modal
       title={intl.formatMessage({
-        id: "dms.console.workspace.dataquery.rename",
+        id: 'dms.console.workspace.dataquery.rename',
       })}
       open={open}
       onOk={() => {
         setLoading(true);
         form.validateFields().then((values) => {
-          if (data?.type === "catalog") {
+          if (data?.type === 'catalog') {
             FileCatalogService.update({
               id: data.originNode.key,
               name: values.name,
@@ -35,14 +35,14 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
               if (resp.success) {
                 message.success(
                   intl.formatMessage({
-                    id: "dms.common.message.operate.success",
-                  })
+                    id: 'dms.common.message.operate.success',
+                  }),
                 );
                 handleOk ? handleOk(false) : null;
               }
             });
-          } else if (data?.type === "file") {
-            let fileId: number | string = data.originNode.key.split(".")[1];
+          } else if (data?.type === 'file') {
+            let fileId: number | string = data.originNode.key.split('.')[1];
             FileService.renameFile({
               id: fileId,
               workspaceId: data.workspaceId,
@@ -50,11 +50,15 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
               newFileName: values.name,
             }).then((resp) => {
               if (resp.success) {
-                setTabsList({ oldTitle: data.originName, newTitle: values.name, id: data.originNode.key })
+                setTabsList({
+                  oldTitle: data.originName,
+                  newTitle: values.name,
+                  id: data.originNode.key,
+                });
                 message.success(
                   intl.formatMessage({
-                    id: "dms.common.message.operate.success",
-                  })
+                    id: 'dms.common.message.operate.success',
+                  }),
                 );
                 handleOk ? handleOk(false) : null;
               }
@@ -63,7 +67,7 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -78,7 +82,7 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
       >
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.file.newName",
+            id: 'dms.console.workspace.dataquery.rename.newName',
           })}
           name="name"
           rules={[{ required: true }, { max: 128 }]}
@@ -90,4 +94,4 @@ const RenameModal: React.FC<DMS.ModalProps<RenameModalProps>> = (props) => {
   );
 };
 
-export default RenameModal;
+export default FileRenameModal;

@@ -22,7 +22,6 @@ declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
 declare module 'monaco-editor/esm/vs/basic-languages/sql/sql';
 declare module '@ant-design/icons';
 declare module '@ant-design/x';
-declare module 'antd';
 declare module 'react-syntax-highlighter';
 declare module 'react-syntax-highlighter/dist/esm/styles/prism';
 declare namespace DMS {
@@ -86,14 +85,5 @@ declare namespace DMS {
     confirmPassword: string;
     authCode: string;
     uuid: string;
-  };
-
-  type TableMetaInfo = {
-    databaseId: string;
-    identifier: string;
-    tableName: string;
-    type?: string;
-    columns?: string[];
-    createAt: Date;
   };
 }

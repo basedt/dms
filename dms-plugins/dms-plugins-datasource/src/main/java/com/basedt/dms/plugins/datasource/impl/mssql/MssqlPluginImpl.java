@@ -186,7 +186,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
                 "    c.max_length as data_length," +
                 "    c.precision as data_precision," +
                 "    c.scale as data_scale," +
-                "    dc.definition as default_value," +
+                "    stuff(stuff(dc.definition, 1, 1, ''), len(dc.definition) - 1, 1, '') as default_value," +
                 "    c.column_id as column_ordinal," +
                 "    ep.value as remark," +
                 "    c.is_nullable as is_nullable" +
@@ -228,6 +228,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
                 "    i.type_desc as index_type," +
                 "    i.is_unique as is_uniqueness," +
                 "    o.name as table_name," +
+                "    ic.columns as columns," +
                 "    null as index_bytes," +
                 "    null as create_time," +
                 "    null as last_ddl_time" +
@@ -236,6 +237,8 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
                 " on o.schema_id = s.schema_id" +
                 " join sys.indexes i" +
                 " on o.object_id = i.object_id" +
+                " join (select string_agg(c.name,',') within group (order by ic.key_ordinal) as columns,ic.object_id,ic.index_id from sys.index_columns ic join sys.columns c on ic.object_id = c.object_id and ic.column_id = c.column_id group by ic.object_id,ic.index_id) ic" +
+                " on ic.index_id = i.index_id and ic.object_id = i.object_id" +
                 " where i.name is not null";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and s.name = '" + schemaPattern + "'";

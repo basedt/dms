@@ -261,6 +261,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
                 "    i.table_name as table_name," +
                 "    i.index_type as index_type," +
                 "    decode(i.uniqueness,'UNIQUE',1,'NONUNIQUE',0,0) as is_uniqueness," +
+                "    ic.columns as columns,"+
                 "    d.bytes as index_bytes," +
                 "    o.created as create_time," +
                 "    o.last_ddl_time as last_ddl_time" +
@@ -272,9 +273,11 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
                 " left join dba_segments d" +
                 " on o.owner = d.owner" +
                 " and o.object_name = d.segment_name " +
+                " left join (select ic.index_owner,ic.index_name,listagg(ic.column_name,',') within group (order by ic.column_position) as columns from all_ind_columns ic group by ic.index_owner,ic.index_name ) ic" +
+                " on o.owner = ic.index_owner and o.object_name = ic.index_name" +
                 " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(tableName)) {
-            sql += " and o.object_name like '%" + tableName.toUpperCase() + "%'";
+            sql += " and i.table_name = '" + tableName.toUpperCase() + "'";
         }
         return super.listIndexDetails(sql);
     }

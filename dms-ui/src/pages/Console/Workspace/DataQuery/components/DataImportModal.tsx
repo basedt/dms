@@ -1,7 +1,7 @@
-import { DataTaskService } from "@/services/workspace/data.task";
-import { UploadOutlined } from "@ant-design/icons";
-import { ProFormInstance, StepsForm } from "@ant-design/pro-components";
-import { useIntl, useModel } from "@umijs/max";
+import { DataTaskService } from '@/services/workspace/data.task';
+import { UploadOutlined } from '@ant-design/icons';
+import { ProFormInstance, StepsForm } from '@ant-design/pro-components';
+import { useIntl, useModel } from '@umijs/max';
 import {
   Alert,
   Button,
@@ -16,8 +16,8 @@ import {
   Select,
   Upload,
   UploadFile,
-} from "antd";
-import { useRef, useState } from "react";
+} from 'antd';
+import { useRef, useState } from 'react';
 
 export interface DataImportModalProps {
   workspaceId: number | string;
@@ -27,9 +27,7 @@ export interface DataImportModalProps {
   tableIdentifier: string;
 }
 
-const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
-  props
-) => {
+const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (props) => {
   const intl = useIntl();
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,58 +38,58 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
     workspaceId: data?.workspaceId as string,
     datasourceId: data?.datasourceId as string,
   });
-  const { setMenuKey } = useModel("global");
+  const { setMenuKey } = useModel('global');
 
   const descItems = () => {
-    const items: DescriptionsProps["items"] = [
+    const items: DescriptionsProps['items'] = [
       {
-        key: "schema",
+        key: 'schema',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.schema",
+          id: 'dms.console.workspace.import.schema',
         }),
         children: formValues.schema,
       },
       {
-        key: "tableName",
+        key: 'tableName',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.tableName",
+          id: 'dms.console.workspace.import.tableName',
         }),
         children: formValues.tableName,
       },
       {
-        key: "file",
-        label: intl.formatMessage({ id: "dms.console.workspace.import.file" }),
+        key: 'file',
+        label: intl.formatMessage({ id: 'dms.console.workspace.import.file' }),
         children: formValues.file?.file?.name,
       },
       {
-        key: "fileType",
+        key: 'fileType',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.fileType",
+          id: 'dms.console.workspace.import.fileType',
         }),
         children: formValues.fileType,
       },
       {
-        key: "fileEncoding",
+        key: 'fileEncoding',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.fileEncoding",
+          id: 'dms.console.workspace.import.fileEncoding',
         }),
         children: formValues.fileEncoding,
       },
 
       {
-        key: "isTruncate",
+        key: 'isTruncate',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.truncate",
+          id: 'dms.console.workspace.import.truncate',
         }),
         children: formValues.isTruncate?.toString(),
       },
     ];
 
-    if (formValues.fileType == "CSV") {
+    if (formValues.fileType == 'CSV') {
       items.push({
-        key: "separator",
+        key: 'separator',
         label: intl.formatMessage({
-          id: "dms.console.workspace.import.separator",
+          id: 'dms.console.workspace.import.separator',
         }),
         children: formValues.separator,
       });
@@ -107,11 +105,10 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         let d: DMS.ImportDataTaskParam = {
           workspaceId: data?.workspaceId as string,
           datasourceId: data?.datasourceId as string,
-          catalog: data?.tableIdentifier.split(".")[0],
+          catalog: data?.tableIdentifier.split('.')[0],
           schema: values.schema,
           tableName: values.tableName,
-          isTruncate:
-            values.isTruncate == undefined ? false : values.isTruncate,
+          isTruncate: values.isTruncate == undefined ? false : values.isTruncate,
           file: uploadFile,
           fileType: values.fileType,
           fileEncoding: values.fileEncoding,
@@ -122,19 +119,19 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
             message.info(
               <>
                 {intl.formatMessage({
-                  id: "dms.console.workspace.dataquery.import.success.info",
+                  id: 'dms.console.workspace.dataquery.import.success.info',
                 })}
                 <a
                   onClick={() => {
-                    setMenuKey("import");
+                    setMenuKey('import');
                   }}
                 >
                   &nbsp;
                   {intl.formatMessage({
-                    id: "dms.console.workspace.dataquery.import.success.view",
+                    id: 'dms.console.workspace.dataquery.import.success.view',
                   })}
                 </a>
-              </>
+              </>,
             );
             handleOk ? handleOk(false) : null;
           }
@@ -145,18 +142,18 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         return (
           <Modal
             title={intl.formatMessage({
-              id: "dms.console.workspace.import",
+              id: 'dms.console.workspace.import',
             })}
             width={860}
             open={open}
             footer={submitter}
             onCancel={handleCancel}
-            destroyOnClose={true}
+            destroyOnHidden={true}
           >
             <div style={{ marginBottom: 16 }}>
               <Alert
                 message={intl.formatMessage({
-                  id: "dms.console.workspace.import.toolTip",
+                  id: 'dms.console.workspace.import.toolTip',
                 })}
                 type="info"
                 showIcon
@@ -169,7 +166,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
     >
       <StepsForm.StepForm
         name="one"
-        title={intl.formatMessage({ id: "dms.console.workspace.import.step1" })}
+        title={intl.formatMessage({ id: 'dms.console.workspace.import.step1' })}
         layout="horizontal"
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
@@ -182,8 +179,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
             ...formValues,
             schema: values.schema,
             tableName: values.tableName,
-            isTruncate:
-              values.isTruncate == undefined ? false : values.isTruncate,
+            isTruncate: values.isTruncate == undefined ? false : values.isTruncate,
           });
           return true;
         }}
@@ -191,7 +187,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="schema"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.schema",
+            id: 'dms.console.workspace.import.schema',
           })}
           rules={[{ required: true }]}
         >
@@ -200,7 +196,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="tableName"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.tableName",
+            id: 'dms.console.workspace.import.tableName',
           })}
           rules={[{ required: true }]}
         >
@@ -209,10 +205,10 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="isTruncate"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.truncate",
+            id: 'dms.console.workspace.import.truncate',
           })}
           tooltip={intl.formatMessage({
-            id: "dms.console.workspace.import.truncate.toolTip",
+            id: 'dms.console.workspace.import.truncate.toolTip',
           })}
           valuePropName="checked"
         >
@@ -221,16 +217,16 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
       </StepsForm.StepForm>
       <StepsForm.StepForm
         name="two"
-        title={intl.formatMessage({ id: "dms.console.workspace.import.step2" })}
+        title={intl.formatMessage({ id: 'dms.console.workspace.import.step2' })}
         layout="horizontal"
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ separator: ",", fileEncoding: "UTF-8" }}
+        initialValues={{ separator: ',', fileEncoding: 'UTF-8' }}
         onFinish={async (values) => {
           setFormValues({
             ...formValues,
             file: values.file,
-            fileType: values.fileType == "csv" ? "CSV" : "EXCEL",
+            fileType: values.fileType == 'csv' ? 'CSV' : 'EXCEL',
             fileEncoding: values.fileEncoding,
             separator: values.separator,
           });
@@ -240,7 +236,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="file"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.file",
+            id: 'dms.console.workspace.import.file',
           })}
           rules={[{ required: true }]}
         >
@@ -254,8 +250,8 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
                 flag = false;
                 message.error(
                   intl.formatMessage({
-                    id: "dms.console.workspace.import.file.sizeLimit",
-                  })
+                    id: 'dms.console.workspace.import.file.sizeLimit',
+                  }),
                 );
               } else {
                 setUploadFile(fileInfo);
@@ -263,17 +259,14 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
               return flag || Upload.LIST_IGNORE;
             }}
             onChange={(info) => {
-              const fileType = info.file.name.split(".").pop();
-              formRef.current?.setFieldValue(
-                "fileType",
-                fileType == "csv" ? "csv" : "xlsx"
-              );
-              setSeparatorStatus(fileType === "csv");
+              const fileType = info.file.name.split('.').pop();
+              formRef.current?.setFieldValue('fileType', fileType == 'csv' ? 'csv' : 'xlsx');
+              setSeparatorStatus(fileType === 'csv');
             }}
           >
             <Button icon={<UploadOutlined />}>
               {intl.formatMessage({
-                id: "dms.console.workspace.import.file.select",
+                id: 'dms.console.workspace.import.file.select',
               })}
             </Button>
           </Upload>
@@ -281,14 +274,14 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="fileType"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.fileType",
+            id: 'dms.console.workspace.import.fileType',
           })}
           rules={[{ required: true }]}
         >
           <Radio.Group
             onChange={(value) => {
               const type = value.target.value;
-              setSeparatorStatus(type === "csv");
+              setSeparatorStatus(type === 'csv');
             }}
           >
             <Radio value="csv">CSV</Radio>
@@ -298,7 +291,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="fileEncoding"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.fileEncoding",
+            id: 'dms.console.workspace.import.fileEncoding',
           })}
           rules={[{ required: true }]}
         >
@@ -310,7 +303,7 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
         <Form.Item
           name="separator"
           label={intl.formatMessage({
-            id: "dms.console.workspace.import.separator",
+            id: 'dms.console.workspace.import.separator',
           })}
           rules={[{ required: true }]}
         >
@@ -325,12 +318,9 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (
       </StepsForm.StepForm>
       <StepsForm.StepForm
         name="three"
-        title={intl.formatMessage({ id: "dms.console.workspace.import.step3" })}
+        title={intl.formatMessage({ id: 'dms.console.workspace.import.step3' })}
       >
-        <Descriptions
-          items={descItems()}
-          style={{ marginLeft: 80 }}
-        ></Descriptions>
+        <Descriptions items={descItems()} style={{ marginLeft: 80 }}></Descriptions>
       </StepsForm.StepForm>
     </StepsForm>
   );

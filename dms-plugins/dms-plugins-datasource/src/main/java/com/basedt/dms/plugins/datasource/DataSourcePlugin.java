@@ -26,12 +26,15 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public interface DataSourcePlugin extends Plugin {
 
     String JDBC = "jdbc";
+
+    List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar","text","nchar", "bigint","int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
 
     String getHostName();
 
@@ -125,4 +128,7 @@ public interface DataSourcePlugin extends Plugin {
 
     void insertBatch(ArrowStreamReader reader, String catalog, String schemaName, String tableName) throws SQLException, IOException;
 
+    Map<String, TypeInfoDTO> listDataType() throws SQLException;
+
+    String renameTable(String catalog, String schemaPattern, String tableName,String newTableName);
 }

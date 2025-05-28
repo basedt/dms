@@ -44,6 +44,8 @@ public class IndexDTO extends ObjectDTO {
 
     private Long indexBytes;
 
+    private String columns;
+
     public String getIndexName() {
         return this.getObjectName();
     }

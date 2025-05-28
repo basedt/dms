@@ -20,6 +20,7 @@ package com.basedt.dms.plugins.datasource.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
 @Data
 public class TableDTO extends ObjectDTO {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private Long tableRows;
@@ -38,6 +40,14 @@ public class TableDTO extends ObjectDTO {
     private String remark;
 
     private List<ColumnDTO> columns;
+
+    private List<IndexDTO> indexes;
+
+    private List<PartitionDTO> partitions;
+
+    private List<ObjectDTO> pks;
+
+    private List<ObjectDTO> fks;
 
     public String getTableName() {
         return this.getObjectName();

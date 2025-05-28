@@ -165,7 +165,7 @@ const HiveDataSourceForm: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => 
         handleOk ? handleOk(false) : null;
       }}
       confirmLoading={loading}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       styles={{
         body: {
           overflowY: 'scroll',

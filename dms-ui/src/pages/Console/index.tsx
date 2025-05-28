@@ -1,6 +1,6 @@
-import { PRIVILEGES } from "@/constants";
-import { UserService } from "@/services/admin/user.service";
-import { WorkspaceService } from "@/services/workspace/workspace.service";
+import { PRIVILEGES } from '@/constants';
+import { UserService } from '@/services/admin/user.service';
+import { WorkspaceService } from '@/services/workspace/workspace.service';
 import {
   AppstoreOutlined,
   BarsOutlined,
@@ -8,14 +8,9 @@ import {
   PlusOutlined,
   ReloadOutlined,
   SearchOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
+} from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { history, useAccess, useIntl } from '@umijs/max';
 import {
   AutoComplete,
   Avatar,
@@ -31,17 +26,15 @@ import {
   message,
   Modal,
   Popconfirm,
-  Popover,
   Row,
   Segmented,
   Space,
   Table,
   Tooltip,
   Typography,
-} from "antd";
-import React, { useEffect, useRef, useState } from "react";
-import { history, useAccess, useIntl } from "@umijs/max";
-import WorkspaceForm from "./Workspace/components/WorkspaceForm";
+} from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import WorkspaceForm from './Workspace/components/WorkspaceForm';
 
 const DmsConsoleView: React.FC = () => {
   const intl = useIntl();
@@ -54,60 +47,56 @@ const DmsConsoleView: React.FC = () => {
   const [workspaces, setWorkspaces] = useState<DMS.Workspace[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [pagination, setPagination] = useState<DMS.QueryParam>();
-  const [layout, setLayout] = useState<string>("card");
-  const [workspaceData, setWorkspaceData] = useState<
-    DMS.ModalProps<DMS.Workspace>
-  >({
+  const [layout, setLayout] = useState<string>('card');
+  const [workspaceData, setWorkspaceData] = useState<DMS.ModalProps<DMS.Workspace>>({
     open: false,
   });
 
   const columns: ProColumns<DMS.Workspace>[] = [
     {
-      title: intl.formatMessage({ id: "dms.console.workspace.workspaceCode" }),
-      dataIndex: "workspaceCode",
+      title: intl.formatMessage({ id: 'dms.console.workspace.workspaceCode' }),
+      dataIndex: 'workspaceCode',
       width: 180,
-      fixed: "left",
+      fixed: 'left',
     },
     {
-      title: intl.formatMessage({ id: "dms.console.workspace.workspaceName" }),
-      dataIndex: "workspaceName",
-      width: 180,
-    },
-    {
-      title: intl.formatMessage({ id: "dms.console.workspace.owner" }),
-      dataIndex: "owner",
+      title: intl.formatMessage({ id: 'dms.console.workspace.workspaceName' }),
+      dataIndex: 'workspaceName',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.console.workspace.remark" }),
-      dataIndex: "remark",
+      title: intl.formatMessage({ id: 'dms.console.workspace.owner' }),
+      dataIndex: 'owner',
+      width: 180,
+    },
+    {
+      title: intl.formatMessage({ id: 'dms.console.workspace.remark' }),
+      dataIndex: 'remark',
       width: 240,
       renderText: (text, record, index, action) => {
         return (
-          <Typography.Text ellipsis={{ tooltip: record.remark }}>
-            {record.remark}
-          </Typography.Text>
+          <Typography.Text ellipsis={{ tooltip: record.remark }}>{record.remark}</Typography.Text>
         );
       },
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.updateTime" }),
-      dataIndex: "updateTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.updateTime' }),
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 220,
       render: (_, record) => (
         <Space>
@@ -119,7 +108,7 @@ const DmsConsoleView: React.FC = () => {
                 history.push(`/workspace/${record.id}?m=query`);
               }}
             >
-              {intl.formatMessage({ id: "dms.console.workspace.open" })}
+              {intl.formatMessage({ id: 'dms.console.workspace.open' })}
             </a>
           )}
           {access.canAccess(PRIVILEGES.wsWssWpiEdit) && (
@@ -129,30 +118,30 @@ const DmsConsoleView: React.FC = () => {
                 setWorkspaceData({ data: record, open: true });
               }}
             >
-              {intl.formatMessage({ id: "dms.common.operate.update" })}
+              {intl.formatMessage({ id: 'dms.common.operate.update' })}
             </a>
           )}
           {access.canAccess(PRIVILEGES.wsWssWpiDelete) && (
             <Popconfirm
               key="delete"
               title={intl.formatMessage({
-                id: "dms.common.operate.delete.confirm.title",
+                id: 'dms.common.operate.delete.confirm.title',
               })}
               onConfirm={() => {
                 WorkspaceService.delete(record).then((resp) => {
                   if (resp.success) {
                     message.success(
                       intl.formatMessage({
-                        id: "dms.common.message.operate.delete.success",
-                      })
+                        id: 'dms.common.message.operate.delete.success',
+                      }),
                     );
                     refreshData();
                   }
                 });
               }}
             >
-              <a href="#"  style={{ color: "red" }}>
-                {intl.formatMessage({ id: "dms.common.operate.delete" })}
+              <a href="#" style={{ color: 'red' }}>
+                {intl.formatMessage({ id: 'dms.common.operate.delete' })}
               </a>
             </Popconfirm>
           )}
@@ -189,16 +178,16 @@ const DmsConsoleView: React.FC = () => {
       header={{
         title: (
           <>
-            {intl.formatMessage({ id: "dms.workspace" })}
+            {intl.formatMessage({ id: 'dms.workspace' })}
             <Divider type="vertical" />
             <Segmented
               options={[
                 {
-                  value: "card",
+                  value: 'card',
                   icon: (
                     <Tooltip
                       title={intl.formatMessage({
-                        id: "dms.common.layout.card",
+                        id: 'dms.common.layout.card',
                       })}
                     >
                       <AppstoreOutlined />
@@ -206,11 +195,11 @@ const DmsConsoleView: React.FC = () => {
                   ),
                 },
                 {
-                  value: "list",
+                  value: 'list',
                   icon: (
                     <Tooltip
                       title={intl.formatMessage({
-                        id: "dms.common.layout.list",
+                        id: 'dms.common.layout.list',
                       })}
                     >
                       <BarsOutlined />
@@ -221,7 +210,7 @@ const DmsConsoleView: React.FC = () => {
               size="small"
               value={layout}
               onChange={(value) => {
-                if (layout == "card") {
+                if (layout == 'card') {
                   setPagination({ current: 1, pageSize: 9 });
                 } else {
                   setPagination({ current: 1, pageSize: 10 });
@@ -239,20 +228,15 @@ const DmsConsoleView: React.FC = () => {
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onPressEnter={onSearchInputChange}
           onChange={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
           <Badge
             dot={
-              queryFormData.workspaceCode ||
-              queryFormData.workspaceName ||
-              queryFormData.owner
+              queryFormData.workspaceCode || queryFormData.workspaceName || queryFormData.owner
                 ? true
                 : false
             }
@@ -266,10 +250,7 @@ const DmsConsoleView: React.FC = () => {
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -289,12 +270,12 @@ const DmsConsoleView: React.FC = () => {
               });
             }}
           >
-            {intl.formatMessage({ id: "dms.console.workspace.create" })}
+            {intl.formatMessage({ id: 'dms.console.workspace.create' })}
           </Button>
         ),
       ]}
     >
-      {layout == "list" && (
+      {layout == 'list' && (
         <ProTable<DMS.Workspace>
           search={false}
           columns={columns}
@@ -316,51 +297,45 @@ const DmsConsoleView: React.FC = () => {
           rowSelection={{
             selections: [Table.SELECTION_INVERT, Table.SELECTION_ALL],
           }}
-          tableAlertOptionRender={({
-            selectedRowKeys,
-            selectedRows,
-            onCleanSelected,
-          }) => {
+          tableAlertOptionRender={({ selectedRowKeys, selectedRows, onCleanSelected }) => {
             return (
               <Space size={16}>
                 {access.canAccess(PRIVILEGES.wsWssWpiDelete) && (
                   <a
                     key="deleteBatch"
-                    style={{ color: "red" }}
+                    style={{ color: 'red' }}
                     onClick={() => {
                       Modal.confirm({
                         title: intl.formatMessage({
-                          id: "dms.common.operate.delete.confirm.title",
+                          id: 'dms.common.operate.delete.confirm.title',
                         }),
                         content: intl.formatMessage({
-                          id: "dms.common.operate.delete.confirm.content",
+                          id: 'dms.common.operate.delete.confirm.content',
                         }),
                         onOk: () => {
-                          WorkspaceService.deleteBatch(selectedRowKeys).then(
-                            (resp) => {
-                              if (resp.success) {
-                                message.success(
-                                  intl.formatMessage({
-                                    id: "dms.common.message.operate.delete.success",
-                                  })
-                                );
-                                onCleanSelected();
-                                refreshData();
-                              }
+                          WorkspaceService.deleteBatch(selectedRowKeys).then((resp) => {
+                            if (resp.success) {
+                              message.success(
+                                intl.formatMessage({
+                                  id: 'dms.common.message.operate.delete.success',
+                                }),
+                              );
+                              onCleanSelected();
+                              refreshData();
                             }
-                          );
+                          });
                         },
                       });
                     }}
                   >
                     {intl.formatMessage({
-                      id: "dms.common.operate.delete.batch",
+                      id: 'dms.common.operate.delete.batch',
                     })}
                   </a>
                 )}
                 <a onClick={onCleanSelected} key="cancelSelect">
                   {intl.formatMessage({
-                    id: "dms.common.operate.cancel.select",
+                    id: 'dms.common.operate.select.cancel',
                   })}
                 </a>
               </Space>
@@ -370,7 +345,7 @@ const DmsConsoleView: React.FC = () => {
       )}
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -384,21 +359,21 @@ const DmsConsoleView: React.FC = () => {
               <Button
                 onClick={() => {
                   queryForm.setFieldsValue({
-                    workspaceCode: "",
-                    workspaceName: "",
-                    owner: "",
+                    workspaceCode: '',
+                    workspaceName: '',
+                    owner: '',
                   });
                   setQueryFormData({
-                    workspaceCode: "",
-                    workspaceName: "",
-                    owner: "",
+                    workspaceCode: '',
+                    workspaceName: '',
+                    owner: '',
                   });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
                   setQueryFormData(queryForm.getFieldsValue());
@@ -407,22 +382,17 @@ const DmsConsoleView: React.FC = () => {
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          wrapperCol={{ span: 16 }}
-          labelCol={{ span: 6 }}
-          form={queryForm}
-        >
+        <Form layout="horizontal" wrapperCol={{ span: 16 }} labelCol={{ span: 6 }} form={queryForm}>
           <Form.Item
             name="workspaceCode"
             label={intl.formatMessage({
-              id: "dms.console.workspace.workspaceCode",
+              id: 'dms.console.workspace.workspaceCode',
             })}
           >
             <Input allowClear></Input>
@@ -430,15 +400,12 @@ const DmsConsoleView: React.FC = () => {
           <Form.Item
             name="workspaceName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.workspaceName",
+              id: 'dms.console.workspace.workspaceName',
             })}
           >
             <Input allowClear></Input>
           </Form.Item>
-          <Form.Item
-            name="owner"
-            label={intl.formatMessage({ id: "dms.console.workspace.owner" })}
-          >
+          <Form.Item name="owner" label={intl.formatMessage({ id: 'dms.console.workspace.owner' })}>
             <AutoComplete
               allowClear
               options={options}
@@ -453,13 +420,13 @@ const DmsConsoleView: React.FC = () => {
                 });
               }}
               placeholder={intl.formatMessage({
-                id: "dms.console.workspace.owner.placeholder",
+                id: 'dms.console.workspace.owner.placeholder',
               })}
             ></AutoComplete>
           </Form.Item>
         </Form>
       </Drawer>
-      {layout == "card" && (
+      {layout == 'card' && (
         <List
           grid={{
             gutter: 24,
@@ -467,7 +434,7 @@ const DmsConsoleView: React.FC = () => {
           }}
           dataSource={workspaces}
           pagination={{
-            size: "small",
+            size: 'small',
             showQuickJumper: true,
             showSizeChanger: true,
             defaultPageSize: 9,
@@ -487,11 +454,11 @@ const DmsConsoleView: React.FC = () => {
                     <Button
                       type="link"
                       onClick={() => {
-                        window.open(`/workspace/${item.id}?m=query`, "_blank");
+                        window.open(`/workspace/${item.id}?m=query`, '_blank');
                       }}
                     >
                       {intl.formatMessage({
-                        id: "dms.console.workspace.open",
+                        id: 'dms.console.workspace.open',
                       })}
                     </Button>
                   ),
@@ -502,7 +469,7 @@ const DmsConsoleView: React.FC = () => {
                         setWorkspaceData({ data: item, open: true });
                       }}
                     >
-                      {intl.formatMessage({ id: "dms.common.operate.update" })}
+                      {intl.formatMessage({ id: 'dms.common.operate.update' })}
                     </Button>
                   ),
                   access.canAccess(PRIVILEGES.wsWssWpiDelete) && (
@@ -512,18 +479,18 @@ const DmsConsoleView: React.FC = () => {
                       onClick={() => {
                         Modal.confirm({
                           title: intl.formatMessage({
-                            id: "dms.common.operate.delete.confirm.title",
+                            id: 'dms.common.operate.delete.confirm.title',
                           }),
                           content: intl.formatMessage({
-                            id: "dms.common.operate.delete.confirm.content",
+                            id: 'dms.common.operate.delete.confirm.content',
                           }),
                           onOk: () => {
                             WorkspaceService.delete(item).then((resp) => {
                               if (resp.success) {
                                 message.success(
                                   intl.formatMessage({
-                                    id: "dms.common.message.operate.delete.success",
-                                  })
+                                    id: 'dms.common.message.operate.delete.success',
+                                  }),
                                 );
                                 refreshData();
                               }
@@ -532,25 +499,20 @@ const DmsConsoleView: React.FC = () => {
                         });
                       }}
                     >
-                      {intl.formatMessage({ id: "dms.common.operate.delete" })}
+                      {intl.formatMessage({ id: 'dms.common.operate.delete' })}
                     </Button>
                   ),
                 ]}
               >
                 <Card.Meta
                   avatar={
-                    <Avatar
-                      style={{ backgroundColor: "#bae0ff", color: "#003eb3" }}
-                    >
+                    <Avatar style={{ backgroundColor: '#bae0ff', color: '#003eb3' }}>
                       {item.workspaceCode.charAt(0)}
                     </Avatar>
                   }
                   title={item.workspaceCode}
                   description={
-                    <Typography.Text
-                      ellipsis={{ tooltip: item.remark }}
-                      style={{ width: "90%" }}
-                    >
+                    <Typography.Text ellipsis={{ tooltip: item.remark }} style={{ width: '90%' }}>
                       {item.remark}
                     </Typography.Text>
                   }

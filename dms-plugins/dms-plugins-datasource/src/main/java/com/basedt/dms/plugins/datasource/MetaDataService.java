@@ -21,7 +21,9 @@ import cn.hutool.core.lang.tree.Tree;
 import com.basedt.dms.common.exception.DmsException;
 import com.basedt.dms.plugins.datasource.dto.CatalogDTO;
 import com.basedt.dms.plugins.datasource.dto.DataSourceDTO;
-import com.basedt.dms.plugins.datasource.dto.SuggestionDTO;
+import com.basedt.dms.plugins.datasource.dto.TableDTO;
+import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
+import com.basedt.dms.plugins.datasource.enums.DmlType;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -42,5 +44,21 @@ public interface MetaDataService {
     List<Tree<String>> listChildNode(DataSourceDTO dataSourceDTO, String identifier, String key, String type) throws DmsException, SQLException;
 
     DataSourcePlugin getDataSourcePluginInstance(DataSourceDTO dataSourceDTO);
+
+    List<TypeInfoDTO> listTypeInfo(DataSourceDTO dataSourceDTO) throws DmsException;
+
+    TableDTO getTableInfo(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
+
+    void renameTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String newTableName) throws DmsException;
+
+    void dropTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
+
+    String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
+
+    String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException;
+
+//    String getDdlScript(DataSourceDTO dataSourceDTO) throws DmsException;
+
+//    String getDmlScript(DataSourceDTO dataSourceDTO) throws DmsException;
 
 }

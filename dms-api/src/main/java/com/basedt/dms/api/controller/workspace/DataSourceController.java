@@ -59,11 +59,8 @@ public class DataSourceController {
 
     private final DmsDataSourceService dmsDataSourceService;
 
-    private final MetaDataService metaDataService;
-
-    public DataSourceController(DmsDataSourceService dmsDataSourceService, MetaDataService metaDataService) {
+    public DataSourceController(DmsDataSourceService dmsDataSourceService) {
         this.dmsDataSourceService = dmsDataSourceService;
-        this.metaDataService = metaDataService;
     }
 
     @GetMapping(path = "/{id}")

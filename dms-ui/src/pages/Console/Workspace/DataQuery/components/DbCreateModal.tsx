@@ -1,6 +1,6 @@
-import { useIntl } from "@umijs/max";
-import { Form, Modal } from "antd";
-import { useState } from "react";
+import { useIntl } from '@umijs/max';
+import { Form, Modal } from 'antd';
+import { useState } from 'react';
 
 const DbCreateModal: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => {
   const intl = useIntl();
@@ -10,7 +10,7 @@ const DbCreateModal: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => {
   return (
     <Modal
       title={intl.formatMessage({
-        id: "dms.console.workspace.dataquery.database.newDatabase",
+        id: 'dms.console.workspace.dataquery.database.newDatabase',
       })}
       open={open}
       onOk={() => {
@@ -21,7 +21,7 @@ const DbCreateModal: React.FC<DMS.ModalProps<DMS.DataSource>> = (props) => {
 
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}

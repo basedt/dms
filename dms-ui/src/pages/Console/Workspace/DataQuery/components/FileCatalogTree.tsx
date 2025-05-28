@@ -1,30 +1,25 @@
-import { Icon, useIntl, useModel } from '@umijs/max';
-import styles from '../index.less';
-import {
-  Col,
-  Divider,
-  Dropdown,
-  Input,
-  MenuProps,
-  Modal,
-  Row,
-  Tree,
-  message,
-} from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
 import { FileCatalogService } from '@/services/workspace/file.catalog.service';
-import FileCatalogModal from './FileCatalogModal';
-import { searchKeysByTitle, debounce, findNodeByTitle } from '@/utils/ExcelUtil'
 import { FileService } from '@/services/workspace/file.service';
-import RenameModal, { RenameModalProps } from './RenameModal';
+import { debounce, findNodeByTitle, searchKeysByTitle } from '@/utils/ExcelUtil';
+import { SearchOutlined } from '@ant-design/icons';
+import { Icon, useIntl, useModel } from '@umijs/max';
+import { Col, Divider, Dropdown, Input, MenuProps, Modal, Row, Tree, message } from 'antd';
+import { useEffect, useState } from 'react';
+import styles from '../index.less';
+import FileCatalogModal from './FileCatalogModal';
 import FileModal from './FileModal';
+import FileRenameModal, { FileRenameModalProps } from './FileRenameModal';
 
 export type FileCatalogTreeViewProps = {
   workspaceId: string | number;
   datasourceId: string | number;
   height: number;
-  onCallback: (action: string, node: DMS.FileTreeNode<string>) => void;
+  onCallback: (
+    tabName: string,
+    node: DMS.FileTreeNode<string>,
+    type: string,
+    action: string,
+  ) => void;
 };
 
 const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
@@ -37,12 +32,12 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
   const [fileData, setFileData] = useState<DMS.ModalProps<DMS.File>>({
     open: false,
   });
-  const [fileCatalogData, setFileCatalogData] = useState<
-    DMS.ModalProps<DMS.FileCatalog>
-  >({ open: false });
-  const [renameData, setRenameData] = useState<
-    DMS.ModalProps<RenameModalProps>
-  >({ open: false });
+  const [fileCatalogData, setFileCatalogData] = useState<DMS.ModalProps<DMS.FileCatalog>>({
+    open: false,
+  });
+  const [renameData, setRenameData] = useState<DMS.ModalProps<FileRenameModalProps>>({
+    open: false,
+  });
 
   useEffect(() => {
     if (!workspaceId || !datasourceId) return;
@@ -64,19 +59,19 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
 
   const onSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setTreeData(findNodeByTitle(defaultData, value))
+    setTreeData(findNodeByTitle(defaultData, value));
     setExpandedKeys(searchKeysByTitle(defaultData, value));
   }, 500);
 
   useEffect(() => {
-    if (upDateFile == 0) return
+    if (upDateFile == 0) return;
     reloadTreeData(); //更新文件列表
   }, [upDateFile]);
 
   const updateTreeData = (
     originTree: DMS.CatalogTreeNode<string>[],
     key: string,
-    children: DMS.CatalogTreeNode<string>[]
+    children: DMS.CatalogTreeNode<string>[],
   ): DMS.CatalogTreeNode<string>[] =>
     originTree.map((node) => {
       if (node.key === key) {
@@ -93,15 +88,12 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
 
   const nodeTitleRender = (node: DMS.FileTreeNode<string>) => {
     return (
-      <Dropdown
-        menu={{ items: nodeTitleContextmenuItems(node) }}
-        trigger={['contextMenu']}
-      >
+      <Dropdown menu={{ items: nodeTitleContextmenuItems(node) }} trigger={['contextMenu']}>
         <div
           style={{ width: '100%' }}
           onDoubleClick={() => {
             if (node.type != 'catalog') {
-              onCallback(node.title, node);
+              onCallback(node.title, node, 'editor', '');
             }
           }}
         >
@@ -130,7 +122,7 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
           {
             id: 'dms.console.workspace.dataquery.new',
           },
-          { type: '' }
+          { type: '' },
         ),
         children: [
           {
@@ -221,7 +213,7 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
                   message.success(
                     intl.formatMessage({
                       id: 'dms.common.message.operate.delete.success',
-                    })
+                    }),
                   );
                   reloadTreeData();
                 }
@@ -237,7 +229,7 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
           id: 'dms.console.workspace.dataquery.open',
         }),
         onClick: () => {
-          onCallback(node.title, node);
+          onCallback(node.title, node, 'editor', '');
         },
       });
       menuItems.push({
@@ -295,7 +287,7 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
                   message.success(
                     intl.formatMessage({
                       id: 'dms.common.message.operate.delete.success',
-                    })
+                    }),
                   );
                   reloadTreeData();
                 }
@@ -330,18 +322,14 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
         treeData={treeData}
         checkable={false}
         blockNode={true}
-        showLine={false}
+        showLine={true}
         // loadData={onLoadData}
         height={height}
         showIcon={true}
         onExpand={onExpand}
         expandedKeys={expandedKeys}
         icon={(props: any) => {
-          return (
-            <div style={{ paddingTop: 3 }}>
-              {nodeTitleIconRender(props.data.type)}
-            </div>
-          );
+          return <div style={{ paddingTop: 4 }}>{nodeTitleIconRender(props.data.type)}</div>;
         }}
         titleRender={nodeTitleRender}
       ></Tree>
@@ -372,7 +360,7 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
         ></FileCatalogModal>
       )}
       {renameData.open && (
-        <RenameModal
+        <FileRenameModal
           open={renameData.open}
           data={renameData.data}
           handleCancel={() => {

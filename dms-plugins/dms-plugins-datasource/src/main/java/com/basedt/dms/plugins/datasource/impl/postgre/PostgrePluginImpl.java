@@ -162,6 +162,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
                 " i.tablename as table_name," +
                 " pg_relation_size(pgi.indexrelid::regclass) as index_bytes," +
                 " pgi.indisunique as is_uniqueness," +
+                " a.columns as columns," +
                 " null as index_type," +
                 " null as create_time," +
                 " null as last_ddl_time" +
@@ -173,6 +174,26 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
                 " and c.relname = i.indexname" +
                 " join pg_catalog.pg_index pgi" +
                 " on c.oid = pgi.indexrelid" +
+                " left join (" +
+                "   SELECT" +
+                "        n.nspname as schemaname," +
+                "        t.relname AS tablename," +
+                "        c.relname AS indexname," +
+                "        string_agg(a.attname,',')  AS columns" +
+                "    FROM" +
+                "        pg_catalog.pg_index i" +
+                "    JOIN" +
+                "        pg_catalog.pg_class c ON c.oid = i.indexrelid" +
+                "    join pg_catalog.pg_namespace n on c.relnamespace  = n.oid" +
+                "    JOIN" +
+                "        pg_catalog.pg_class t ON t.oid = i.indrelid" +
+                "    JOIN" +
+                "        pg_catalog.pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(i.indkey)" +
+                "    group by n.nspname,t.relname,c.relname" +
+                " ) a" +
+                "                 on a.schemaname = n.nspname" +
+                "                and a.tablename = i.tablename" +
+                "                and a.indexname = c.relname"+
                 " where c.relkind in ('" + PostgreObjectTypeMapper.mapToOrigin(INDEX) + "')";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and n.nspname = '" + schemaPattern + "'";
@@ -479,4 +500,10 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
         }
     }
 
+    @Override
+    public Map<String, TypeInfoDTO> listDataType() throws SQLException {
+        Map<String, TypeInfoDTO> map = super.listDataType();
+        map.entrySet().removeIf((entry) -> entry.getKey().startsWith("_"));
+        return map;
+    }
 }

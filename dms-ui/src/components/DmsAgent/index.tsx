@@ -13,7 +13,6 @@ import { Bubble, useXAgent, useXChat, Welcome } from '@ant-design/x';
 import { EventSourceMessage } from '@microsoft/fetch-event-source';
 import { useIntl } from '@umijs/max';
 import { Avatar, Button, Col, Flex, Input, Row, Tooltip, Typography } from 'antd';
-import classNames from 'classnames';
 import copy from 'copy-to-clipboard';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
@@ -299,7 +298,7 @@ const DmsAgent: React.FC<DmsAgentProps> = (props) => {
       </div>
 
       <div
-        className={classNames('codeAiList')}
+        className="codeAiList"
         ref={chatBoxRef}
         onScroll={() => {
           if (chatBoxRef.current) {
@@ -324,7 +323,7 @@ const DmsAgent: React.FC<DmsAgentProps> = (props) => {
         />
       </div>
 
-      <div className={classNames('codetext')}>
+      <div className="codetext">
         <Input.TextArea
           value={content}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
@@ -334,7 +333,7 @@ const DmsAgent: React.FC<DmsAgentProps> = (props) => {
           disabled={isRequesting}
         />
 
-        <div className={classNames('codetext_button')}>
+        <div className="codetext_button">
           {isRequesting ? (
             <Button
               type="primary"

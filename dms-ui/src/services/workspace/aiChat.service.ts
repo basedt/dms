@@ -47,7 +47,6 @@ export const AiChatService = {
         onerror?.(err);
       },
       onclose: () => {
-        console.log('EventSource closed');
         onclose?.();
       },
     });

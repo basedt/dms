@@ -1,9 +1,9 @@
-import { DICT_TYPE } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { RoleService } from "@/services/admin/role.service";
-import { Form, Input, message, Modal, Select } from "antd";
-import { useEffect, useState } from "react";
-import { useIntl } from "@umijs/max";
+import { DICT_TYPE } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { RoleService } from '@/services/admin/role.service';
+import { useIntl } from '@umijs/max';
+import { Form, Input, message, Modal, Select } from 'antd';
+import { useEffect, useState } from 'react';
 
 const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
   const intl = useIntl();
@@ -24,10 +24,10 @@ const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
     <Modal
       title={
         data?.id
-          ? intl.formatMessage({ id: "dms.common.operate.update" }) +
-          intl.formatMessage({ id: "dms.admin.role" })
-          : intl.formatMessage({ id: "dms.common.operate.new" }) +
-          intl.formatMessage({ id: "dms.admin.role" })
+          ? intl.formatMessage({ id: 'dms.common.operate.update' }) +
+            intl.formatMessage({ id: 'dms.admin.role' })
+          : intl.formatMessage({ id: 'dms.common.operate.new' }) +
+            intl.formatMessage({ id: 'dms.admin.role' })
       }
       open={open}
       onOk={() => {
@@ -40,29 +40,29 @@ const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
           };
           data?.id
             ? RoleService.update({ ...d, id: data.id }).then((resp) => {
-              if (resp.success) {
-                message.success(
-                  intl.formatMessage({
-                    id: "dms.common.message.operate.update.success",
-                  })
-                );
-                handleOk ? handleOk(false) : null;
-              }
-            })
+                if (resp.success) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'dms.common.message.operate.update.success',
+                    }),
+                  );
+                  handleOk ? handleOk(false) : null;
+                }
+              })
             : RoleService.add(d).then((resp) => {
-              if (resp.success) {
-                message.success(
-                  intl.formatMessage({
-                    id: "dms.common.message.operate.new.success",
-                  })
-                );
-                handleOk ? handleOk(false) : null;
-              }
-            });
+                if (resp.success) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'dms.common.message.operate.new.success',
+                    }),
+                  );
+                  handleOk ? handleOk(false) : null;
+                }
+              });
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -75,19 +75,19 @@ const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
         wrapperCol={{ span: 16 }}
         initialValues={{
           roleName: data?.roleName,
-          roleStatus: data?.id ? data?.roleStatus?.value : "01",
+          roleStatus: data?.id ? data?.roleStatus?.value : '01',
           roleDesc: data?.roleDesc,
         }}
       >
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.role.roleName" })}
+          label={intl.formatMessage({ id: 'dms.admin.role.roleName' })}
           name="roleName"
           rules={[{ required: true }, { max: 64 }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.role.roleStatus" })}
+          label={intl.formatMessage({ id: 'dms.admin.role.roleStatus' })}
           name="roleStatus"
           rules={[{ required: true }]}
         >
@@ -96,9 +96,7 @@ const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
             allowClear={true}
             optionFilterProp="label"
             filterOption={(input, option) =>
-              (option!.children as unknown as string)
-                .toLowerCase()
-                .includes(input.toLowerCase())
+              (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
             }
           >
             {roleStatusList.map((item) => {
@@ -111,7 +109,7 @@ const RoleForm: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
           </Select>
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.role.roleDesc" })}
+          label={intl.formatMessage({ id: 'dms.admin.role.roleDesc' })}
           name="roleDesc"
           rules={[{ max: 128 }]}
         >

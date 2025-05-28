@@ -1,51 +1,47 @@
-import { PATTERNS } from "@/constants";
-import { FileCatalogService } from "@/services/workspace/file.catalog.service";
-import { FileService } from "@/services/workspace/file.service";
-import { useIntl } from "@umijs/max";
-import { Form, Input, Modal, TreeSelect, message } from "antd";
-import { useEffect, useState } from "react";
+import { PATTERNS } from '@/constants';
+import { FileCatalogService } from '@/services/workspace/file.catalog.service';
+import { FileService } from '@/services/workspace/file.service';
+import { useIntl } from '@umijs/max';
+import { Form, Input, Modal, TreeSelect, message } from 'antd';
+import { useEffect, useState } from 'react';
 
 const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
   const intl = useIntl();
   const [form] = Form.useForm();
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
-  const [catalogTreeData, setCatalogTreeData] = useState<
-    DMS.FileTreeNode<string>[]
-  >([]);
+  const [catalogTreeData, setCatalogTreeData] = useState<DMS.FileTreeNode<string>[]>([]);
 
   useEffect(() => {
-    FileCatalogService.listCatalogTree(data?.workspaceId as string, "").then(
-      (resp) => {
-        if (resp.success) {
-          setCatalogTreeData(resp.data as DMS.FileTreeNode<string>[]);
-        }
+    FileCatalogService.listCatalogTree(data?.workspaceId as string, '').then((resp) => {
+      if (resp.success) {
+        setCatalogTreeData(resp.data as DMS.FileTreeNode<string>[]);
       }
-    );
+    });
   }, []);
 
   return (
     <Modal
       title={
         data?.id
-          ? intl.formatMessage({ id: "dms.console.workspace.dataquery.move" })
+          ? intl.formatMessage({ id: 'dms.console.workspace.dataquery.move' })
           : intl.formatMessage(
               {
-                id: "dms.console.workspace.dataquery.new",
+                id: 'dms.console.workspace.dataquery.new',
               },
               {
                 type:
                   (data?.fileType?.value as string).toUpperCase() +
                   intl.formatMessage({
-                    id: "dms.console.workspace.dataquery.file",
+                    id: 'dms.console.workspace.dataquery.file',
                   }),
-              }
+              },
             )
       }
       open={open}
       onOk={() => {
         setLoading(true);
-        form.validateFields().then((values) => {
+        form.validateFields().then((values: any) => {
           let d: DMS.File = {
             workspaceId: data?.workspaceId as string,
             datasourceId: data?.datasourceId as string,
@@ -53,7 +49,7 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
             fileType: data?.fileType,
             fileCatalog: values.fileCatalog,
             remark: values.remark,
-            content: data?.content ?? "",
+            content: data?.content ?? '',
           };
           data?.id
             ? FileService.moveFileCatalog({
@@ -64,8 +60,8 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
                 if (resp.success) {
                   message.success(
                     intl.formatMessage({
-                      id: "dms.common.message.operate.success",
-                    })
+                      id: 'dms.common.message.operate.success',
+                    }),
                   );
                   handleOk ? handleOk(false) : null;
                 }
@@ -74,8 +70,8 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
                 if (resp.success) {
                   message.success(
                     intl.formatMessage({
-                      id: "dms.common.message.operate.success",
-                    })
+                      id: 'dms.common.message.operate.success',
+                    }),
                   );
                   handleOk ? handleOk(false, d) : null;
                 }
@@ -84,7 +80,7 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
 
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -99,7 +95,7 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
       >
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.file.name",
+            id: 'dms.console.workspace.dataquery.file.name',
           })}
           name="fileName"
           rules={[
@@ -108,7 +104,7 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
             {
               pattern: PATTERNS.excludeSpecialChar,
               message: intl.formatMessage({
-                id: "dms.common.validate.excludeSpecialChar",
+                id: 'dms.common.validate.excludeSpecialChar',
               }),
             },
           ]}
@@ -117,26 +113,26 @@ const FileModal: React.FC<DMS.ModalProps<DMS.File>> = (props) => {
         </Form.Item>
         <Form.Item
           label={intl.formatMessage({
-            id: "dms.console.workspace.dataquery.file.tgtCatalog",
+            id: 'dms.console.workspace.dataquery.file.tgtCatalog',
           })}
           name="fileCatalog"
           rules={[{ required: true }]}
         >
           <TreeSelect
             showSearch
-            style={{ width: "100%" }}
-            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+            style={{ width: '100%' }}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
             allowClear
             treeDefaultExpandAll
             treeData={catalogTreeData}
-            fieldNames={{ label: "title", value: "key", children: "children" }}
+            fieldNames={{ label: 'title', value: 'key', children: 'children' }}
           />
         </Form.Item>
         {!data?.id && (
           <Form.Item
             name="remark"
             label={intl.formatMessage({
-              id: "dms.console.workspace.dataquery.file.remark",
+              id: 'dms.console.workspace.dataquery.file.remark',
             })}
             rules={[{ max: 500 }]}
           >

@@ -6,11 +6,11 @@ import { DataSourceService } from '@/services/workspace/datasource.service';
 import { history, useIntl, useModel } from '@umijs/max';
 import { Button, Col, ConfigProvider, Divider, Row, Segmented, Select, Space } from 'antd';
 import { createStyles } from 'antd-style';
-import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DbCatalogTreeView from './components/DbCatalogTree';
 import DbSelectModal from './components/DbSelectModal';
+import DbTableInfoView from './components/DbTableInfo';
 import FileCatalogTreeView from './components/FileCatalogTree';
 import './index.less';
 
@@ -31,10 +31,10 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
   >({ open: false });
   const [datasourceId, setDataSourceId] = useState<number | string>();
   const [datasource, setDatasource] = useState<DMS.DataSource>();
-  const newTabIndex = useRef(0);
   const newTabList = useRef<TabItem[] | undefined>([]);
   const [dbList, setDbList] = useState<DMS.Dict[]>([]);
   const [selectedContent, setSelectedContent] = useState<boolean>(false);
+  const tabsNumber = useRef<number>(0);
   const { tabsList, tabsKey, tableKey, setSelectTabsActive } = useModel('global');
 
   const handleWindowResize = () => {
@@ -110,7 +110,7 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
   const { styles } = useStyle();
 
   const tabBarOperations = (
-    <div className={classNames('actionBar')}>
+    <div className="actionBar">
       <Select
         style={{ width: 220, height: 26 }}
         allowClear={false}
@@ -147,7 +147,7 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
             );
           })}
       </Select>
-      <div className={classNames('actionBar_aiButton')}>
+      <div className="actionBar_aiButton">
         <span onClick={() => setSelectedContent(!selectedContent)}>
           <ConfigProvider
             button={{
@@ -172,51 +172,75 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
       </div>
     </div>
   );
-  const newEditorTab = (
-    tabName: string,
-    node: DMS.FileTreeNode<string> | DMS.CatalogTreeNode<string>,
-  ) => {
-    if (
-      tabItems?.some((item) => {
-        if (!item?.parentId) return false;
-        if (item?.label == tabName && item?.parentId == node?.parentId) {
-          setActiveKey(item.key);
-          tabsKey.current = item.key;
-          return true;
-        }
-        return false;
-      })
-    ) {
-      return;
-    }
 
-    const newTabItem: TabItem = {
-      key: `tab${++newTabIndex.current}`,
-      label: tabName,
-      children: (
+  const tabContent = (node: any, type: string, action: string) => {
+    if (type === 'editor') {
+      return (
         <CodeEditor
           theme="clouds"
           unSave={unSave}
           language="sql"
-          fileId={`tab${newTabIndex.current}`}
+          fileId={node?.key}
           maxHeight={windowSize.height - 110}
           dataSourceId={datasourceId as string}
           workspaceId={workspaceId}
           fileName={node?.title}
           parentId={node?.parentId}
         />
-      ),
+      );
+    } else if (type === 'tableInfo') {
+      return (
+        <DbTableInfoView
+          workspaceId={workspaceId}
+          // datasourceId={datasourceId as string}
+          datasource={datasource as DMS.DataSource}
+          maxHeight={windowSize.height - 110}
+          node={node}
+          action={action}
+        ></DbTableInfoView>
+      );
+    } else {
+      return <></>;
+    }
+  };
+
+  const newTab = (
+    tabName: string,
+    node: DMS.FileTreeNode<string> | DMS.CatalogTreeNode<string>,
+    type: string,
+    action: string,
+  ) => {
+    const flag = tabItems?.some((item) => {
+      if (item.key === node.key) {
+        setActiveKey(item.key);
+        tabsKey.current = item.key;
+        return true;
+      } else {
+        return false;
+      }
+    });
+    if (flag) {
+      return;
+    }
+
+    const newTabItem: TabItem = {
+      key: node.key,
+      label: tabName,
+      children: tabContent(node, type, action),
       parentId: node?.parentId,
       keyId: node?.key,
     };
+
     setSelectTabsActive({
       keyId: newTabItem?.keyId,
       label: newTabItem?.label,
     });
+
     newTabList.current = tabItems ? [...tabItems, newTabItem] : [newTabItem];
     setTabItems(tabItems ? [...tabItems, newTabItem] : [newTabItem]);
     setActiveKey(newTabItem.key);
     tabsKey.current = newTabItem.key;
+    tabsNumber.current = newTabList?.current?.length ?? 0;
   };
 
   // 保存||未保存执行
@@ -255,18 +279,6 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
       <CloseableTab
         size="small"
         items={tabItems}
-        onTabChange={(item) => {
-          tabItems?.forEach((sitem: TabItem) => {
-            if (sitem.key === item) {
-              setSelectTabsActive({
-                keyId: sitem.keyId,
-                label: sitem.label,
-              });
-            }
-          });
-          setActiveKey(item);
-          tabsKey.current = item;
-        }}
         saveType={true}
         tabBarExtraContent={tabBarOperations}
         defaultActiveKey={activeKey}
@@ -291,6 +303,20 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
             });
           }
         }}
+        onTabChange={(item) => {
+          if (newTabList?.current?.length !== tabsNumber.current) return;
+          tabItems?.forEach((sitem: TabItem) => {
+            if (sitem.key === item) {
+              setSelectTabsActive({
+                keyId: sitem.keyId,
+                label: sitem.label,
+              });
+            }
+          });
+          setActiveKey(item);
+          tabsKey.current = item;
+          tabsNumber.current = newTabList?.current?.length ?? 0;
+        }}
       />
     </>
   );
@@ -302,7 +328,7 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
           defaultSize={24}
           minSize={0}
           style={{ padding: '1px 2px' }}
-          className={classNames('panel-horizontal')}
+          className="panel-horizontal"
         >
           <Row gutter={[6, 6]}>
             <Col span={24}>
@@ -339,8 +365,13 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
               workspaceId={workspaceId}
               datasourceId={datasourceId as string}
               height={windowSize.height - 125}
-              onCallback={(action, node: DMS.CatalogTreeNode<string>) => {
-                newEditorTab(action, node);
+              onCallback={(
+                tabName: string,
+                node: DMS.CatalogTreeNode<string>,
+                type: string,
+                action: string,
+              ) => {
+                newTab(tabName, node, type, action);
               }}
             />
           </div>
@@ -349,21 +380,26 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
               workspaceId={workspaceId}
               datasourceId={datasourceId as string}
               height={windowSize.height - 125}
-              onCallback={(action, node: DMS.FileTreeNode<string>) => {
-                newEditorTab(action, node);
+              onCallback={(
+                tabName: string,
+                node: DMS.FileTreeNode<string>,
+                type: string,
+                action: string,
+              ) => {
+                newTab(tabName, node, type, action);
               }}
             />
           </div>
         </Panel>
-        <PanelResizeHandle className={classNames('panel_handle_hover')} />
-        <Panel defaultSize={76} className={classNames('panel-horizontal')}>
+        <PanelResizeHandle className="panel_handle_hover" />
+        <Panel defaultSize={76} className="panel-horizontal">
           {tabBarRender}
         </Panel>
         {selectedContent && (
           <>
-            <PanelResizeHandle className={classNames('panel_handle_hover')} />
+            <PanelResizeHandle className="panel_handle_hover" />
             <Panel defaultSize={50} minSize={0}>
-              <div className={classNames('codeEditor_aiContent')}>
+              <div className="codeEditor_aiContent">
                 <DmsAgent
                   msgs={['database type is ' + datasource?.datasourceType?.label]}
                   onClose={() => {

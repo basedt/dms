@@ -5,7 +5,6 @@ import { SqlSocketCreator } from '@/socket';
 import Editor, { loader, useMonaco } from '@monaco-editor/react';
 import { history, useIntl, useModel } from '@umijs/max';
 import { Button, message, Modal, notification, Space } from 'antd';
-import classNames from 'classnames';
 import * as monaco from 'monaco-editor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -477,11 +476,6 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
                 width={'100%'}
                 theme={theme}
                 value={sqlScript}
-                // beforeMount={(monaco) => {
-                //   monaco.languages.registerCompletionItemProvider("sql", {
-                //     provideCompletionItems,
-                //   });
-                // }}
                 beforeMount={(monaco) => {
                   monaco.languages.registerCompletionItemProvider(
                     'sql',
@@ -498,14 +492,14 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
 
             {selectedContent && (
               <>
-                <PanelResizeHandle className={classNames('panel_handle_hover')} />
+                <PanelResizeHandle className="panel_handle_hover" />
                 <Panel defaultSize={60} minSize={0}>
                   {selectedContent.element}
                 </Panel>
               </>
             )}
             {/* 右侧控制面板 */}
-            {/* <div className={classNames("codeEditor_rightContent")}>
+            {/* <div className="codeEditor_rightContent">
               {CONTENT_CONFIG.map((item) => (
                 <span
                   key={item.key}
@@ -518,7 +512,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
           </PanelGroup>
         </Panel>
 
-        <PanelResizeHandle className={classNames('panel_handle_hover')} />
+        <PanelResizeHandle className="panel_handle_hover" />
         <Panel defaultSize={50} minSize={0}>
           <DmsGridCallback />
         </Panel>

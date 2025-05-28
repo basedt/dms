@@ -1,8 +1,8 @@
-import { RoleService } from "@/services/admin/role.service";
-import { UserService } from "@/services/admin/user.service";
-import { message, Modal, Transfer } from "antd";
-import { useEffect, useState } from "react";
-import { useIntl } from "@umijs/max";
+import { RoleService } from '@/services/admin/role.service';
+import { UserService } from '@/services/admin/user.service';
+import { useIntl } from '@umijs/max';
+import { message, Modal, Transfer } from 'antd';
+import { useEffect, useState } from 'react';
 
 const RoleUserGrant: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
   const intl = useIntl();
@@ -36,35 +36,29 @@ const RoleUserGrant: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
     setTargetKeys(nextTargetKeys);
   };
 
-  const onSelectChange = (
-    sourceSelectedKeys: string[],
-    targetSelectedKeys: string[]
-  ) => {
+  const onSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
     setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
   };
 
   return (
     <Modal
-      title={intl.formatMessage({ id: "dms.admin.role.user.grant" })}
+      title={intl.formatMessage({ id: 'dms.admin.role.user.grant' })}
       open={open}
       onOk={() => {
         setLoading(true);
-        RoleService.grantUserToRole(
-          data?.id as string,
-          targetKeys as string[]
-        ).then((resp) => {
+        RoleService.grantUserToRole(data?.id as string, targetKeys as string[]).then((resp) => {
           if (resp.success) {
             message.success(
               intl.formatMessage({
-                id: "dms.common.message.operate.success",
-              })
+                id: 'dms.common.message.operate.success',
+              }),
             );
             handleOk ? handleOk(false) : null;
           }
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -73,10 +67,10 @@ const RoleUserGrant: React.FC<DMS.ModalProps<DMS.SysRole>> = (props) => {
       <Transfer
         dataSource={userList}
         titles={[
-          intl.formatMessage({ id: "dms.common.operate.grant.source" }),
-          intl.formatMessage({ id: "dms.common.operate.grant.target" }),
+          intl.formatMessage({ id: 'dms.common.operate.grant.source' }),
+          intl.formatMessage({ id: 'dms.common.operate.grant.target' }),
         ]}
-        listStyle={{ width: "100%", minHeight: 420 }}
+        listStyle={{ width: '100%', minHeight: 420 }}
         showSearch={true}
         showSelectAll={true}
         targetKeys={targetKeys}

@@ -5,18 +5,28 @@ import { DataSourceService } from '@/services/workspace/datasource.service';
 import { debounce, findNodeByTitle, searchKeysByTitle } from '@/utils/ExcelUtil';
 import { DownloadOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import { Icon, useIntl, useModel } from '@umijs/max';
-import { Button, Col, Divider, Dropdown, Input, MenuProps, Row, Tree } from 'antd';
+import { Button, Col, Divider, Dropdown, Input, MenuProps, message, Modal, Row, Tree } from 'antd';
+import { ItemType } from 'antd/lib/menu/interface';
+import copy from 'copy-to-clipboard';
 import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import styles from '../index.less';
 import DataImportModal, { DataImportModalProps } from './DataImportModal';
 import DbCreateModal from './DbCreateModal';
+import DbRenameModal, { DbRenameModalProps } from './DbRenameModal';
 import FileModal from './FileModal';
+import ScriptPreviewModal from './ScriptPreviewModal';
 
 export type DbCatalogTreeViewProps = {
   workspaceId: string | number;
   datasourceId: string | number;
   height: number;
-  onCallback: (action: string, node: DMS.CatalogTreeNode<string>) => void;
+  onCallback: (
+    tabName: string,
+    node: DMS.CatalogTreeNode<string>,
+    type: string,
+    action: string,
+  ) => void;
 };
 
 const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
@@ -35,6 +45,12 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     open: false,
   });
   const [dataImportData, setDataImportData] = useState<DMS.ModalProps<DataImportModalProps>>({
+    open: false,
+  });
+  const [renameData, setRenameData] = useState<DMS.ModalProps<DbRenameModalProps>>({
+    open: false,
+  });
+  const [sqlPriview, setSqlPriview] = useState<DMS.ModalProps<{ script: string }>>({
     open: false,
   });
   const { setUpDateFile } = useModel('global');
@@ -179,7 +195,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
       setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));
     } else {
-      // 定义一个包含特定字符串的常量数组
       const typeArray: string[] = [
         'G_TABLE',
         'TABLE',
@@ -209,76 +224,363 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   };
 
   const nodeTitleContextmenuItems = (node: DMS.CatalogTreeNode<string>) => {
-    // TODO 根据不同节点，分别实现右键菜单，新建、删除、刷新、重命名、编辑数据、详情
     const menuItems: MenuProps['items'] = [];
-
     if (node.type === 'TABLE') {
       tableMenuItems(node, menuItems);
     } else if (node.type === 'VIEW') {
       viewMenuItems(node, menuItems);
+    } else if (node.type === 'MATERIALIZED_VIEW') {
+      mviewMenuItems(node, menuItems);
+    } else if (node.type === 'INDEX') {
+      indexMenuItems(node, menuItems);
+    } else if (node.type === 'FOREIGN_TABLE') {
+      fgnTableMenuItems(node, menuItems);
+    } else if (node.type === 'SEQUENCE') {
+      seqMenuItems(node, menuItems);
+    } else if (node.type === 'FUNCTION') {
+      funMenuItems(node, menuItems);
+    } else if (node.type === 'G_TABLE') {
+      gTableMenuItems(node, menuItems);
     }
-    //add default refresh menu
-    menuItems.push({
+    if (node.type.startsWith('G_') && node.type !== 'G_TABLE') {
+      refreshMenuItem(node, menuItems);
+    }
+    return menuItems;
+  };
+
+  const dividerMenuItem = (menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      type: 'divider',
+    });
+  };
+
+  const newMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      key: node.key + 'new',
+      label: intl.formatMessage(
+        {
+          id: 'dms.console.workspace.dataquery.new',
+        },
+        { type: '...' },
+      ),
+      onClick: () => {
+        if (node.type === 'TABLE' || node.type === 'G_TABLE') {
+          onCallback(
+            intl.formatMessage(
+              {
+                id: 'dms.console.workspace.dataquery.new',
+              },
+              { type: 'TABLE' },
+            ),
+            { ...node, key: uuidv4() },
+            'tableInfo',
+            'create',
+          );
+        }
+      },
+    });
+  };
+
+  const copyMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      key: node.key + 'copy',
+      label: intl.formatMessage({
+        id: 'dms.console.workspace.dataquery.copy',
+      }),
+      onClick: () => {
+        copy(node.title);
+      },
+    });
+  };
+
+  const refreshMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
       key: node.key + 'refresh',
       label: intl.formatMessage({
         id: 'dms.console.workspace.dataquery.refresh',
       }),
       onClick: () => {
-        // console.log("refresh", node);
         refreshTreeData(node);
       },
     });
-    return menuItems;
+  };
+
+  const editMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      key: node.key + 'edit',
+      label: intl.formatMessage({
+        id: 'dms.console.workspace.dataquery.edit',
+      }),
+      onClick: () => {
+        if (node.type === 'TABLE') {
+          onCallback(node.title, node, 'tableInfo', 'edit');
+        }
+      },
+    });
+  };
+
+  const renameMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      key: node.key + 'rename',
+      label: intl.formatMessage({
+        id: 'dms.console.workspace.dataquery.rename',
+      }),
+      onClick: () => {
+        setRenameData({
+          open: true,
+          data: {
+            dataSourceId: datasourceId as string,
+            node: node,
+          },
+        });
+      },
+    });
+  };
+
+  const dropMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    menuItems?.push({
+      key: node.key + 'drop',
+      label: intl.formatMessage({
+        id: 'dms.console.workspace.dataquery.drop',
+      }),
+      danger: true,
+      onClick: () => {
+        console.log('drop', node);
+        Modal.confirm({
+          title: intl.formatMessage({ id: 'dms.common.operate.delete.confirm.title' }),
+          content: node.type + ' : ' + node.title,
+          onOk: () => {
+            MetaDataService.dropObject(datasourceId, node.identifier, node.type).then((resp) => {
+              if (resp.success) {
+                message.success(
+                  intl.formatMessage({
+                    id: 'dms.common.message.operate.success',
+                  }),
+                );
+                refreshTreeData({
+                  ...node,
+                  key: node.parentId,
+                  type: 'G_' + node.type,
+                });
+              }
+            });
+          },
+        });
+      },
+    });
+  };
+
+  const scriptMenuItem = (
+    node: DMS.CatalogTreeNode<string>,
+    menuItems: MenuProps['items'],
+    ddl: boolean,
+    select: boolean,
+    insert: boolean,
+    update: boolean,
+    del: boolean,
+  ) => {
+    const menu: ItemType = {
+      key: node.key + 'script',
+      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.script' }),
+      children: [],
+    };
+    if (ddl) {
+      menu.children?.push({
+        key: node.key + 'ddl',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.script.ddl',
+        }),
+        onClick: () => {
+          console.log('ddl', node);
+        },
+      });
+    }
+    if (select) {
+      menu.children?.push({
+        key: node.key + 'select',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.script.select',
+        }),
+        onClick: () => {
+          MetaDataService.generateDML(datasourceId, node.identifier, 'SELECT').then((resp) => {
+            if (resp.success) {
+              setSqlPriview({ open: true, data: { script: resp.data as string } });
+            }
+          });
+        },
+      });
+    }
+    if (insert) {
+      menu.children?.push({
+        key: node.key + 'insert',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.script.insert',
+        }),
+        onClick: () => {
+          MetaDataService.generateDML(datasourceId, node.identifier, 'INSERT').then((resp) => {
+            if (resp.success) {
+              setSqlPriview({ open: true, data: { script: resp.data as string } });
+            }
+          });
+        },
+      });
+    }
+    if (update) {
+      menu.children?.push({
+        key: node.key + 'update',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.script.update',
+        }),
+        onClick: () => {
+          MetaDataService.generateDML(datasourceId, node.identifier, 'UPDATE').then((resp) => {
+            if (resp.success) {
+              setSqlPriview({ open: true, data: { script: resp.data as string } });
+            }
+          });
+        },
+      });
+    }
+    if (del) {
+      menu.children?.push({
+        key: node.key + 'delete',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.script.delete',
+        }),
+        onClick: () => {
+          MetaDataService.generateDML(datasourceId, node.identifier, 'DELETE').then((resp) => {
+            if (resp.success) {
+              setSqlPriview({ open: true, data: { script: resp.data as string } });
+            }
+          });
+        },
+      });
+    }
+    menuItems?.push(menu);
+  };
+
+  const ioMenuItem = (
+    node: DMS.CatalogTreeNode<string>,
+    menuItems: MenuProps['items'],
+    input: boolean,
+    output: boolean,
+  ) => {
+    const menu: ItemType = {
+      key: node.key + 'io',
+      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.io' }),
+      children: [],
+    };
+    if (input) {
+      menu.children?.push({
+        key: node.key + 'export',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.io.export',
+        }),
+        icon: <DownloadOutlined />,
+        onClick: () => {
+          dataExport(node);
+        },
+      });
+    }
+    if (output) {
+      menu.children?.push({
+        key: node.key + 'import',
+        label: intl.formatMessage({
+          id: 'dms.console.workspace.dataquery.io.import',
+        }),
+        icon: <UploadOutlined />,
+        onClick: () => {
+          dataImport(node);
+        },
+      });
+    }
+    menuItems?.push(menu);
+  };
+
+  const gTableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const tableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
-    menuItems?.push({
-      key: node.key + 'io',
-      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.io' }),
-      children: [
-        {
-          key: node.key + 'export',
-          label: intl.formatMessage({
-            id: 'dms.console.workspace.dataquery.io.export',
-          }),
-          icon: <DownloadOutlined />,
-          onClick: () => {
-            dataExport(node);
-          },
-        },
-        {
-          key: node.key + 'import',
-          label: intl.formatMessage({
-            id: 'dms.console.workspace.dataquery.io.import',
-          }),
-          icon: <UploadOutlined />,
-          onClick: () => {
-            dataImport(node);
-          },
-        },
-      ],
-    });
-    return menuItems;
+    newMenuItem(node, menuItems);
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    ioMenuItem(node, menuItems, true, true);
+    scriptMenuItem(node, menuItems, true, true, true, true, true);
   };
 
   const viewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
-    menuItems?.push({
-      key: node.key + '',
-      label: intl.formatMessage({ id: 'dms.console.workspace.dataquery.io' }),
-      children: [
-        {
-          key: node.key + 'export',
-          label: intl.formatMessage({
-            id: 'dms.console.workspace.dataquery.io.export',
-          }),
-          icon: <DownloadOutlined />,
-          onClick: () => {
-            dataExport(node);
-          },
-        },
-      ],
-    });
-    return menuItems;
+    newMenuItem(node, menuItems);
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    ioMenuItem(node, menuItems, true, false);
+    scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const mviewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    ioMenuItem(node, menuItems, true, false);
+    scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const indexMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    scriptMenuItem(node, menuItems, true, false, false, false, false);
+  };
+
+  const fgnTableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    ioMenuItem(node, menuItems, true, false);
+    scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const seqMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    editMenuItem(node, menuItems);
+    renameMenuItem(node, menuItems);
+    dropMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    scriptMenuItem(node, menuItems, true, false, false, false, false);
+  };
+
+  const funMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    copyMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
+    dividerMenuItem(menuItems);
+    scriptMenuItem(node, menuItems, true, false, false, false, false);
   };
 
   const dataExport = (node: DMS.CatalogTreeNode<string>) => {
@@ -310,7 +612,14 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   const nodeTitleRender = (node: DMS.CatalogTreeNode<string>) => {
     return (
       <Dropdown menu={{ items: nodeTitleContextmenuItems(node) }} trigger={['contextMenu']}>
-        <div style={{ width: '100%' }}>{node.title}</div>
+        <div
+          style={{ width: '100%' }}
+          onDoubleClick={() => {
+            console.log('node info', node);
+          }}
+        >
+          {node.title}
+        </div>
       </Dropdown>
     );
   };
@@ -321,7 +630,13 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     }
     switch (nodeType) {
       case 'CATALOG':
-        return <Icon icon="local:database" height="16" width="16"></Icon>;
+        return (
+          <img
+            src={'/images/databases/' + datasource?.datasourceType?.value?.toLowerCase() + '.svg'}
+            style={{ width: 16, height: 16 }}
+            alt=""
+          />
+        );
       case 'SCHEMA':
         return <Icon icon="local:schema" height="16" width="16"></Icon>;
       case 'TABLE':
@@ -481,7 +796,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         loadData={onLoadData}
         height={height}
         icon={(props: any) => {
-          return <div style={{ paddingTop: 3 }}>{nodeTitleIconRender(props.data.type)}</div>;
+          return <div style={{ paddingTop: 4 }}>{nodeTitleIconRender(props.data.type)}</div>;
         }}
         showIcon={true}
         titleRender={nodeTitleRender}
@@ -509,13 +824,14 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           handleOk={(isOpen: boolean, value: DMS.File) => {
             setUpDateFile((res) => ++res);
             setFileData({ open: isOpen });
-            onCallback(value.fileName + '', {
+            const node = {
               title: value.fileName + '',
               parentId: value.fileCatalog as string,
               type: value.fileType?.value as string,
               key: '',
               identifier: '',
-            });
+            };
+            onCallback(value.fileName + '', node, 'editor', '');
           }}
         />
       )}
@@ -542,6 +858,35 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
             setDataImportData({ open: false });
           }}
         ></DataImportModal>
+      )}
+      {renameData.open && (
+        <DbRenameModal
+          open={renameData.open}
+          data={renameData.data}
+          handleOk={(isOpen: boolean, node: DMS.CatalogTreeNode<string>) => {
+            setRenameData({ open: isOpen });
+            refreshTreeData({
+              ...node,
+              key: node.parentId,
+              type: 'G_' + node.type,
+            });
+          }}
+          handleCancel={() => {
+            setRenameData({ open: false });
+          }}
+        ></DbRenameModal>
+      )}
+      {sqlPriview.open && (
+        <ScriptPreviewModal
+          open={sqlPriview.open}
+          data={sqlPriview.data}
+          handleOk={(isOpen: boolean) => {
+            setSqlPriview({ open: isOpen });
+          }}
+          handleCancel={() => {
+            setSqlPriview({ open: false });
+          }}
+        ></ScriptPreviewModal>
       )}
     </div>
   );

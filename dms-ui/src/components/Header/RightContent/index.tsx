@@ -1,54 +1,50 @@
-import { MsgService } from "@/services/user/msg.service";
-import { BellOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { useEmotionCss } from "@ant-design/use-emotion-css";
-import { Badge } from "antd";
-import React, { useEffect, useState } from "react";
-import { history, useModel } from "@umijs/max";
-import SelectLang from "../../SelectLang";
-import Avatar from "./AvatarDropdown";
+import { MsgService } from '@/services/user/msg.service';
+import { BellOutlined, GithubOutlined } from '@ant-design/icons';
+import { history, useModel } from '@umijs/max';
+import { Badge } from 'antd';
+import { createStyles } from 'antd-style';
+import React, { useEffect, useState } from 'react';
+import SelectLang from '../../SelectLang';
+import Avatar from './AvatarDropdown';
 
-export type SiderTheme = "light" | "dark";
+export type SiderTheme = 'light' | 'dark';
+
+const useStyles = createStyles(({ token, css }) => ({
+  headerContainer: {
+    display: 'flex',
+    height: '48px',
+    marginLeft: 'auto',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    gap: 4,
+  },
+  actionIcon: {
+    display: 'flex',
+    float: 'right',
+    height: '48px',
+    marginLeft: 'auto',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    padding: '0 12px',
+    borderRadius: token.borderRadius,
+    '&:hover': {
+      backgroundColor: token.colorBgTextHover,
+    },
+  },
+  bellIcon: {
+    padding: '0 12px',
+    borderRadius: token.borderRadius,
+    '&:hover': {
+      backgroundColor: token.colorBgTextHover,
+    },
+  },
+}));
 
 const GlobalHeaderRight: React.FC = () => {
   const [msgCount, setMsgCount] = useState<number>();
-  const className = useEmotionCss(() => {
-    return {
-      display: "flex",
-      height: "48px",
-      marginLeft: "auto",
-      overflow: "hidden",
-      cursor: "pointer",
-      gap: 4,
-    };
-  });
+  const { styles, cx, theme } = useStyles();
 
-  const actionClassName = useEmotionCss(({ token }) => {
-    return {
-      display: "flex",
-      float: "right",
-      height: "48px",
-      marginLeft: "auto",
-      overflow: "hidden",
-      cursor: "pointer",
-      padding: "0 12px",
-      borderRadius: token.borderRadius,
-      "&:hover": {
-        backgroundColor: token.colorBgTextHover,
-      },
-    };
-  });
-
-  const bellClassName = useEmotionCss(({ token }) => {
-    return {
-      padding: "0 12px",
-      borderRadius: token.borderRadius,
-      "&:hover": {
-        backgroundColor: token.colorBgTextHover,
-      },
-    };
-  });
-
-  const { initialState } = useModel("@@initialState");
+  const { initialState } = useModel('@@initialState');
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -63,19 +59,19 @@ const GlobalHeaderRight: React.FC = () => {
   }, []);
 
   return (
-    <div className={className}>
-      {/* <span
-        className={actionClassName}
+    <div className={styles.headerContainer}>
+      <span
+        className={styles.actionIcon}
         onClick={() => {
-          window.open("https://pro.ant.design/docs/getting-started");
+          window.open('https://github.com/basedt/dms', '_blank');
         }}
       >
-        <QuestionCircleOutlined />
-      </span> */}
+        <GithubOutlined />
+      </span>
       <span
-        className={bellClassName}
+        className={styles.bellIcon}
         onClick={() => {
-          history.push("/user/center", { key: "message" });
+          history.push('/user/center', { key: 'message' });
         }}
       >
         <div style={{ marginTop: -3 }}>
@@ -84,7 +80,7 @@ const GlobalHeaderRight: React.FC = () => {
           </Badge>
         </div>
       </span>
-      <SelectLang className={actionClassName} />
+      <SelectLang className={styles.actionIcon} />
       <Avatar menu={true} />
     </div>
   );

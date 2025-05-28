@@ -63,7 +63,7 @@ const DataExportModal: React.FC<DMS.ModalProps<DMS.DataTask>> = (props) => {
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}

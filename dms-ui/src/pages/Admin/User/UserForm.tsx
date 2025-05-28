@@ -1,9 +1,9 @@
-import { DICT_TYPE, PATTERNS } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { UserService } from "@/services/admin/user.service";
-import { Form, Input, message, Modal, Select } from "antd";
-import { useEffect, useState } from "react";
-import { useIntl } from "@umijs/max";
+import { DICT_TYPE, PATTERNS } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { UserService } from '@/services/admin/user.service';
+import { useIntl } from '@umijs/max';
+import { Form, Input, message, Modal, Select } from 'antd';
+import { useEffect, useState } from 'react';
 
 const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
   const intl = useIntl();
@@ -24,10 +24,10 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
     <Modal
       title={
         data?.id
-          ? intl.formatMessage({ id: "dms.common.operate.update" }) +
-          intl.formatMessage({ id: "dms.admin.user" })
-          : intl.formatMessage({ id: "dms.common.operate.new" }) +
-          intl.formatMessage({ id: "dms.admin.user" })
+          ? intl.formatMessage({ id: 'dms.common.operate.update' }) +
+            intl.formatMessage({ id: 'dms.admin.user' })
+          : intl.formatMessage({ id: 'dms.common.operate.new' }) +
+            intl.formatMessage({ id: 'dms.admin.user' })
       }
       open={open}
       onOk={() => {
@@ -44,29 +44,29 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
           };
           data?.id
             ? UserService.update({ ...d, id: data.id }).then((resp) => {
-              if (resp.success) {
-                message.success(
-                  intl.formatMessage({
-                    id: "dms.common.message.operate.update.success",
-                  })
-                );
-                handleOk ? handleOk(false) : null;
-              }
-            })
+                if (resp.success) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'dms.common.message.operate.update.success',
+                    }),
+                  );
+                  handleOk ? handleOk(false) : null;
+                }
+              })
             : UserService.add(d).then((resp) => {
-              if (resp.success) {
-                message.success(
-                  intl.formatMessage({
-                    id: "dms.common.message.operate.new.success",
-                  })
-                );
-                handleOk ? handleOk(false) : null;
-              }
-            });
+                if (resp.success) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'dms.common.message.operate.new.success',
+                    }),
+                  );
+                  handleOk ? handleOk(false) : null;
+                }
+              });
         });
         setLoading(false);
       }}
-      destroyOnClose={true}
+      destroyOnHidden={true}
       confirmLoading={loading}
       onCancel={handleCancel}
       styles={{ body: { paddingTop: 8 } }}
@@ -79,18 +79,18 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
         wrapperCol={{ span: 16 }}
         initialValues={{
           ...data,
-          userStatus: data?.userStatus ? data?.userStatus?.value : "normal",
+          userStatus: data?.userStatus ? data?.userStatus?.value : 'normal',
         }}
       >
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.userName" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.userName' })}
           name="userName"
           rules={[
             { required: true, max: 30, min: 5 },
             {
               pattern: PATTERNS.characterWord,
               message: intl.formatMessage({
-                id: "dms.common.validate.characterWord",
+                id: 'dms.common.validate.characterWord',
               }),
             },
             {
@@ -98,16 +98,16 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
                 data?.id
                   ? callback()
                   : UserService.isUserExists(value).then((resp) => {
-                    if (resp) {
-                      callback();
-                    } else {
-                      callback(
-                        intl.formatMessage({
-                          id: "dms.common.validate.sameUserName",
-                        })
-                      );
-                    }
-                  });
+                      if (resp) {
+                        callback();
+                      } else {
+                        callback(
+                          intl.formatMessage({
+                            id: 'dms.common.validate.sameUserName',
+                          }),
+                        );
+                      }
+                    });
               },
             },
           ]}
@@ -115,27 +115,27 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
           <Input disabled={data?.id ? true : false} />
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.email" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.email' })}
           name="email"
           rules={[
             { max: 128 },
             { required: true },
-            { type: "email" },
+            { type: 'email' },
             {
               validator: (rule, value, callback) => {
                 data?.id
                   ? callback()
                   : UserService.isEmailExists(value).then((resp) => {
-                    if (resp) {
-                      callback();
-                    } else {
-                      callback(
-                        intl.formatMessage({
-                          id: "dms.common.validate.sameEmail",
-                        })
-                      );
-                    }
-                  });
+                      if (resp) {
+                        callback();
+                      } else {
+                        callback(
+                          intl.formatMessage({
+                            id: 'dms.common.validate.sameEmail',
+                          }),
+                        );
+                      }
+                    });
               },
             },
           ]}
@@ -143,14 +143,14 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
           <Input disabled={data?.id ? true : false} />
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.nickName" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.nickName' })}
           name="nickName"
           rules={[{ max: 50 }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.realName" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.realName' })}
           name="realName"
           rules={[{ max: 64 }]}
         >
@@ -158,14 +158,14 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
         </Form.Item>
 
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.mobilePhone" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.mobilePhone' })}
           name="mobilePhone"
           rules={[{ max: 16 }]}
         >
           <Input />
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.userStatus" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.userStatus' })}
           name="userStatus"
           rules={[{ required: true }]}
         >
@@ -174,9 +174,7 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
             allowClear={true}
             optionFilterProp="label"
             filterOption={(input, option) =>
-              (option!.children as unknown as string)
-                .toLowerCase()
-                .includes(input.toLowerCase())
+              (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
             }
           >
             {userStatusList.map((item) => {
@@ -189,7 +187,7 @@ const UserForm: React.FC<DMS.ModalProps<DMS.SysUser>> = (props) => {
           </Select>
         </Form.Item>
         <Form.Item
-          label={intl.formatMessage({ id: "dms.admin.user.summary" })}
+          label={intl.formatMessage({ id: 'dms.admin.user.summary' })}
           name="summary"
           rules={[{ max: 200 }]}
         >

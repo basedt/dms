@@ -1,9 +1,9 @@
-import { PATTERNS } from "@/constants";
-import { UserService } from "@/services/admin/user.service";
-import { WorkspaceService } from "@/services/workspace/workspace.service";
-import { AutoComplete, Form, Input, message, Modal } from "antd";
-import { useState } from "react";
-import { useIntl } from "@umijs/max";
+import { PATTERNS } from '@/constants';
+import { UserService } from '@/services/admin/user.service';
+import { WorkspaceService } from '@/services/workspace/workspace.service';
+import { useIntl } from '@umijs/max';
+import { AutoComplete, Form, Input, message, Modal } from 'antd';
+import { useState } from 'react';
 
 const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
   const intl = useIntl();
@@ -16,9 +16,9 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
       <Modal
         title={
           data?.id
-            ? intl.formatMessage({ id: "dms.common.operate.update" }) +
-            intl.formatMessage({ id: "dms.workspace" })
-            : intl.formatMessage({ id: "dms.console.workspace.create" })
+            ? intl.formatMessage({ id: 'dms.common.operate.update' }) +
+              intl.formatMessage({ id: 'dms.workspace' })
+            : intl.formatMessage({ id: 'dms.console.workspace.create' })
         }
         open={open}
         onOk={() => {
@@ -26,29 +26,29 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
           form.validateFields().then((values) => {
             data?.id
               ? WorkspaceService.update(values).then((resp) => {
-                if (resp.success) {
-                  message.success(
-                    intl.formatMessage({
-                      id: "dms.common.message.operate.update.success",
-                    })
-                  );
-                  handleOk ? handleOk(false) : null;
-                }
-              })
+                  if (resp.success) {
+                    message.success(
+                      intl.formatMessage({
+                        id: 'dms.common.message.operate.update.success',
+                      }),
+                    );
+                    handleOk ? handleOk(false) : null;
+                  }
+                })
               : WorkspaceService.add(values).then((resp) => {
-                if (resp.success) {
-                  message.success(
-                    intl.formatMessage({
-                      id: "dms.common.message.operate.new.success",
-                    })
-                  );
-                  handleOk ? handleOk(false) : null;
-                }
-              });
+                  if (resp.success) {
+                    message.success(
+                      intl.formatMessage({
+                        id: 'dms.common.message.operate.new.success',
+                      }),
+                    );
+                    handleOk ? handleOk(false) : null;
+                  }
+                });
           });
           setLoading(false);
         }}
-        destroyOnClose={true}
+        destroyOnHidden={true}
         confirmLoading={loading}
         onCancel={handleCancel}
         styles={{ body: { paddingTop: 8 } }}
@@ -67,7 +67,7 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
           <Form.Item
             name="workspaceCode"
             label={intl.formatMessage({
-              id: "dms.console.workspace.workspaceCode",
+              id: 'dms.console.workspace.workspaceCode',
             })}
             rules={[
               { required: true },
@@ -75,7 +75,7 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
               {
                 pattern: PATTERNS.characterWord,
                 message: intl.formatMessage({
-                  id: "dms.common.validate.characterWord",
+                  id: 'dms.common.validate.characterWord',
                 }),
               },
             ]}
@@ -85,7 +85,7 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
           <Form.Item
             name="workspaceName"
             label={intl.formatMessage({
-              id: "dms.console.workspace.workspaceName",
+              id: 'dms.console.workspace.workspaceName',
             })}
             rules={[{ required: true }, { max: 64 }]}
           >
@@ -94,7 +94,7 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
           {data?.id && (
             <Form.Item
               name="owner"
-              label={intl.formatMessage({ id: "dms.console.workspace.owner" })}
+              label={intl.formatMessage({ id: 'dms.console.workspace.owner' })}
             >
               <AutoComplete
                 allowClear
@@ -110,14 +110,14 @@ const WorkspaceForm: React.FC<DMS.ModalProps<DMS.Workspace>> = (props) => {
                   });
                 }}
                 placeholder={intl.formatMessage({
-                  id: "dms.console.workspace.owner.placeholder",
+                  id: 'dms.console.workspace.owner.placeholder',
                 })}
               ></AutoComplete>
             </Form.Item>
           )}
           <Form.Item
             name="remark"
-            label={intl.formatMessage({ id: "dms.console.workspace.remark" })}
+            label={intl.formatMessage({ id: 'dms.console.workspace.remark' })}
             rules={[{ max: 500 }]}
           >
             <Input.TextArea />

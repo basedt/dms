@@ -1,18 +1,9 @@
-import { DICT_TYPE, PRIVILEGES } from "@/constants";
-import { DictDataService } from "@/services/admin/dict.data.service";
-import { UserService } from "@/services/admin/user.service";
-import {
-  FilterOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
-import {
-  ActionType,
-  PageContainer,
-  ProColumns,
-  ProTable,
-} from "@ant-design/pro-components";
+import { DICT_TYPE, PRIVILEGES } from '@/constants';
+import { DictDataService } from '@/services/admin/dict.data.service';
+import { UserService } from '@/services/admin/user.service';
+import { FilterOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { useAccess, useIntl } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -27,11 +18,10 @@ import {
   Space,
   Table,
   Tooltip,
-} from "antd";
-import React, { useEffect, useRef, useState } from "react";
-import { useAccess, useIntl } from "@umijs/max";
-import UserForm from "./UserForm";
-import UserRoleGrant from "./UserRoleGrant";
+} from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import UserForm from './UserForm';
+import UserRoleGrant from './UserRoleGrant';
 
 const UserView: React.FC = () => {
   const intl = useIntl();
@@ -43,9 +33,7 @@ const UserView: React.FC = () => {
   const [userData, setUserData] = useState<DMS.ModalProps<DMS.SysUser>>({
     open: false,
   });
-  const [userRoleGrant, setUserRoleGrant] = useState<
-    DMS.ModalProps<DMS.SysUser>
-  >({
+  const [userRoleGrant, setUserRoleGrant] = useState<DMS.ModalProps<DMS.SysUser>>({
     open: false,
   });
   const [userStatusList, setUserStatusList] = useState<DMS.Dict[]>([]);
@@ -60,53 +48,53 @@ const UserView: React.FC = () => {
 
   const columns: ProColumns<DMS.SysUser>[] = [
     {
-      title: intl.formatMessage({ id: "dms.admin.user.userName" }),
-      dataIndex: "userName",
+      title: intl.formatMessage({ id: 'dms.admin.user.userName' }),
+      dataIndex: 'userName',
       width: 120,
-      fixed: "left",
+      fixed: 'left',
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.user.nickName" }),
-      dataIndex: "nickName",
+      title: intl.formatMessage({ id: 'dms.admin.user.nickName' }),
+      dataIndex: 'nickName',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.user.email" }),
-      dataIndex: "email",
+      title: intl.formatMessage({ id: 'dms.admin.user.email' }),
+      dataIndex: 'email',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.user.userStatus" }),
-      dataIndex: "userStatus",
+      title: intl.formatMessage({ id: 'dms.admin.user.userStatus' }),
+      dataIndex: 'userStatus',
       width: 120,
-      align: "center",
+      align: 'center',
       render: (dom, entity) => {
         return entity.userStatus?.label;
       },
     },
     {
-      title: intl.formatMessage({ id: "dms.admin.user.mobilePhone" }),
-      dataIndex: "mobilePhone",
+      title: intl.formatMessage({ id: 'dms.admin.user.mobilePhone' }),
+      dataIndex: 'mobilePhone',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.createTime" }),
-      dataIndex: "createTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.createTime' }),
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.updateTime" }),
-      dataIndex: "updateTime",
-      valueType: "dateTime",
+      title: intl.formatMessage({ id: 'dms.common.table.field.updateTime' }),
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
       width: 180,
     },
     {
-      title: intl.formatMessage({ id: "dms.common.table.field.action" }),
-      key: "option",
-      valueType: "option",
-      align: "center",
-      fixed: "right",
+      title: intl.formatMessage({ id: 'dms.common.table.field.action' }),
+      key: 'option',
+      valueType: 'option',
+      align: 'center',
+      fixed: 'right',
       width: 120,
       render: (_, record) => (
         <Space>
@@ -117,7 +105,7 @@ const UserView: React.FC = () => {
                 setUserData({ data: record, open: true });
               }}
             >
-              {intl.formatMessage({ id: "dms.common.operate.update" })}
+              {intl.formatMessage({ id: 'dms.common.operate.update' })}
             </a>
           )}
           {access.canAccess(PRIVILEGES.sysRolRliGrant) && (
@@ -128,7 +116,7 @@ const UserView: React.FC = () => {
                 setUserRoleGrant({ data: record, open: true });
               }}
             >
-              {intl.formatMessage({ id: "dms.admin.user.role.grant" })}
+              {intl.formatMessage({ id: 'dms.admin.user.role.grant' })}
             </a>
           )}
         </Space>
@@ -147,7 +135,7 @@ const UserView: React.FC = () => {
   return (
     <PageContainer
       header={{
-        title: intl.formatMessage({ id: "dms.admin.user.list" }),
+        title: intl.formatMessage({ id: 'dms.admin.user.list' }),
         breadcrumb: {},
       }}
       extra={[
@@ -156,20 +144,15 @@ const UserView: React.FC = () => {
           prefix={<SearchOutlined />}
           allowClear
           placeholder={intl.formatMessage({
-            id: "dms.common.operate.search.placeholder",
+            id: 'dms.common.operate.search.placeholder',
           })}
           onChange={onSearchInputChange}
           onPressEnter={onSearchInputChange}
         />,
-        <Tooltip
-          key="filter"
-          title={intl.formatMessage({ id: "dms.common.operate.filter" })}
-        >
+        <Tooltip key="filter" title={intl.formatMessage({ id: 'dms.common.operate.filter' })}>
           <Badge
             dot={
-              queryFormData.userName ||
-              queryFormData.email ||
-              queryFormData.userStatus
+              queryFormData.userName || queryFormData.email || queryFormData.userStatus
                 ? true
                 : false
             }
@@ -183,10 +166,7 @@ const UserView: React.FC = () => {
             ></Button>
           </Badge>
         </Tooltip>,
-        <Tooltip
-          key="reload"
-          title={intl.formatMessage({ id: "dms.common.operate.refresh" })}
-        >
+        <Tooltip key="reload" title={intl.formatMessage({ id: 'dms.common.operate.refresh' })}>
           <Button
             icon={<ReloadOutlined />}
             type="text"
@@ -203,11 +183,11 @@ const UserView: React.FC = () => {
             onClick={() => {
               setUserData({
                 open: true,
-                data: { userStatus: { value: "normal" } },
+                data: { userStatus: { value: 'normal' } },
               });
             }}
           >
-            {intl.formatMessage({ id: "dms.common.operate.new" })}
+            {intl.formatMessage({ id: 'dms.common.operate.new' })}
           </Button>
         ),
       ]}
@@ -234,11 +214,7 @@ const UserView: React.FC = () => {
         rowSelection={{
           selections: [Table.SELECTION_INVERT, Table.SELECTION_ALL],
         }}
-        tableAlertOptionRender={({
-          selectedRowKeys,
-          selectedRows,
-          onCleanSelected,
-        }) => {
+        tableAlertOptionRender={({ selectedRowKeys, selectedRows, onCleanSelected }) => {
           return (
             <Space size={16}>
               {access.canAccess(PRIVILEGES.sysUsrUliDelete) && (
@@ -247,31 +223,29 @@ const UserView: React.FC = () => {
                   onClick={() => {
                     Modal.confirm({
                       title: intl.formatMessage({
-                        id: "dms.admin.user.disable.title",
+                        id: 'dms.admin.user.disable.title',
                       }),
                       content: intl.formatMessage({
-                        id: "dms.admin.user.disable.content",
+                        id: 'dms.admin.user.disable.content',
                       }),
                       onOk: () => {
-                        UserService.deleteBatch(selectedRowKeys).then(
-                          (resp) => {
-                            if (resp.success) {
-                              message.success(
-                                intl.formatMessage({
-                                  id: "dms.common.message.operate.success",
-                                })
-                              );
-                              onCleanSelected();
-                              actionRef.current?.reload();
-                            }
+                        UserService.deleteBatch(selectedRowKeys).then((resp) => {
+                          if (resp.success) {
+                            message.success(
+                              intl.formatMessage({
+                                id: 'dms.common.message.operate.success',
+                              }),
+                            );
+                            onCleanSelected();
+                            actionRef.current?.reload();
                           }
-                        );
+                        });
                       },
                     });
                   }}
                 >
                   {intl.formatMessage({
-                    id: "dms.common.operate.disable.batch",
+                    id: 'dms.common.operate.disable.batch',
                   })}
                 </a>
               )}
@@ -281,36 +255,34 @@ const UserView: React.FC = () => {
                   onClick={() => {
                     Modal.confirm({
                       title: intl.formatMessage({
-                        id: "dms.admin.user.enable.title",
+                        id: 'dms.admin.user.enable.title',
                       }),
                       content: intl.formatMessage({
-                        id: "dms.admin.user.enable.content",
+                        id: 'dms.admin.user.enable.content',
                       }),
                       onOk: () => {
-                        UserService.enableUsers(selectedRowKeys).then(
-                          (resp) => {
-                            if (resp.success) {
-                              message.success(
-                                intl.formatMessage({
-                                  id: "dms.common.message.operate.success",
-                                })
-                              );
-                              onCleanSelected();
-                              actionRef.current?.reload();
-                            }
+                        UserService.enableUsers(selectedRowKeys).then((resp) => {
+                          if (resp.success) {
+                            message.success(
+                              intl.formatMessage({
+                                id: 'dms.common.message.operate.success',
+                              }),
+                            );
+                            onCleanSelected();
+                            actionRef.current?.reload();
                           }
-                        );
+                        });
                       },
                     });
                   }}
                 >
                   {intl.formatMessage({
-                    id: "dms.common.operate.enable.batch",
+                    id: 'dms.common.operate.enable.batch',
                   })}
                 </a>
               )}
               <a onClick={onCleanSelected} key="cancelSelect">
-                {intl.formatMessage({ id: "dms.common.operate.cancel.select" })}
+                {intl.formatMessage({ id: 'dms.common.operate.select.cancel' })}
               </a>
             </Space>
           );
@@ -318,7 +290,7 @@ const UserView: React.FC = () => {
       ></ProTable>
       <Drawer
         width={560}
-        title={intl.formatMessage({ id: "dms.common.operate.filter" })}
+        title={intl.formatMessage({ id: 'dms.common.operate.filter' })}
         onClose={() => {
           setQueryFormOpen(false);
           actionRef.current?.reload();
@@ -332,21 +304,21 @@ const UserView: React.FC = () => {
               <Button
                 onClick={() => {
                   queryForm.setFieldsValue({
-                    userName: "",
-                    email: "",
+                    userName: '',
+                    email: '',
                     userStatus: null,
                   });
                   setQueryFormData({
-                    userName: "",
-                    email: "",
-                    userStatus: "",
+                    userName: '',
+                    email: '',
+                    userStatus: '',
                   });
                 }}
               >
-                {intl.formatMessage({ id: "dms.common.operate.reset" })}
+                {intl.formatMessage({ id: 'dms.common.operate.reset' })}
               </Button>
             </Col>
-            <Col span={12} style={{ textAlign: "right" }}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 onClick={() => {
                   setQueryFormData(queryForm.getFieldsValue());
@@ -355,42 +327,29 @@ const UserView: React.FC = () => {
                 }}
                 type="primary"
               >
-                {intl.formatMessage({ id: "dms.common.operate.confirm" })}
+                {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
               </Button>
             </Col>
           </Row>
         }
       >
-        <Form
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          form={queryForm}
-        >
-          <Form.Item
-            name="userName"
-            label={intl.formatMessage({ id: "dms.admin.user.userName" })}
-          >
+        <Form layout="horizontal" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={queryForm}>
+          <Form.Item name="userName" label={intl.formatMessage({ id: 'dms.admin.user.userName' })}>
             <Input allowClear></Input>
           </Form.Item>
-          <Form.Item
-            name="email"
-            label={intl.formatMessage({ id: "dms.admin.user.email" })}
-          >
+          <Form.Item name="email" label={intl.formatMessage({ id: 'dms.admin.user.email' })}>
             <Input allowClear></Input>
           </Form.Item>
           <Form.Item
             name="userStatus"
-            label={intl.formatMessage({ id: "dms.admin.user.userStatus" })}
+            label={intl.formatMessage({ id: 'dms.admin.user.userStatus' })}
           >
             <Select
               showSearch={true}
               allowClear={true}
               optionFilterProp="label"
               filterOption={(input, option) =>
-                (option!.children as unknown as string)
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
+                (option!.children as unknown as string).toLowerCase().includes(input.toLowerCase())
               }
             >
               {userStatusList.map((item) => {

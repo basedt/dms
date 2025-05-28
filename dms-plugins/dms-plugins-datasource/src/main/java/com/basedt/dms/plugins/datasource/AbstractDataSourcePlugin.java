@@ -419,6 +419,7 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
             index.setIndexBytes(rs.getLong("index_bytes"));
             index.setIndexType(rs.getString("index_type"));
             index.setIsUniqueness(rs.getBoolean("is_uniqueness"));
+            index.setColumns(rs.getString("columns"));
             index.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
             index.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(index);
@@ -736,5 +737,32 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
 
     protected abstract void setColumnValue(PreparedStatement ps, ColumnDTO column, String value, int columnIndex) throws SQLException, ParseException;
 
+    @Override
+    public Map<String, TypeInfoDTO> listDataType() throws SQLException {
+        Map<String, TypeInfoDTO> map = new HashMap<>();
+        // sql standard data type
+        STD_SQL_TYPES_AND_ALIAS.forEach(item -> {
+            map.put(item.toLowerCase(), new TypeInfoDTO(item.toLowerCase()));
+        });
+        Connection conn = getConnection();
+        DatabaseMetaData metaData = conn.getMetaData();
+        ResultSet rs = metaData.getTypeInfo();
+        while (rs.next()) {
+            TypeInfoDTO typeInfo = new TypeInfoDTO();
+            typeInfo.setTypeName(rs.getString("TYPE_NAME").toLowerCase());
+            typeInfo.setDataType(rs.getInt("DATA_TYPE"));
+            typeInfo.setPrecision(rs.getInt("PRECISION"));
+            typeInfo.setLocalTypeName(rs.getString("LOCAL_TYPE_NAME"));
+            typeInfo.setAutoIncrement(rs.getBoolean("AUTO_INCREMENT"));
+            map.put(typeInfo.getTypeName(), typeInfo);
+        }
+        JdbcUtil.close(conn, rs);
+        return map;
+    }
 
+    @Override
+    public String renameTable(String catalog, String schemaPattern, String tableName, String newTableName) {
+        String originName = schemaPattern + Constants.SEPARATOR_DOT + tableName;
+        return StrUtil.format("alter table {} rename to {}", originName, newTableName);
+    }
 }

@@ -1,30 +1,26 @@
-import {
-  LogoutOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { useEmotionCss } from "@ant-design/use-emotion-css";
-import { history, useModel } from "@umijs/max";
-import { Avatar, Spin } from "antd";
-import { setAlpha } from "@ant-design/pro-components";
-import type { MenuInfo } from "rc-menu/lib/interface";
-import React, { useCallback } from "react";
-import { flushSync } from "react-dom";
-import HeaderDropdown from "../HeaderDropdown";
-import { AuthService } from "@/services/admin/auth.service";
+import { AuthService } from '@/services/admin/auth.service';
+import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import { setAlpha } from '@ant-design/pro-components';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
+import { history, useModel } from '@umijs/max';
+import { Avatar, Spin } from 'antd';
+import type { MenuInfo } from 'rc-menu/lib/interface';
+import React, { useCallback } from 'react';
+import { flushSync } from 'react-dom';
+import HeaderDropdown from '../HeaderDropdown';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
 };
 
 const AvatarLogo = () => {
-  const { initialState } = useModel("@@initialState");
+  const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
 
   const avatarClassName = useEmotionCss(({ token }) => {
     return {
       color: token.colorPrimary,
-      verticalAlign: "top",
+      verticalAlign: 'top',
       background: setAlpha(token.colorInfoBg, 0.85),
       [`@media only screen and (max-width: ${token.screenMD}px)`]: {
         margin: 0,
@@ -40,27 +36,27 @@ const AvatarLogo = () => {
 };
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
-  const { initialState, setInitialState } = useModel("@@initialState");
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   const loginOut = async () => {
     await AuthService.logout().then((resp) => {
       if (resp.success) {
-        history.push("/user/login");
+        history.push('/user/login');
       }
     });
   };
 
   const actionClassName = useEmotionCss(({ token }) => {
     return {
-      display: "flex",
-      height: "48px",
-      marginLeft: "auto",
-      overflow: "hidden",
-      alignItems: "center",
-      padding: "0 8px",
-      cursor: "pointer",
+      display: 'flex',
+      height: '48px',
+      marginLeft: 'auto',
+      overflow: 'hidden',
+      alignItems: 'center',
+      padding: '0 8px',
+      cursor: 'pointer',
       borderRadius: token.borderRadius,
-      "&:hover": {
+      '&:hover': {
         backgroundColor: token.colorBgTextHover,
       },
     };
@@ -69,7 +65,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
-      if (key === "logout") {
+      if (key === 'logout') {
         flushSync(() => {
           setInitialState((s) => ({ ...s, currentUser: undefined }));
         });
@@ -78,7 +74,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       }
       history.push(`/user/center`);
     },
-    [setInitialState]
+    [setInitialState],
   );
 
   const loading = (
@@ -107,19 +103,19 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     ...(menu
       ? [
           {
-            key: "center",
+            key: 'center',
             icon: <UserOutlined />,
-            label: "个人中心",
+            label: '个人中心',
           },
           {
-            type: "divider" as const,
+            type: 'divider' as const,
           },
         ]
       : []),
     {
-      key: "logout",
+      key: 'logout',
       icon: <LogoutOutlined />,
-      label: "退出登录",
+      label: '退出登录',
     },
   ];
 

@@ -345,13 +345,16 @@ const DataExportView: React.FC<{ workspaceId: string | number }> = (props) => {
               placeholder={intl.formatMessage({
                 id: 'dms.console.workspace.dataquery.select',
               })}
+              filterOption={(input, option) =>
+                (option!.label as string).toLowerCase().includes(input.toLowerCase())
+              }
             >
               {dbList &&
                 dbList.map((item) => {
                   const label: string = item.label || 'img-db';
                   const dbinfo: string[] = label.split('-');
                   return (
-                    <Select.Option key={item.value} value={item.value}>
+                    <Select.Option key={item.value} value={item.value} label={dbinfo[1]}>
                       <Space style={{ display: 'flex', alignItems: 'center' }}>
                         <img
                           src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}

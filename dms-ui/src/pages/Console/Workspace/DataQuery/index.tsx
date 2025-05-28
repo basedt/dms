@@ -119,6 +119,9 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
           id: 'dms.console.workspace.dataquery.select',
         })}
         value={datasourceId ?? dataSourceIdGlobal?.[workspaceId]}
+        filterOption={(input, option) =>
+          (option!.label as string).toLowerCase().includes(input.toLowerCase())
+        }
         onChange={(value: any) => {
           if (!value) return;
           sessionStorage.setItem(
@@ -134,7 +137,7 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
             const label: string = item.label || 'img-db';
             const dbinfo: string[] = label.split('-');
             return (
-              <Select.Option key={item.value} value={item.value}>
+              <Select.Option key={item.value} value={item.value} label={dbinfo[1]}>
                 <Space style={{ display: 'flex', alignItems: 'center' }}>
                   <img
                     src={'/images/databases/' + dbinfo[0].toLowerCase() + '.svg'}

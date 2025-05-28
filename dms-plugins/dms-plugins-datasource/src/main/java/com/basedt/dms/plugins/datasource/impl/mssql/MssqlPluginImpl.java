@@ -25,6 +25,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -71,6 +72,13 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     protected String getJdbcUrl() {
         return "jdbc:sqlserver://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + ";databaseName=" + getDatabaseName() + formatJdbcProps();
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        MssqlViewHandler handler = new MssqlViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
@@ -141,39 +149,6 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
         return super.listTableDetails(sql);
     }
 
-    @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return listViewDetails(catalog, schemaPattern, viewPattern);
-    }
-
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                "    db_name() as catalog_name," +
-                "    s.name as schema_name," +
-                "    o.name as object_name," +
-                "    'VIEW' as object_type," +
-                "    ep.value as remark," +
-                "    o.create_date as create_time," +
-                "    o.modify_date as last_ddl_time," +
-                "    m.definition as query_sql" +
-                " from sys.all_objects o" +
-                " join sys.schemas s" +
-                " on o.schema_id = s.schema_id" +
-                " left join sys.extended_properties ep" +
-                " on o.object_id = ep.major_id" +
-                " and ep.minor_id = 0" +
-                " left join sys.all_sql_modules m" +
-                " on o.object_id = m.object_id" +
-                " where o.type in ('V')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and s.name = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and o.name like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
-    }
 
     @Override
     public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {

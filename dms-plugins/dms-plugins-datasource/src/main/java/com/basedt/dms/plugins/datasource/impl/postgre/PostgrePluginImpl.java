@@ -24,6 +24,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -65,6 +66,13 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POSTGRESQL.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
         setDriverClassName("org.postgresql.Driver");
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        PostgreViewHandler handler = new PostgreViewHandler();
+        handler.initialize(getDataSource(),new HashMap<>());
+        return handler;
     }
 
     @Override
@@ -111,36 +119,6 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
         return super.listTableDetails(sql);
     }
 
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = " select " +
-                " null as catalog_name," +
-                " n.nspname as schema_name," +
-                " c.relname as object_name," +
-                " 'VIEW'as object_type," +
-                " d.description as remark," +
-                " v.definition as query_sql," +
-                " null as create_time," +
-                " null as last_ddl_time" +
-                " from pg_catalog.pg_namespace n" +
-                " join pg_catalog.pg_class c " +
-                " on n.oid = c.relnamespace  " +
-                " join pg_catalog.pg_views v " +
-                " on n.nspname = v.schemaname " +
-                " and c.relname = v.viewname " +
-                " left join pg_catalog.pg_description d " +
-                " on c.oid  = d.objoid " +
-                " and d.objsubid = 0" +
-                " and d.classoid  = 'pg_class'::regclass" +
-                " where c.relkind in ('" + PostgreObjectTypeMapper.mapToOrigin(VIEW) + "')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and n.nspname = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and c.relname like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
-    }
 
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
@@ -193,7 +171,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
                 " ) a" +
                 "                 on a.schemaname = n.nspname" +
                 "                and a.tablename = i.tablename" +
-                "                and a.indexname = c.relname"+
+                "                and a.indexname = c.relname" +
                 " where c.relkind in ('" + PostgreObjectTypeMapper.mapToOrigin(INDEX) + "')";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and n.nspname = '" + schemaPattern + "'";

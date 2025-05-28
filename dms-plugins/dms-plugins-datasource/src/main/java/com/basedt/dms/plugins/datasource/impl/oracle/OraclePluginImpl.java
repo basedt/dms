@@ -24,6 +24,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -64,6 +65,13 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.ORACLE.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
         setDriverClassName("oracle.jdbc.driver.OracleDriver");
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        OracleViewHandler handler = new OracleViewHandler();
+        handler.initialize(getDataSource(),new HashMap<>());
+        return handler;
     }
 
     public List<CatalogDTO> listCatalogs() throws SQLException {
@@ -192,38 +200,6 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return super.listViews(StrUtil.isNotEmpty(catalog) ? catalog.toUpperCase() : null,
-                StrUtil.isNotEmpty(schemaPattern) ? schemaPattern.toUpperCase() : null,
-                StrUtil.isNotEmpty(viewPattern) ? viewPattern.toUpperCase() : null);
-    }
-
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                "    null as catalog_name," +
-                "    t.owner as schema_name," +
-                "    t.view_name as object_name," +
-                "    'VIEW' as object_type," +
-                "    c.comments as remark," +
-                "    t.text as query_sql," +
-                "    o.created as create_time," +
-                "    o.last_ddl_time as last_ddl_time" +
-                " from all_views t" +
-                " left join all_tab_comments c on" +
-                " t.owner = c.owner" +
-                " and t.view_name = c.table_name" +
-                " left join all_objects o" +
-                " on t.owner = o.owner" +
-                " and t.view_name = o.object_name" +
-                " where t.owner = '" + schemaPattern.toUpperCase() + "'";
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and t.view_name like '%" + viewPattern.toUpperCase() + "%'";
-        }
-        return super.listViewDetails(sql);
-    }
-
-    @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
         String sql = "select" +
                 "    null as catalog_name," +
@@ -261,7 +237,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
                 "    i.table_name as table_name," +
                 "    i.index_type as index_type," +
                 "    decode(i.uniqueness,'UNIQUE',1,'NONUNIQUE',0,0) as is_uniqueness," +
-                "    ic.columns as columns,"+
+                "    ic.columns as columns," +
                 "    d.bytes as index_bytes," +
                 "    o.created as create_time," +
                 "    o.last_ddl_time as last_ddl_time" +

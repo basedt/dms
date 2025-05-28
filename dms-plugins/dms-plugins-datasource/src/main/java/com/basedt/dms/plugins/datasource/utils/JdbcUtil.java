@@ -85,6 +85,12 @@ public class JdbcUtil {
         return dataSource;
     }
 
+    public static int execute(Connection conn, String sql) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            return ps.executeUpdate();
+        }
+    }
+
     public static void close(Connection conn, PreparedStatement pstm, ResultSet rs) throws SQLException {
         if (rs != null) {
             rs.close();

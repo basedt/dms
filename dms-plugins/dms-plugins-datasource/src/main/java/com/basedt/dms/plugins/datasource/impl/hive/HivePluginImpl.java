@@ -24,6 +24,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -35,8 +36,8 @@ import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
 
 import java.math.BigDecimal;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.*;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,34 +111,6 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         return result;
     }
 
-    @SneakyThrows
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ViewDTO> result = new ArrayList<>();
-        HiveMetaStoreClient client = getHmsClient();
-        List<String> tables = client.getAllTables(null, schemaPattern);
-        List<Table> tableList = client.getTableObjectsByName(null, schemaPattern, tables);
-        for (Table table : tableList) {
-            if ("VIRTUAL_VIEW".equals(table.getTableType())) {
-                ViewDTO viewDTO = new ViewDTO();
-                viewDTO.setCatalogName(catalog);
-                viewDTO.setSchemaName(table.getDbName());
-                viewDTO.setObjectName(table.getTableName());
-                viewDTO.setObjectType(VIEW.name());
-                viewDTO.setCreateTime(DateTimeUtil.toLocalDateTime(table.getCreateTime()));
-                viewDTO.setQuerySql(table.getViewOriginalText());
-                Map<String, String> params = table.getParameters();
-                viewDTO.setRemark(params.get("comment"));
-                String lastDdlTime = params.get("transient_lastDdlTime");
-                viewDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(Integer.parseInt(Objects.isNull(lastDdlTime) ? "0" : lastDdlTime)));
-                if (Objects.isNull(viewPattern) || StrUtil.contains(viewDTO.getViewName(), viewPattern)) {
-                    result.add(viewDTO);
-                }
-            }
-        }
-        client.close();
-        return result;
-    }
 
     @Override
     public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
@@ -310,6 +283,15 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         } else {
             return builder.toString();
         }
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        HiveViewHandler handler = new HiveViewHandler();
+        Map<String, String> config = new HashMap<>();
+        config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
+        handler.initialize(getDataSource(), config);
+        return handler;
     }
 
     @Override

@@ -25,6 +25,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -67,6 +68,13 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.MYSQL.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
         setDriverClassName("com.mysql.cj.jdbc.Driver");
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        MysqlViewHandler handler = new MysqlViewHandler();
+        handler.initialize(getDataSource(),new HashMap<>());
+        return handler;
     }
 
     @Override
@@ -129,35 +137,6 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
         return super.listTableDetails(sql);
     }
 
-    @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return listViewDetails(catalog, schemaPattern, viewPattern);
-    }
-
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                " null as catalog_name," +
-                " v.table_schema as schema_name," +
-                " v.table_name as object_name," +
-                " 'VIEW' as object_type," +
-                " t.table_comment as remark," +
-                " t.create_time as create_time," +
-                " t.update_time as last_ddl_time," +
-                " v.view_definition as query_sql" +
-                " from information_schema.views v" +
-                " join information_schema.tables t" +
-                " on v.table_schema = t.table_schema " +
-                " and v.table_name = t.table_name " +
-                " where t.table_type not in ('BASE TABLE')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and v.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and v.table_name like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
-    }
 
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
@@ -179,7 +158,7 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
                 " t.index_type as index_type," +
                 " t.table_name as table_name, " +
                 " case when max(t.non_unique) >=1 then 0 else 1 end as is_uniqueness," +
-                " group_concat(t.column_name order by t.seq_in_index) as columns,"+
+                " group_concat(t.column_name order by t.seq_in_index) as columns," +
                 " null as index_bytes," +
                 " null as create_time," +
                 " null as last_ddl_time" +

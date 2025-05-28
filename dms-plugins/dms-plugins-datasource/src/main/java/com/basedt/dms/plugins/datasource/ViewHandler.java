@@ -15,26 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.plugins.datasource.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+package com.basedt.dms.plugins.datasource;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class ViewDTO extends ObjectDTO {
+import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 
-    private static final long serialVersionUID = 1L;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
-    private String querySql;
+public interface ViewHandler {
 
-    private String remark;
+    void initialize(DataSource dataSource, Map<String, String> config);
 
-    public String getViewName() {
-        return getObjectName();
-    }
+    ViewDTO getViewDetail(String catalog, String schema, String viewName) throws SQLException;
 
-    public void setViewName(String viewName) {
-        setObjectName(viewName);
-    }
+    List<ViewDTO> listViews(String catalog, String schema, String viewName) throws SQLException;
+
+    List<ViewDTO> listViewDetails(String catalog, String schema, String viewName) throws SQLException;
+
+    void dropView(String schema, String viewName) throws SQLException;
+
+    void renameView(String schema, String viewName, String newName) throws SQLException;
 }

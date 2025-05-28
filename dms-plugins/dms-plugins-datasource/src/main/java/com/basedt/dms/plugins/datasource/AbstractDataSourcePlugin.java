@@ -45,7 +45,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.VIEW;
 
 @Slf4j
 public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
@@ -547,31 +546,6 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
         }
     }
 
-
-    @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ObjectDTO> list = this.listTables(catalog, schemaPattern, viewPattern, new String[]{VIEW.name()});
-        List<ViewDTO> result = new ArrayList<>();
-        for (ObjectDTO obj : list) {
-            ViewDTO view = new ViewDTO();
-            view.setCatalogName(obj.getCatalogName());
-            view.setSchemaName(obj.getSchemaName());
-            view.setObjectName(obj.getObjectName());
-            view.setObjectType(obj.getObjectType());
-            result.add(view);
-        }
-        return result;
-    }
-
-    @Override
-    public ViewDTO getViewDetail(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        List<ViewDTO> views = listViewDetails(catalog, schemaPattern, viewPattern);
-        if (CollectionUtil.isNotEmpty(views)) {
-            return views.get(0);
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName) throws SQLException {

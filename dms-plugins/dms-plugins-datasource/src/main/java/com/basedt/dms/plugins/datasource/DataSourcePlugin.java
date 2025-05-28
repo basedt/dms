@@ -70,6 +70,8 @@ public interface DataSourcePlugin extends Plugin {
 
     Boolean testConnection() throws SQLException, ClassNotFoundException;
 
+    ViewHandler getViewHandler();
+
     List<CatalogDTO> listCatalogs() throws SQLException;
 
     List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException;
@@ -84,11 +86,8 @@ public interface DataSourcePlugin extends Plugin {
 
     TableDTO getTableDetail(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException;
 
-    List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException;
 
-    List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException;
 
-    ViewDTO getViewDetail(String catalog, String schemaPattern, String viewPattern) throws SQLException;
 
     List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
 

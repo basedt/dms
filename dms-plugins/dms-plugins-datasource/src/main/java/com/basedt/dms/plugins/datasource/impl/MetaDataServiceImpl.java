@@ -176,7 +176,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listViews(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<ViewDTO> viewList = dataSourcePlugin.listViews(catalog, schema, null);
+        List<ViewDTO> viewList = dataSourcePlugin.getViewHandler().listViews(catalog,schema,null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(viewList)) {
             TreeNodeVO parent = new TreeNodeVO();

@@ -25,6 +25,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -61,6 +62,13 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.CLICKHOUSE.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
         setDriverClassName("com.clickhouse.jdbc.ClickHouseDriver");
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        ClickHouseViewHandler handler = new ClickHouseViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
@@ -127,40 +135,6 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
             sql += " and t.table_name like '%" + tablePattern + "%'";
         }
         return super.listTableDetails(sql);
-    }
-
-    @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return listViewDetails(catalog, schemaPattern, viewPattern);
-    }
-
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                "    v.table_catalog as catalog_name," +
-                "    v.table_schema as schema_name," +
-                "    v.table_name as object_name," +
-                "    'VIEW' as object_type," +
-                "    t.table_comment as remark," +
-                "    st.metadata_modification_time as create_time," +
-                "    st.metadata_modification_time as last_ddl_time," +
-                "    v.view_definition as query_sql" +
-                " from information_schema.views v" +
-                " left join information_schema.tables t" +
-                " on v.table_catalog = t.table_catalog" +
-                " and v.table_schema = t.table_schema" +
-                " and v.table_name = t.table_name" +
-                " left join system.tables st" +
-                " on v.table_schema = st.database" +
-                " and v.table_name = st.name" +
-                " where st.engine <> 'MaterializedView'";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and v.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and v.table_name like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
     }
 
     @Override

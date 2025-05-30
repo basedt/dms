@@ -16,31 +16,22 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.param;
+package com.basedt.dms.plugins.datasource;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 
-@Data
-public class TableRenameParam {
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
-    @NotNull
-    @Schema(name = "dataSourceId", title = "data source id")
-    private Long dataSourceId;
+public interface MaterializedViewHandler {
 
-    @Schema(name = "catalog", title = "catalog name")
-    private String catalog;
+    void initialize(DataSource dataSource, Map<String, String> config);
 
-    @NotNull
-    @Schema(name = "schemaName", title = "schema name")
-    private String schemaName;
+    List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
 
-    @NotNull
-    @Schema(name = "tableName", title = "table name")
-    private String tableName;
+    List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
 
-    @NotNull
-    @Schema(name = "newTableName", title = "new table name")
-    private String newTableName;
+    MaterializedViewDTO getMViewDetail(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
 }

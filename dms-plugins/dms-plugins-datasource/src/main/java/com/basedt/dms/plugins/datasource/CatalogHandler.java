@@ -15,31 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.common.exception;
 
-import com.basedt.dms.common.enums.ResponseCode;
-import com.basedt.dms.common.utils.I18nUtil;
+package com.basedt.dms.plugins.datasource;
 
-public class DmsException extends Exception {
+import com.basedt.dms.plugins.datasource.dto.CatalogDTO;
+import com.basedt.dms.plugins.datasource.dto.SchemaDTO;
+import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
+import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 
-    private String exceptionCode;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
+public interface CatalogHandler {
 
-    public DmsException(String code, String message) {
-        super(message);
-        setExceptionCode(code);
-    }
+    void initialize(DataSource dataSource, Map<String, String> config,String databaseName);
 
-    public DmsException(ResponseCode responseCode) {
-        super(I18nUtil.get(responseCode.getLabel()));
-        setExceptionCode(responseCode.getValue());
-    }
+    List<CatalogDTO> listCatalogs() throws SQLException;
 
-    public String getExceptionCode() {
-        return exceptionCode;
-    }
+    List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException;
 
-    public void setExceptionCode(String exceptionCode) {
-        this.exceptionCode = exceptionCode;
-    }
+    List<String> listObjectTypes() throws SQLException;
+
+    Map<String, TypeInfoDTO> listDataType() throws SQLException;
 }

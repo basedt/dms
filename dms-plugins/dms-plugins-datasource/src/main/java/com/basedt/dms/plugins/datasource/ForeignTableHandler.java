@@ -15,31 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.common.exception;
 
-import com.basedt.dms.common.enums.ResponseCode;
-import com.basedt.dms.common.utils.I18nUtil;
+package com.basedt.dms.plugins.datasource;
 
-public class DmsException extends Exception {
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.TableDTO;
 
-    private String exceptionCode;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
+public interface ForeignTableHandler {
 
-    public DmsException(String code, String message) {
-        super(message);
-        setExceptionCode(code);
-    }
+    List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
 
-    public DmsException(ResponseCode responseCode) {
-        super(I18nUtil.get(responseCode.getLabel()));
-        setExceptionCode(responseCode.getValue());
-    }
-
-    public String getExceptionCode() {
-        return exceptionCode;
-    }
-
-    public void setExceptionCode(String exceptionCode) {
-        this.exceptionCode = exceptionCode;
-    }
 }

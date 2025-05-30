@@ -49,11 +49,11 @@ public interface MetaDataService {
 
     TableDTO getTableInfo(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
 
-    void renameTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String newTableName) throws DmsException;
-
-    void dropTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
-
     String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
+
+    void renameObject(DataSourceDTO dataSource, String catalog, String schemaName,String objectType, String objectName, String newName) throws DmsException;
+
+    void dropObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectName,String objectType) throws DmsException;
 
     String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException;
 

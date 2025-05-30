@@ -32,7 +32,8 @@ public enum ResponseCode {
     ERROR_EMAIL("531", "response.error.email"),
     ERROR_INVALID_ARGUMENT("532", "response.error.invalid.argument"),
     ERROR_DUPLICATE_DATA("533", "response.error.duplicate.data"),
-    ERROR_CATALOG_NOTNULL("533", "response.error.file.catalog.notNull");
+    ERROR_CATALOG_NOTNULL("533", "response.error.file.catalog.notNull"),
+    ERROR_DB_TYPE_NOT_SUPPORTED("533", "response.error.db.typeNotSupported"),;
 
     private final String value;
     private final String label;

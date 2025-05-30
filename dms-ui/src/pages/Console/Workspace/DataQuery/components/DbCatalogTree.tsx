@@ -345,7 +345,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       }),
       danger: true,
       onClick: () => {
-        console.log('drop', node);
         Modal.confirm({
           title: intl.formatMessage({ id: 'dms.common.operate.delete.confirm.title' }),
           content: node.type + ' : ' + node.title,

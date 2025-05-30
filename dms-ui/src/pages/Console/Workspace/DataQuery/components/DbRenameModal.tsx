@@ -28,7 +28,7 @@ const DbRenameModal: React.FC<DMS.ModalProps<DbRenameModalProps>> = (props) => {
           setLoading(true);
           form.validateFields().then((values) => {
             if (data?.node.type === 'TABLE') {
-              MetaDataService.renameTable({
+              MetaDataService.renameObject({
                 dataSourceId: data.dataSourceId,
                 catalog: objectInfo[0],
                 schemaName: objectInfo[1],

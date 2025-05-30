@@ -15,31 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.common.exception;
 
-import com.basedt.dms.common.enums.ResponseCode;
-import com.basedt.dms.common.utils.I18nUtil;
+package com.basedt.dms.plugins.datasource;
 
-public class DmsException extends Exception {
+import com.basedt.dms.plugins.datasource.dto.SequenceDTO;
 
-    private String exceptionCode;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
+public interface SequenceHandler {
 
-    public DmsException(String code, String message) {
-        super(message);
-        setExceptionCode(code);
-    }
+    void initialize(DataSource dataSource, Map<String, String> config);
 
-    public DmsException(ResponseCode responseCode) {
-        super(I18nUtil.get(responseCode.getLabel()));
-        setExceptionCode(responseCode.getValue());
-    }
+    List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
 
-    public String getExceptionCode() {
-        return exceptionCode;
-    }
+    List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
 
-    public void setExceptionCode(String exceptionCode) {
-        this.exceptionCode = exceptionCode;
-    }
+    SequenceDTO getSequenceDetail(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
+
 }

@@ -23,22 +23,23 @@ import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
-import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
-import com.basedt.dms.plugins.datasource.DataSourcePlugin;
-import com.basedt.dms.plugins.datasource.dto.*;
+import com.basedt.dms.plugins.datasource.*;
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.enums.DbObjectType;
-import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcSequenceHandler;
 import com.google.auto.service.AutoService;
 
 import java.math.BigDecimal;
-import java.sql.*;
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 @AutoService(DataSourcePlugin.class)
 public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
@@ -64,207 +65,64 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    public List<CatalogDTO> listCatalogs() {
-        CatalogDTO catalog = new CatalogDTO();
-        catalog.setCatalogName(getDatabaseName());
-        return new ArrayList<CatalogDTO>() {{
-            add(catalog);
-        }};
+    public CatalogHandler getCatalogHandler() {
+        ClickHouseCatalogHandler handler = new ClickHouseCatalogHandler();
+        handler.initialize(getDataSource(), new HashMap<>(), getDatabaseName());
+        return handler;
     }
 
     @Override
-    public List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException {
-        List<SchemaDTO> resultList = new ArrayList<>();
-        String sql = "select name from system.databases where name not in ('system','information_schema','INFORMATION_SCHEMA')";
-        Connection connection = getConnection();
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            String name = rs.getString("name");
-            resultList.add(new SchemaDTO(name));
-        }
-        JdbcUtil.close(connection, ps, rs);
-        return resultList;
+    public TableHandler getTableHandler() {
+        ClickHouseTableHandler handler = new ClickHouseTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        ClickHouseViewHandler handler = new ClickHouseViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public ForeignTableHandler getForeignTableHandler() {
+        ClickHouseFgnTableHandler handler = new ClickHouseFgnTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public FunctionHandler getFunctionHandler() {
+        ClickHouseFunctionHandler handler = new ClickHouseFunctionHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public IndexHandler getIndexHandler() {
+        JdbcIndexHandler handler = new JdbcIndexHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public MaterializedViewHandler getMaterializedViewHandler() {
+        ClickHouseMaterializedViewHandler handler = new ClickHouseMaterializedViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public SequenceHandler getSequenceHandler() {
+        JdbcSequenceHandler handler = new JdbcSequenceHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
     protected String getJdbcUrl() {
         return "jdbc:clickhouse://" + getHostName() + ":" + getPort() + "/" + getDatabaseName() + formatJdbcProps();
-    }
-
-    @Override
-    public List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        return listTableDetails(catalog, schemaPattern, tablePattern, TABLE);
-    }
-
-    @Override
-    public List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        return listTableDetails(catalog, schemaPattern, tablePattern, type);
-    }
-
-    @Override
-    public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        String sql = " select" +
-                "    t.table_catalog as catalog_name," +
-                "    t.table_schema as schema_name," +
-                "    t.table_name as object_name," +
-                "    case when t.table_type = 'SYSTEM VIEW' then 'VIEW' when t.table_type='BASE TABLE' then 'TABLE' else t.table_type end as object_type," +
-                "    t.table_rows as table_rows," +
-                "    t.data_length as data_bytes," +
-                "    t.table_comment as remark," +
-                "    st.metadata_modification_time as create_time," +
-                "    st.metadata_modification_time as last_ddl_time," +
-                "    toDateTime('1970-01-01 00:00:00') as last_access_time" +
-                " from information_schema.tables t" +
-                " left join system.tables st" +
-                " on t.table_schema = st.database" +
-                " and t.table_name = st.name" +
-                " where t.table_type in ('BASE TABLE')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tablePattern)) {
-            sql += " and t.table_name like '%" + tablePattern + "%'";
-        }
-        return super.listTableDetails(sql);
-    }
-
-    @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return listViewDetails(catalog, schemaPattern, viewPattern);
-    }
-
-    @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                "    v.table_catalog as catalog_name," +
-                "    v.table_schema as schema_name," +
-                "    v.table_name as object_name," +
-                "    'VIEW' as object_type," +
-                "    t.table_comment as remark," +
-                "    st.metadata_modification_time as create_time," +
-                "    st.metadata_modification_time as last_ddl_time," +
-                "    v.view_definition as query_sql" +
-                " from information_schema.views v" +
-                " left join information_schema.tables t" +
-                " on v.table_catalog = t.table_catalog" +
-                " and v.table_schema = t.table_schema" +
-                " and v.table_name = t.table_name" +
-                " left join system.tables st" +
-                " on v.table_schema = st.database" +
-                " and v.table_name = st.name" +
-                " where st.engine <> 'MaterializedView'";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and v.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and v.table_name like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
-    }
-
-    @Override
-    public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        String sql = " select" +
-                "    t.table_catalog as catalog_name," +
-                "    t.table_schema as schema_name," +
-                "    t.table_name as object_name," +
-                "    'FOREIGN_TABLE' as object_type," +
-                "    t.table_comment as remark," +
-                "    st.metadata_modification_time as create_time," +
-                "    st.metadata_modification_time as last_ddl_time" +
-                " from information_schema.tables t" +
-                " left join system.tables st" +
-                " on t.table_schema = st.database" +
-                " and t.table_name = st.name" +
-                " where t.table_type in ('FOREIGN TABLE')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tablePattern)) {
-            sql += " and t.table_name like '%" + tablePattern + "%'";
-        }
-        return super.listForeignTables(sql);
-    }
-
-    @Override
-    public List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return listIndexDetails(catalog, schemaPattern, tableName);
-    }
-
-    @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        return listMViewDetails(catalog, schemaPattern, mViewPattern);
-    }
-
-    @Override
-    public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        String sql = "select" +
-                "    t.table_catalog as catalog_name," +
-                "    t.table_schema as schema_name," +
-                "    t.table_name as object_name," +
-                "    'MATERIALIZED_VIEW'  as object_type," +
-                "    t.table_comment as remark," +
-                "    st.create_table_query as query_sql," +
-                "    t.data_length as data_bytes," +
-                "    st.metadata_modification_time as create_time," +
-                "    st.metadata_modification_time as last_ddl_time" +
-                " from information_schema.tables t" +
-                " left join system.tables st" +
-                " on t.table_schema = st.database" +
-                " and t.table_name = st.name" +
-                " where st.engine = 'MaterializedView'";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(mViewPattern)) {
-            sql += " and t.table_name like '%" + mViewPattern + "%'";
-        }
-        return super.listMViewDetails(sql);
-    }
-
-    @Override
-    public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return listSequenceDetails(catalog, schemaPattern, sequencePattern);
-    }
-
-    @Override
-    public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        String sql = "select" + catalog +
-                "     as catalog_name," + schemaPattern +
-                "     as schema_name," +
-                "    t.name as object_name," +
-                "    'FUNCTION' as object_type," +
-                "    '' as  source_code," +
-                "    toDateTime('1970-01-01 00:00:00') as create_time," +
-                "    toDateTime('1970-01-01 00:00:00') as last_ddl_time," +
-                "    t.description as remark" +
-                " from system.functions t " +
-                " where 1=1 ";
-        if (StrUtil.isNotEmpty(functionPattern)) {
-            sql += " and t.name like '%" + functionPattern + "%'";
-        }
-        return super.listFunctionDetails(sql);
-    }
-
-    @Override
-    public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
     }
 
     @Override
@@ -408,15 +266,4 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
         }
     }
 
-    @Override
-    public List<String> listObjectTypes() throws SQLException {
-        List<String> list = new ArrayList<String>() {{
-            add(TABLE.name());
-            add(VIEW.name());
-            add(MATERIALIZED_VIEW.name());
-            add(FOREIGN_TABLE.name());
-            add(FUNCTION.name());
-        }};
-        return list.stream().map(String::toLowerCase).collect(Collectors.toList());
-    }
 }

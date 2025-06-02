@@ -17,28 +17,26 @@
  */
 package com.basedt.dms.plugins.datasource.impl.mysql;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.common.enums.ResponseCode;
+import com.basedt.dms.common.exception.DmsException;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
-import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
-import com.basedt.dms.plugins.datasource.DataSourcePlugin;
-import com.basedt.dms.plugins.datasource.dto.*;
+import com.basedt.dms.plugins.datasource.*;
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.enums.DbObjectType;
-import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import com.google.auto.service.AutoService;
+import lombok.SneakyThrows;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 @AutoService(DataSourcePlugin.class)
 public class MysqlPluginImpl extends AbstractDataSourcePlugin {
@@ -70,219 +68,58 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    public List<CatalogDTO> listCatalogs() throws SQLException {
-        CatalogDTO catalog = new CatalogDTO();
-        catalog.setCatalogName(getDatabaseName());
-        return new ArrayList<CatalogDTO>() {{
-            add(catalog);
-        }};
+    public CatalogHandler getCatalogHandler() {
+        MysqlCatalogHandler handler = new MysqlCatalogHandler();
+        handler.initialize(getDataSource(), new HashMap<>(), getDatabaseName());
+        return handler;
     }
 
     @Override
-    public List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException {
-        List<CatalogDTO> schemaList = listCatalogs();
-        List<SchemaDTO> resultList = new ArrayList<>();
-        if (CollectionUtil.isNotEmpty(schemaList)) {
-            for (CatalogDTO catalogDTO : schemaList) {
-                if (!catalogDTO.getCatalogName().equalsIgnoreCase("performance_schema") &&
-                        !catalogDTO.getCatalogName().equalsIgnoreCase("information_schema") &&
-                        !catalogDTO.getCatalogName().equalsIgnoreCase("mysql")
-                ) {
-                    resultList.add(new SchemaDTO(catalogDTO.getCatalogName()));
-                }
-            }
-        }
-        return resultList;
+    public TableHandler getTableHandler() {
+        MysqlTableHandler handler = new MysqlTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        return listTableDetails(catalog, schemaPattern, tablePattern, TABLE);
+    public ViewHandler getViewHandler() {
+        MysqlViewHandler handler = new MysqlViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @SneakyThrows
+    @Override
+    public ForeignTableHandler getForeignTableHandler() {
+        throw new DmsException(ResponseCode.ERROR_DB_TYPE_NOT_SUPPORTED);
     }
 
     @Override
-    public List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        return listTableDetails(catalog, schemaPattern, tablePattern, type);
+    public FunctionHandler getFunctionHandler() {
+        MysqlFunctionHandler handler = new MysqlFunctionHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        String sql = "select " +
-                " null as catalog_name," +
-                " t.table_schema as schema_name," +
-                " t.table_name as object_name," +
-                " case when t.table_type = 'SYSTEM VIEW' then 'VIEW' when t.table_type = 'BASE TABLE' then 'TABLE' else t.table_type end as object_type," +
-                " t.table_rows as table_rows," +
-                " t.data_length as data_bytes," +
-                " t.table_comment as remark," +
-                " t.create_time as create_time, " +
-                " t.create_time as last_ddl_time," +
-                " t.update_time as last_access_time" +
-                " from information_schema.tables t " +
-                " where t.table_type = 'BASE TABLE'";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tablePattern)) {
-            sql += " and t.table_name like '%" + tablePattern + "%'";
-        }
-        return super.listTableDetails(sql);
+    public IndexHandler getIndexHandler() {
+        MysqlIndexHandler handler = new MysqlIndexHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
+    @SneakyThrows
     @Override
-    public List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        return listViewDetails(catalog, schemaPattern, viewPattern);
+    public MaterializedViewHandler getMaterializedViewHandler() {
+        throw new DmsException(ResponseCode.ERROR_DB_TYPE_NOT_SUPPORTED);
     }
 
+    @SneakyThrows
     @Override
-    public List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException {
-        String sql = "select" +
-                " null as catalog_name," +
-                " v.table_schema as schema_name," +
-                " v.table_name as object_name," +
-                " 'VIEW' as object_type," +
-                " t.table_comment as remark," +
-                " t.create_time as create_time," +
-                " t.update_time as last_ddl_time," +
-                " v.view_definition as query_sql" +
-                " from information_schema.views v" +
-                " join information_schema.tables t" +
-                " on v.table_schema = t.table_schema " +
-                " and v.table_name = t.table_name " +
-                " where t.table_type not in ('BASE TABLE')";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and v.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(viewPattern)) {
-            sql += " and v.table_name like '%" + viewPattern + "%'";
-        }
-        return super.listViewDetails(sql);
+    public SequenceHandler getSequenceHandler() {
+        throw new DmsException(ResponseCode.ERROR_DB_TYPE_NOT_SUPPORTED);
     }
 
-    @Override
-    public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return listIndexDetails(catalog, schemaPattern, tableName);
-    }
-
-    @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        String sql = "select " +
-                " null as catalog_name," +
-                " t.index_schema as schema_name," +
-                " t.index_name as object_name," +
-                " 'INDEX' as object_type," +
-                " t.index_type as index_type," +
-                " t.table_name as table_name, " +
-                " case when max(t.non_unique) >=1 then 0 else 1 end as is_uniqueness," +
-                " group_concat(t.column_name order by t.seq_in_index) as columns,"+
-                " null as index_bytes," +
-                " null as create_time," +
-                " null as last_ddl_time" +
-                " from information_schema.statistics t" +
-                " where 1 = 1";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.index_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tableName)) {
-            sql += " and t.table_name = '" + tableName + "'";
-        }
-        sql += " group by t.index_schema,t.index_name,t.index_type,t.table_name";
-        return super.listIndexDetails(sql);
-    }
-
-    @Override
-    public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        String sql = "select " +
-                " null as catalog_name," +
-                " r.routine_schema as schema_name," +
-                " r.routine_name as object_name," +
-                " 'FUNCTION' as object_type," +
-                " r.routine_definition as source_code," +
-                " r.created as create_time," +
-                " r.last_altered as last_ddl_time," +
-                " r.routine_comment as remark" +
-                " from information_schema.routines r" +
-                " where 1=1 ";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and r.routine_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(functionPattern)) {
-            sql += " and r.routine_name like '%" + functionPattern + "%'";
-        }
-        return super.listFunctionDetails(sql);
-    }
-
-    @Override
-    public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return getConstraint(catalog, schemaPattern, tableName, PK);
-    }
-
-    @Override
-    public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return getConstraint(catalog, schemaPattern, tableName, FK);
-    }
-
-    @Override
-    public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        String sql = "select " +
-                " null as catalog_name," +
-                " t.table_schema as schema_name," +
-                " t.table_name as table_name," +
-                " t.column_name  as column_name," +
-                " t.data_type as data_type," +
-                " t.character_maximum_length as data_length," +
-                " t.numeric_precision as data_precision," +
-                " t.numeric_scale as data_scale," +
-                " t.column_default as default_value," +
-                " t.ordinal_position as column_ordinal," +
-                " t.column_comment as remark," +
-                " case when t.is_nullable = 'YES' then 1 else 0 end as is_nullable" +
-                " from information_schema.columns t" +
-                " where 1=1 ";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.table_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tableName)) {
-            sql += " and t.table_name = '" + tableName + "'";
-        }
-        return super.listColumnDetails(sql);
-    }
-
-    @Override
-    public List<String> listObjectTypes() throws SQLException {
-        List<String> list = new ArrayList<String>() {{
-            add(TABLE.name());
-            add(VIEW.name());
-            add(FUNCTION.name());
-            add(INDEX.name());
-        }};
-        return list.stream().map(String::toLowerCase).collect(Collectors.toList());
-    }
 
     @Override
     public Boolean isSupportRowEdit() {
@@ -379,46 +216,4 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
         }
     }
 
-    private List<ObjectDTO> getConstraint(String catalog, String schemaPattern, String tableName, DbObjectType type) throws SQLException {
-        List<ObjectDTO> constraints = new ArrayList<>();
-        String constraintType = "";
-        if (PK.equals(type)) {
-            constraintType = "PRIMARY KEY";
-        } else if (FK.equals(type)) {
-            constraintType = "FOREIGN KEY";
-        }
-        String sql = "select " +
-                " null as catalog_name," +
-                " t.constraint_schema as schema_name," +
-                " t.constraint_name as object_name," +
-                " t.table_name as table_name," +
-                " t.constraint_type " +
-                " from information_schema.table_constraints t" +
-                " where t.constraint_type = '" + constraintType + "'";
-        if (StrUtil.isNotEmpty(schemaPattern)) {
-            sql += " and t.constraint_schema = '" + schemaPattern + "'";
-        }
-        if (StrUtil.isNotEmpty(tableName)) {
-            sql += " and t.table_name = '" + tableName + "'";
-        }
-        Connection conn = this.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
-        while (rs.next()) {
-            ObjectDTO obj = new ObjectDTO();
-            obj.setCatalogName(rs.getString("catalog_name"));
-            obj.setSchemaName(rs.getString("schema_name"));
-            obj.setObjectName(rs.getString("object_name"));
-            obj.setObjectType(type.name());
-            constraints.add(obj);
-        }
-        JdbcUtil.close(conn, pstm, rs);
-        return constraints;
-    }
-
-    @Override
-    public String renameTable(String catalog, String schemaPattern, String tableName, String newTableName) {
-        String originName = schemaPattern + Constants.SEPARATOR_DOT + tableName;
-        return StrUtil.format("rename table {} to {}", originName, newTableName);
-    }
 }

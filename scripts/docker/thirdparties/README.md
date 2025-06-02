@@ -89,6 +89,8 @@ VALUES ('John Smith', 'M', '1998-04-25'),
        ('William Thomas', 'M', '1992-08-09'),
        ('Sophia Martinez', NULL, NULL);
 
+-- jdbc连接配置注意增加参数encrypt=true;trustServerCertificate=true
+
 ```
 ### Greenplum 
 启动docker容器

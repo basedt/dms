@@ -18,8 +18,6 @@
 package com.basedt.dms.plugins.datasource;
 
 import com.basedt.dms.plugins.core.Plugin;
-import com.basedt.dms.plugins.datasource.dto.*;
-import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import org.apache.arrow.vector.ipc.ArrowStreamReader;
 
 import javax.sql.DataSource;
@@ -34,7 +32,7 @@ public interface DataSourcePlugin extends Plugin {
 
     String JDBC = "jdbc";
 
-    List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar","text","nchar", "bigint","int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
+    List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar", "text", "nchar", "bigint", "int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
 
     String getHostName();
 
@@ -64,63 +62,25 @@ public interface DataSourcePlugin extends Plugin {
 
     void setAttributes(Map<String, String> attributes);
 
-    Connection getConnection();
-
     DataSource getDataSource();
 
-    Boolean testConnection() throws SQLException, ClassNotFoundException;
+    Boolean testConnection() throws Exception;
 
-    List<CatalogDTO> listCatalogs() throws SQLException;
+    CatalogHandler getCatalogHandler();
 
-    List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException;
+    TableHandler getTableHandler();
 
-    List<String> listObjectTypes() throws SQLException;
+    ViewHandler getViewHandler();
 
-    List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
+    ForeignTableHandler getForeignTableHandler();
 
-    List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException;
+    FunctionHandler getFunctionHandler();
 
-    List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException;
+    IndexHandler getIndexHandler();
 
-    TableDTO getTableDetail(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException;
+    MaterializedViewHandler getMaterializedViewHandler();
 
-    List<ViewDTO> listViews(String catalog, String schemaPattern, String viewPattern) throws SQLException;
-
-    List<ViewDTO> listViewDetails(String catalog, String schemaPattern, String viewPattern) throws SQLException;
-
-    ViewDTO getViewDetail(String catalog, String schemaPattern, String viewPattern) throws SQLException;
-
-    List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
-
-    List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException;
-
-    List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException;
-
-    IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName) throws SQLException;
-
-    List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
-
-    List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
-
-    MaterializedViewDTO getMViewDetail(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
-
-    List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
-
-    List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
-
-    SequenceDTO getSequenceDetail(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
-
-    List<FunctionDTO> listFunctions(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    FunctionDTO getFunctionDetail(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
-
-    List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
-
-    List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
+    SequenceHandler getSequenceHandler();
 
     Boolean isSupportRowEdit();
 
@@ -128,7 +88,4 @@ public interface DataSourcePlugin extends Plugin {
 
     void insertBatch(ArrowStreamReader reader, String catalog, String schemaName, String tableName) throws SQLException, IOException;
 
-    Map<String, TypeInfoDTO> listDataType() throws SQLException;
-
-    String renameTable(String catalog, String schemaPattern, String tableName,String newTableName);
 }

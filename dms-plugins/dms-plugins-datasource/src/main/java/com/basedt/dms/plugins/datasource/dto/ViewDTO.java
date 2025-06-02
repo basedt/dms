@@ -33,4 +33,8 @@ public class ViewDTO extends ObjectDTO {
     public String getViewName() {
         return getObjectName();
     }
+
+    public void setViewName(String viewName) {
+        setObjectName(viewName);
+    }
 }

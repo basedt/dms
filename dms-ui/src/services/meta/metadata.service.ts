@@ -45,10 +45,18 @@ export const MetaDataService = {
       params: tableParam,
     });
   },
-  renameTable(param: DMS.TableRenameParam) {
-    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/table/rename`, {
-      method: 'POST',
-      data: param,
+  renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {
+    const objInfo: string[] = identifier.split('.') as string[];
+    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/rename`, {
+      method: 'GET',
+      params: {
+        dataSourceId: dataSourceId,
+        catalog: objInfo[0],
+        schemaName: objInfo[1],
+        objectName: objInfo[2],
+        objectType: type,
+        newName: newName,
+      },
     });
   },
   dropObject(dataSourceId: number | string, identifier: string, type: string) {

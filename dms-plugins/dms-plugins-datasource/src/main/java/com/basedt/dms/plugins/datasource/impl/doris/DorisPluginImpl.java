@@ -19,27 +19,16 @@ package com.basedt.dms.plugins.datasource.impl.doris;
 
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.constant.Constants;
-import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
-import com.basedt.dms.plugins.datasource.DataSourcePlugin;
-import com.basedt.dms.plugins.datasource.dto.*;
+import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.impl.mysql.MysqlPluginImpl;
-import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import com.google.auto.service.AutoService;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
 @AutoService(DataSourcePlugin.class)
 public class DorisPluginImpl extends MysqlPluginImpl {
@@ -66,119 +55,30 @@ public class DorisPluginImpl extends MysqlPluginImpl {
     }
 
     @Override
-    public List<SchemaDTO> listSchemas(String catalog, String schemaPattern) throws SQLException {
-        return super.listSchemas(catalog, schemaPattern).stream().filter(s -> {
-            if ("__internal_schema".equalsIgnoreCase(s.getSchemaName())) {
-                return false;
-            } else {
-                return true;
-            }
-        }).collect(Collectors.toList());
+    public CatalogHandler getCatalogHandler() {
+        DorisCatalogHandler handler = new DorisCatalogHandler();
+        handler.initialize(getDataSource(), new HashMap<>(), getDatabaseName());
+        return handler;
     }
 
     @Override
-    public List<String> listObjectTypes() throws SQLException {
-        List<String> objectTypes = super.listObjectTypes();
-        objectTypes.add(FOREIGN_TABLE.name());
-        objectTypes.add(MATERIALIZED_VIEW.name());
-        return objectTypes.stream().filter(s -> {
-            if (INDEX.name().equalsIgnoreCase(s)) {
-                return false;
-            } else {
-                return true;
-            }
-        }).collect(Collectors.toList());
+    public FunctionHandler getFunctionHandler() {
+        DorisFunctionHandler handler = new DorisFunctionHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> mViewList = new ArrayList<>();
-        String sql = "show alter table materialized view from " + schemaPattern;
-        Connection conn = this.getConnection();
-        if (StrUtil.isNotEmpty(mViewPattern)) {
-            sql += " where tablename = " + mViewPattern;
-        }
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            MaterializedViewDTO mView = new MaterializedViewDTO();
-            mView.setCatalogName(catalog);
-            mView.setSchemaName(schemaPattern);
-            mView.setObjectName(rs.getString("TableName"));
-            mView.setObjectType(MATERIALIZED_VIEW.name());
-            mView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("CreateTime")));
-            mViewList.add(mView);
-        }
-        JdbcUtil.close(conn, st, rs);
-        return mViewList;
+    public IndexHandler getIndexHandler() {
+        DorisIndexHandler handler = new DorisIndexHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        return listMViewDetails(catalog, schemaPattern, mViewPattern);
-    }
-
-    @Override
-    public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        List<FunctionDTO> functionList = new ArrayList<>();
-        String sql = "show global full functions";
-        Connection connection = this.getConnection();
-        if (StrUtil.isNotEmpty(functionPattern)) {
-            sql += StrUtil.concat(true, " like ", functionPattern, "%");
-        }
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            FunctionDTO function = new FunctionDTO();
-            function.setCatalogName(catalog);
-            function.setSchemaName(schemaPattern);
-            function.setObjectName(rs.getString("Signature"));
-            function.setObjectType(FUNCTION.name());
-            functionList.add(function);
-        }
-        JdbcUtil.close(connection, st, rs);
-        return functionList;
-    }
-
-    @Override
-    public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<IndexDTO> indexList = new ArrayList<>();
-        String sql = "show index from " + StrUtil.concat(true, schemaPattern, Constants.SEPARATOR_DOT, tableName);
-        Connection conn = this.getConnection();
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            IndexDTO index = new IndexDTO();
-            index.setCatalogName(catalog);
-            index.setSchemaName(schemaPattern);
-            index.setTableName(tableName);
-            index.setObjectName(rs.getString("key_name"));
-            index.setIndexType(rs.getString("index_type"));
-            index.setColumns(rs.getString("column_name"));
-            index.setIsUniqueness(false);
-            indexList.add(index);
-        }
-        JdbcUtil.close(conn, st, rs);
-        return indexList;
+    public MaterializedViewHandler getMaterializedViewHandler() {
+        DorisMaterializedViewHandler handler = new DorisMaterializedViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 }

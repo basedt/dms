@@ -67,7 +67,7 @@ public class MetaDataServiceImpl implements MetaDataService {
         }
         List<CatalogDTO> catalogs = null;
         try {
-            catalogs = dataSourcePlugin.listCatalogs();
+            catalogs = dataSourcePlugin.getCatalogHandler().listCatalogs();
             for (CatalogDTO catalog : catalogs) {
                 List<SchemaDTO> schemas = null;
                 if (StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POSTGRESQL.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
@@ -77,9 +77,9 @@ public class MetaDataServiceImpl implements MetaDataService {
                         || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.GREENPLUM.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
                         || StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.POLARDB_POSTGRE.getValue()).toUpperCase().equals(dataSourcePlugin.getPluginName())
                 ) {
-                    schemas = dataSourcePlugin.listSchemas(catalog.getCatalogName(), null);
+                    schemas = dataSourcePlugin.getCatalogHandler().listSchemas(catalog.getCatalogName(), null);
                 } else {
-                    schemas = dataSourcePlugin.listSchemas(catalog.getCatalogName(), dataSourcePlugin.getDatabaseName());
+                    schemas = dataSourcePlugin.getCatalogHandler().listSchemas(catalog.getCatalogName(), dataSourcePlugin.getDatabaseName());
                 }
                 catalog.setSchemas(schemas);
             }
@@ -156,9 +156,9 @@ public class MetaDataServiceImpl implements MetaDataService {
         String schema = parseIdentifier(identifier, 2);
         List<TableDTO> tableList = new ArrayList<>();
         if (DbObjectType.TABLE.equals(type)) {
-            tableList = dataSourcePlugin.listTables(catalog, schema, null);
+            tableList = dataSourcePlugin.getTableHandler().listTables(catalog, schema, null);
         } else if (DbObjectType.FOREIGN_TABLE.equals(type)) {
-            tableList = dataSourcePlugin.listForeignTables(catalog, schema, null);
+            tableList = dataSourcePlugin.getForeignTableHandler().listForeignTables(catalog, schema, null);
         }
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(tableList)) {
@@ -176,7 +176,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listViews(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<ViewDTO> viewList = dataSourcePlugin.listViews(catalog, schema, null);
+        List<ViewDTO> viewList = dataSourcePlugin.getViewHandler().listViews(catalog, schema, null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(viewList)) {
             TreeNodeVO parent = new TreeNodeVO();
@@ -193,7 +193,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listMViews(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<MaterializedViewDTO> list = dataSourcePlugin.listMViews(catalog, schema, null);
+        List<MaterializedViewDTO> list = dataSourcePlugin.getMaterializedViewHandler().listMViews(catalog, schema, null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(list)) {
             TreeNodeVO parent = new TreeNodeVO();
@@ -210,7 +210,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listIndex(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<IndexDTO> list = dataSourcePlugin.listIndexes(catalog, schema, null);
+        List<IndexDTO> list = dataSourcePlugin.getIndexHandler().listIndexes(catalog, schema, null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(list)) {
             TreeNodeVO parent = new TreeNodeVO();
@@ -227,7 +227,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listFunction(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<FunctionDTO> list = dataSourcePlugin.listFunctions(catalog, schema, null);
+        List<FunctionDTO> list = dataSourcePlugin.getFunctionHandler().listFunctions(catalog, schema, null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(list)) {
             TreeNodeVO parent = new TreeNodeVO();
@@ -244,7 +244,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     private List<Tree<String>> listSequence(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
-        List<SequenceDTO> list = dataSourcePlugin.listSequences(catalog, schema, null);
+        List<SequenceDTO> list = dataSourcePlugin.getSequenceHandler().listSequences(catalog, schema, null);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(list)) {
             TreeNodeVO parent = new TreeNodeVO();
@@ -320,7 +320,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     private List<TreeNodeVO> listColumnNode(String catalog, String schema, String tableName, DataSourcePlugin dataSourcePlugin, TreeNodeVO parent) throws SQLException {
-        List<ColumnDTO> columnList = dataSourcePlugin.listColumnsByTable(catalog, schema, tableName);
+        List<ColumnDTO> columnList = dataSourcePlugin.getTableHandler().listColumnsByTable(catalog, schema, tableName);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(columnList)) {
             for (ColumnDTO column : columnList) {
@@ -332,7 +332,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     private List<TreeNodeVO> listIndexesNode(String catalog, String schema, String tableName, DataSourcePlugin dataSourcePlugin, TreeNodeVO parent) throws SQLException {
-        List<IndexDTO> indexList = dataSourcePlugin.listIndexes(catalog, schema, tableName);
+        List<IndexDTO> indexList = dataSourcePlugin.getIndexHandler().listIndexes(catalog, schema, tableName);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(indexList)) {
             for (IndexDTO index : indexList) {
@@ -344,7 +344,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     private List<TreeNodeVO> listPkNode(String catalog, String schema, String tableName, DataSourcePlugin dataSourcePlugin, TreeNodeVO parent) throws SQLException {
-        List<ObjectDTO> pkList = dataSourcePlugin.listPkByTable(catalog, schema, tableName);
+        List<ObjectDTO> pkList = dataSourcePlugin.getIndexHandler().listPkByTable(catalog, schema, tableName);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(pkList)) {
             for (ObjectDTO obj : pkList) {
@@ -356,7 +356,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     private List<TreeNodeVO> listFkNode(String catalog, String schema, String tableName, DataSourcePlugin dataSourcePlugin, TreeNodeVO parent) throws SQLException {
-        List<ObjectDTO> fkList = dataSourcePlugin.listFkByTable(catalog, schema, tableName);
+        List<ObjectDTO> fkList = dataSourcePlugin.getIndexHandler().listFkByTable(catalog, schema, tableName);
         List<TreeNodeVO> treeList = new ArrayList<>();
         if (CollectionUtil.isNotEmpty(fkList)) {
             for (ObjectDTO obj : fkList) {
@@ -400,7 +400,7 @@ public class MetaDataServiceImpl implements MetaDataService {
             return null;
         }
         try {
-            return dataSourcePlugin.listDataType().values().stream().sorted().collect(Collectors.toList());
+            return dataSourcePlugin.getCatalogHandler().listDataType().values().stream().sorted().collect(Collectors.toList());
         } catch (SQLException e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
         }
@@ -413,18 +413,18 @@ public class MetaDataServiceImpl implements MetaDataService {
             return null;
         }
         try {
-            List<TableDTO> tables = dataSourcePlugin.listTableDetails(catalog, schemaName, tableName, TABLE);
+            List<TableDTO> tables = dataSourcePlugin.getTableHandler().listTableDetails(catalog, schemaName, tableName, TABLE);
             if (CollectionUtils.isEmpty(tables)) {
                 return null;
             } else {
                 TableDTO table = tables.get(0);
-                List<ColumnDTO> columnList = dataSourcePlugin.listColumnsByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                List<ColumnDTO> columnList = dataSourcePlugin.getTableHandler().listColumnsByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
                 columnList.sort(Comparator.comparing(ColumnDTO::getColumnOrdinal));
                 table.setColumns(columnList);
-                List<IndexDTO> indexes = dataSourcePlugin.listIndexes(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                List<IndexDTO> indexes = dataSourcePlugin.getIndexHandler().listIndexes(table.getCatalogName(), table.getSchemaName(), table.getTableName());
                 table.setIndexes(indexes);
-                List<ObjectDTO> pks = dataSourcePlugin.listPkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
-                List<ObjectDTO> fks = dataSourcePlugin.listFkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                List<ObjectDTO> pks = dataSourcePlugin.getIndexHandler().listPkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
+                List<ObjectDTO> fks = dataSourcePlugin.getIndexHandler().listFkByTable(table.getCatalogName(), table.getSchemaName(), table.getTableName());
                 table.setPks(pks);
                 table.setFks(fks);
                 //todo list partitions
@@ -436,22 +436,14 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
-    public void renameTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String newTableName) throws DmsException {
-        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+    public void renameObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
-            String sql = dataSourcePlugin.renameTable(catalog, schemaName, tableName, newTableName);
-            dataSourcePlugin.execute(sql);
-        } catch (Exception e) {
-            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
-        }
-    }
-
-    @Override
-    public void dropTable(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
-        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
-        try {
-            String sql = StrUtil.format("drop table {}", schemaName + Constants.SEPARATOR_DOT + tableName);
-            dataSourcePlugin.execute(sql);
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            if (TABLE.name().equals(objectType)) {
+                dataSourcePlugin.getTableHandler().renameTable(schemaName, objectName, newName);
+            } else if (VIEW.name().equals(objectType)) {
+                dataSourcePlugin.getViewHandler().renameView(schemaName, objectName, newName);
+            }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
@@ -464,13 +456,28 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
+    public void dropObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+        try {
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            if (TABLE.name().equals(objectType)) {
+                dataSourcePlugin.getTableHandler().dropTable(schemaName, objectName);
+            } else if (VIEW.name().equals(objectType)) {
+                dataSourcePlugin.getViewHandler().dropView(schemaName, objectName);
+            }
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+
+    }
+
+    @Override
     public String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException {
         if (DmlType.DELETE.equals(type)) {
             return StrUtil.format("delete from {} \nwhere ;", schemaName + Constants.SEPARATOR_DOT + tableName);
         } else {
             try {
                 DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
-                List<ColumnDTO> columns = dataSourcePlugin.listColumnsByTable(catalog, schemaName, tableName);
+                List<ColumnDTO> columns = dataSourcePlugin.getTableHandler().listColumnsByTable(catalog, schemaName, tableName);
                 TableDTO table = new TableDTO();
                 table.setCatalogName(catalog);
                 table.setSchemaName(schemaName);
@@ -489,7 +496,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     private String generateSelect(TableDTO table) {
-        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())) {
+        if (Objects.nonNull(table) && !CollectionUtils.isEmpty(table.getColumns())) {
             StringBuilder buffer = new StringBuilder();
             buffer.append("select \n");
             for (ColumnDTO column : table.getColumns()) {
@@ -498,13 +505,13 @@ public class MetaDataServiceImpl implements MetaDataService {
             buffer.deleteCharAt(buffer.lastIndexOf(","));
             buffer.append("from ").append(table.getSchemaName()).append(".").append(table.getTableName()).append("\nwhere ;");
             return buffer.toString();
-        }else {
+        } else {
             return "";
         }
     }
 
     private String generateUpdate(TableDTO table) {
-        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())){
+        if (Objects.nonNull(table) && !CollectionUtils.isEmpty(table.getColumns())) {
             StringBuilder buffer = new StringBuilder("update ");
             buffer.append(table.getSchemaName()).append(".").append(table.getTableName()).append("\nset\n");
             for (ColumnDTO column : table.getColumns()) {
@@ -513,13 +520,13 @@ public class MetaDataServiceImpl implements MetaDataService {
             buffer.deleteCharAt(buffer.lastIndexOf(","));
             buffer.append("where ;");
             return buffer.toString();
-        }else {
+        } else {
             return "";
         }
     }
 
     private String generateInsert(TableDTO table) {
-        if (Objects.nonNull(table)&& !CollectionUtils.isEmpty(table.getColumns())){
+        if (Objects.nonNull(table) && !CollectionUtils.isEmpty(table.getColumns())) {
             StringBuilder buffer = new StringBuilder("insert into ");
             buffer.append(table.getSchemaName()).append(".").append(table.getTableName()).append(" \n(");
             for (ColumnDTO column : table.getColumns()) {
@@ -528,7 +535,7 @@ public class MetaDataServiceImpl implements MetaDataService {
             buffer.deleteCharAt(buffer.lastIndexOf(","));
             buffer.append("\n) \nvalues\n();");
             return buffer.toString();
-        }else {
+        } else {
             return "";
         }
     }
@@ -541,7 +548,7 @@ public class MetaDataServiceImpl implements MetaDataService {
             return null;
         }
         try {
-            return dataSourcePlugin.listObjectTypes();
+            return dataSourcePlugin.getCatalogHandler().listObjectTypes();
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
         }

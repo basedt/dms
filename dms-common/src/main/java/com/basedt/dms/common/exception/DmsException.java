@@ -17,13 +17,22 @@
  */
 package com.basedt.dms.common.exception;
 
+import com.basedt.dms.common.enums.ResponseCode;
+import com.basedt.dms.common.utils.I18nUtil;
+
 public class DmsException extends Exception {
+
     private String exceptionCode;
 
 
     public DmsException(String code, String message) {
         super(message);
         setExceptionCode(code);
+    }
+
+    public DmsException(ResponseCode responseCode) {
+        super(I18nUtil.get(responseCode.getLabel()));
+        setExceptionCode(responseCode.getValue());
     }
 
     public String getExceptionCode() {

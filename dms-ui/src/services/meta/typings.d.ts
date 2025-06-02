@@ -99,12 +99,4 @@ declare namespace DMS {
     tableName: string;
     tableInfo?: DMS.Table;
   };
-
-  type TableRenameParam = {
-    dataSourceId: string;
-    catalog?: string;
-    schemaName: string;
-    tableName: string;
-    newTableName: string;
-  };
 }

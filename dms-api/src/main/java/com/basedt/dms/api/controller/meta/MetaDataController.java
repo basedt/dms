@@ -29,7 +29,6 @@ import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
 import com.basedt.dms.plugins.datasource.enums.DmlType;
 import com.basedt.dms.plugins.datasource.param.MetaObjectParam;
 import com.basedt.dms.plugins.datasource.param.TableInfoParam;
-import com.basedt.dms.plugins.datasource.param.TableRenameParam;
 import com.basedt.dms.service.workspace.DmsDataSourceService;
 import com.basedt.dms.service.workspace.convert.DataSourceConvert;
 import com.basedt.dms.service.workspace.dto.DmsDataSourceDTO;
@@ -46,8 +45,6 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
-
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
 
 @RestController
 @RequestMapping(path = "/api/meta")
@@ -114,12 +111,12 @@ public class MetaDataController {
     }
 
     @AuditLogging
-    @PostMapping(path = "/table/rename")
-    @Operation(summary = "rename table", description = "rename table")
+    @GetMapping(path = "/obj/rename")
+    @Operation(summary = "rename object", description = "rename object")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> renameTable(@Validated @RequestBody final TableRenameParam param) throws DmsException {
-        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(param.getDataSourceId());
-        metaDataService.renameTable(DataSourceConvert.toDataSource(dto), param.getCatalog(), param.getSchemaName(), param.getTableName(), param.getNewTableName());
+    public ResponseEntity<ResponseVO<Object>> renameObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType, String newName) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        metaDataService.renameObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectType, objectName, newName);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
@@ -127,11 +124,9 @@ public class MetaDataController {
     @GetMapping(path = "/obj/drop")
     @Operation(summary = "drop object", description = "drop object")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> dropTable(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+    public ResponseEntity<ResponseVO<Object>> dropObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        if (TABLE.name().equals(objectType)) {
-            metaDataService.dropTable(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName);
-        }
+        metaDataService.dropObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, objectType);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 

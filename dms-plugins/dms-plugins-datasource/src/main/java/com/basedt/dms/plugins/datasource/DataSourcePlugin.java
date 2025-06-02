@@ -64,7 +64,7 @@ public interface DataSourcePlugin extends Plugin {
 
     DataSource getDataSource();
 
-    Boolean testConnection() throws SQLException, ClassNotFoundException;
+    Boolean testConnection() throws Exception;
 
     CatalogHandler getCatalogHandler();
 

@@ -22,13 +22,14 @@ import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.common.vo.DictVO;
-import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static com.basedt.dms.plugins.datasource.DataSourcePlugin.JDBC;
 
 @Data
 public class DataSourceDTO {

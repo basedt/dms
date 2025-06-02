@@ -178,6 +178,12 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
             InputPlugin inputPlugin = InputPluginManager.newInstance(StrUtil.concat(true, PluginType.RESOURCE_INPUT.name(), Constants.SEPARATOR_UNDERLINE, dmsDataTaskDTO.getFileType().getValue()).toUpperCase(),
                     propMap);
             DmsDataSourceDTO dataSourceDTO = dmsDataSourceService.selectOne(dmsDataTaskDTO.getDatasourceId());
+            Map<String, String> attrs = new HashMap<>();
+            if (CollectionUtil.isNotEmpty(dataSourceDTO.getAttrs())) {
+                dataSourceDTO.getAttrs().forEach((k, v) -> {
+                    attrs.put(k, (String) v);
+                });
+            }
             try (ByteArrayOutputStream outputStream = inputPlugin.read();
                  ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
                  RootAllocator allocator = new RootAllocator(Long.MAX_VALUE);
@@ -189,7 +195,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
                         dataSourceDTO.getDatabaseName(),
                         dataSourceDTO.getUserName(),
                         Base64.decodeStr(dataSourceDTO.getPassword()),
-                        new HashMap<>()
+                        attrs
                 );
                 this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "connected to the database success."));
                 String tableName = StrUtil.concat(true, dmsImportTaskVO.getSchema(), Constants.SEPARATOR_DOT, dmsImportTaskVO.getTableName());

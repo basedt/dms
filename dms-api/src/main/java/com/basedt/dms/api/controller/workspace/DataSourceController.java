@@ -31,13 +31,13 @@ import com.basedt.dms.common.vo.ResponseVO;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.DataSourcePluginManager;
-import com.basedt.dms.plugins.datasource.MetaDataService;
 import com.basedt.dms.service.base.dto.PageDTO;
 import com.basedt.dms.service.workspace.DmsDataSourceService;
 import com.basedt.dms.service.workspace.dto.DmsDataSourceDTO;
 import com.basedt.dms.service.workspace.param.DmsDataSourceParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,9 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.sql.SQLException;
 import java.util.*;
 
 import static com.basedt.dms.plugins.datasource.DataSourcePlugin.JDBC;
@@ -148,12 +145,15 @@ public class DataSourceController {
                 dataSourceDTO.setPassword(Base64.decodeStr(ds.getPassword()));
             }
             Map<String, String> attrs = new HashMap<>();
-            if (CollectionUtil.isNotEmpty(dataSourceDTO.getAttrs()) && dataSourceDTO.getAttrs().containsKey(JDBC)) {
-                String jdbcAttr = (String) dataSourceDTO.getAttrs().get(JDBC);
-                Map<String, Object> map = PropertiesUtil.formatToMap(jdbcAttr, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
-                map.forEach((k, v) -> {
+            if (CollectionUtil.isNotEmpty(dataSourceDTO.getAttrs())) {
+                dataSourceDTO.getAttrs().forEach((k, v) -> {
                     attrs.put(k, (String) v);
                 });
+//                String jdbcAttr = (String) dataSourceDTO.getAttrs().get(JDBC);
+//                Map<String, Object> map = PropertiesUtil.formatToMap(jdbcAttr, Constants.LINE_FEED, Constants.SEPARATOR_EQUAL);
+//                map.forEach((k, v) -> {
+//                    attrs.put(k, (String) v);
+//                });
             }
             DataSourcePlugin dataSource = DataSourcePluginManager.newInstance(
                     StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, datasourceType).toUpperCase(),
@@ -169,7 +169,7 @@ public class DataSourceController {
             } else {
                 throw new NullPointerException("datasource is null");
             }
-        } catch (SQLException | ClassNotFoundException | NullPointerException e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(ResponseVO.error(ResponseCode.ERROR_CUSTOM.getValue(),
                     I18nUtil.get("response.error.datasource.connection") + " : " + e.getMessage(),
                     ErrorShowType.NOTIFICATION),

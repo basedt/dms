@@ -94,4 +94,9 @@ public class MssqlTableHandler extends JdbcTableHandler {
         }
         return super.listColumnFromTable(sql);
     }
+
+    @Override
+    protected String generateRenameSQL(String schema, String viewName, String newName) {
+        return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, viewName, newName);
+    }
 }

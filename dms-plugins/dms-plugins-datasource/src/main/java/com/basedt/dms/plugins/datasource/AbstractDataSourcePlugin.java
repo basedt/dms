@@ -180,14 +180,14 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     }
 
     @Override
-    public Boolean testConnection() throws SQLException, ClassNotFoundException {
-        Connection conn = getDataSource().getConnection();
+    public Boolean testConnection() throws Exception {
+        Connection conn = JdbcUtil.getConnection(getJdbcUrl(), getDriverClassName(), getUserName(), getPassword(), getJdbcProps());
         return conn != null;
     }
 
     @Override
     public DataSource getDataSource() {
-        return JdbcUtil.getDataSource(getJdbcUrl(), getDriverClassName(), getUserName(), getPassword(), getAttributes());
+        return JdbcUtil.getDataSource(getJdbcUrl(), getDriverClassName(), getUserName(), getPassword(), getJdbcProps());
     }
 
     protected abstract String getJdbcUrl();

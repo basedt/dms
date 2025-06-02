@@ -44,7 +44,7 @@ public interface DmsDataTaskService {
 
     void createImportTask(Long taskId, DmsImportTaskVO dmsImportTaskVO, MultipartFile file) throws IOException, SQLException;
 
-    void createExportTask(Long taskId, String script);
+    void createExportTask(Long taskId, String script) throws SQLException;
 
     List<LogDataTaskDTO> getLogDetail(Long taskId) throws IOException;
 }

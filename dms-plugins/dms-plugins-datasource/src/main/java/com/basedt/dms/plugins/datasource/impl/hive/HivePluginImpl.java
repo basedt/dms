@@ -22,27 +22,22 @@ import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
-import com.basedt.dms.plugins.datasource.AbstractDataSourcePlugin;
-import com.basedt.dms.plugins.datasource.DataSourcePlugin;
-import com.basedt.dms.plugins.datasource.ViewHandler;
-import com.basedt.dms.plugins.datasource.dto.*;
+import com.basedt.dms.plugins.datasource.*;
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.enums.DbObjectType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcFunctionHandler;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcSequenceHandler;
 import com.google.auto.service.AutoService;
-import lombok.SneakyThrows;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
-import org.apache.hadoop.hive.metastore.api.MetaException;
-import org.apache.hadoop.hive.metastore.api.Table;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.*;
 import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 
 @AutoService(DataSourcePlugin.class)
 public class HivePluginImpl extends AbstractDataSourcePlugin {
@@ -80,121 +75,67 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         return false;
     }
 
-    @SneakyThrows
-    @Override
-    public List<TableDTO> listTableDetails(String catalog, String schemaPattern, String tablePattern, DbObjectType type) throws SQLException {
-        List<TableDTO> result = new ArrayList<>();
-        HiveMetaStoreClient client = getHmsClient();
-        List<String> tables = client.getAllTables(null, schemaPattern);
-        List<Table> tableList = client.getTableObjectsByName(null, schemaPattern, tables);
-        for (Table table : tableList) {
-            if ("MANAGED_TABLE".equals(table.getTableType()) || "EXTERNAL_TABLE".equals(table.getTableType())) {
-                TableDTO tableDTO = new TableDTO();
-                tableDTO.setCatalogName(catalog);
-                tableDTO.setSchemaName(table.getDbName());
-                tableDTO.setObjectName(table.getTableName());
-                tableDTO.setObjectType(TABLE.name());
-                tableDTO.setCreateTime(DateTimeUtil.toLocalDateTime(table.getCreateTime()));
-                tableDTO.setLastAccessTime(DateTimeUtil.toLocalDateTime(table.getLastAccessTime()));
-                Map<String, String> params = table.getParameters();
-                tableDTO.setRemark(params.get("comment"));
-                tableDTO.setTableRows(Long.parseLong(Objects.isNull(params.get("numRows")) ? "0" : params.get("numRows")));
-                tableDTO.setDataBytes(Long.parseLong(Objects.isNull(params.get("totalSize")) ? "0" : params.get("totalSize")));
-                String lastDdlTime = params.get("transient_lastDdlTime");
-                tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(Integer.parseInt(Objects.isNull(lastDdlTime) ? "0" : lastDdlTime)));
-                if (Objects.isNull(tablePattern) || StrUtil.contains(tableDTO.getTableName(), tablePattern)) {
-                    result.add(tableDTO);
-                }
-            }
-        }
-        client.close();
-        return result;
-    }
-
 
     @Override
-    public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> result = new ArrayList<>();
-        List<TableDTO> tables = super.listTables(catalog, schemaPattern, mViewPattern, MATERIALIZED_VIEW);
-        for (TableDTO table : tables) {
-            MaterializedViewDTO mvDTO = new MaterializedViewDTO();
-            mvDTO.setCatalogName(catalog);
-            mvDTO.setSchemaName(table.getSchemaName());
-            mvDTO.setObjectName(table.getObjectName());
-            mvDTO.setObjectType(MATERIALIZED_VIEW.name());
-            result.add(mvDTO);
-        }
-        return result;
-    }
-
-    @SneakyThrows
-    @Override
-    public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> result = new ArrayList<>();
-        HiveMetaStoreClient client = getHmsClient();
-        List<String> tables = client.getAllTables(null, schemaPattern);
-        List<Table> tableList = client.getTableObjectsByName(null, schemaPattern, tables);
-        for (Table table : tableList) {
-            if ("MATERIALIZED_VIEW".equals(table.getTableType())) {
-                MaterializedViewDTO mvDTO = new MaterializedViewDTO();
-                mvDTO.setCatalogName(catalog);
-                mvDTO.setSchemaName(table.getDbName());
-                mvDTO.setObjectName(table.getTableName());
-                mvDTO.setObjectType(MATERIALIZED_VIEW.name());
-                mvDTO.setCreateTime(DateTimeUtil.toLocalDateTime(table.getCreateTime()));
-                mvDTO.setQuerySql(table.getViewOriginalText());
-                Map<String, String> params = table.getParameters();
-                mvDTO.setRemark(params.get("comment"));
-                mvDTO.setDataBytes(Long.parseLong(Objects.isNull(params.get("totalSize")) ? "0" : params.get("totalSize")));
-                String lastDdlTime = params.get("transient_lastDdlTime");
-                mvDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(Integer.parseInt(Objects.isNull(lastDdlTime) ? "0" : lastDdlTime)));
-                if (Objects.isNull(mViewPattern) || StrUtil.contains(mvDTO.getMViewName(), mViewPattern)) {
-                    result.add(mvDTO);
-                }
-            }
-        }
-        client.close();
-        return result;
+    public CatalogHandler getCatalogHandler() {
+        HiveCatalogHandler handler = new HiveCatalogHandler();
+        handler.initialize(getDataSource(), new HashMap<>(), getDatabaseName());
+        return handler;
     }
 
     @Override
-    public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
-        return List.of();
+    public TableHandler getTableHandler() {
+        HiveTableHandler handler = new HiveTableHandler();
+        Map<String, String> config = new HashMap<>();
+        config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
+        handler.initialize(getDataSource(), config);
+        return handler;
     }
 
     @Override
-    public List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
+    public ViewHandler getViewHandler() {
+        HiveViewHandler handler = new HiveViewHandler();
+        Map<String, String> config = new HashMap<>();
+        config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
+        handler.initialize(getDataSource(), config);
+        return handler;
     }
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
+    public ForeignTableHandler getForeignTableHandler() {
+        JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<SequenceDTO> listSequences(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return List.of();
+    public FunctionHandler getFunctionHandler() {
+        JdbcFunctionHandler handler = new JdbcFunctionHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
-        return List.of();
+    public IndexHandler getIndexHandler() {
+        JdbcIndexHandler handler = new JdbcIndexHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
-    public List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException {
-        return List.of();
+    public MaterializedViewHandler getMaterializedViewHandler() {
+        HiveMaterializedViewHandler handler = new HiveMaterializedViewHandler();
+        Map<String, String> config = new HashMap<>();
+        config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
+        handler.initialize(getDataSource(), config);
+        return handler;
     }
 
     @Override
-    public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
-    }
-
-    @Override
-    public List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return List.of();
+    public SequenceHandler getSequenceHandler() {
+        JdbcSequenceHandler handler = new JdbcSequenceHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
     @Override
@@ -283,33 +224,6 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         } else {
             return builder.toString();
         }
-    }
-
-    @Override
-    public ViewHandler getViewHandler() {
-        HiveViewHandler handler = new HiveViewHandler();
-        Map<String, String> config = new HashMap<>();
-        config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
-        handler.initialize(getDataSource(), config);
-        return handler;
-    }
-
-    @Override
-    public List<String> listObjectTypes() throws SQLException {
-        List<String> list = new ArrayList<String>() {{
-            add(TABLE.name());
-            add(VIEW.name());
-            add(MATERIALIZED_VIEW.name());
-        }};
-        return list.stream().map(String::toLowerCase).collect(Collectors.toList());
-    }
-
-    private HiveMetaStoreClient getHmsClient() throws MetaException {
-        String uris = this.attributes.get(METASTORE_URIS);
-        Configuration conf = new Configuration();
-        conf.set("hive.metastore.uris", uris);
-        HiveMetaStoreClient client = new HiveMetaStoreClient(conf);
-        return client;
     }
 
 }

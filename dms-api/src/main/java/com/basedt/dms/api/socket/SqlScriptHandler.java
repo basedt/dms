@@ -111,7 +111,7 @@ public class SqlScriptHandler {
                 DataSourcePlugin plugin = metaDataService.getDataSourcePluginInstance(DataSourceConvert.toDataSource(dto));
                 List<String> sqlArray = Arrays.stream(data.getScript().split(Constants.SEPARATOR_SEMICOLON)).filter(StrUtil::isNotBlank).collect(Collectors.toList());
                 redisUtil.queuePush(socketId, sqlArray);
-                Connection conn = plugin.getConnection();
+                Connection conn = plugin.getDataSource().getConnection();
                 while (redisUtil.getQueueSize(socketId) > 0) {
                     String sql = redisUtil.queuePop(socketId);
                     LogSqlHistoryDTO sqlLog = new LogSqlHistoryDTO();

@@ -48,7 +48,7 @@ export const MetaDataService = {
   renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {
     const objInfo: string[] = identifier.split('.') as string[];
     return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/rename`, {
-      method: 'POST',
+      method: 'GET',
       params: {
         dataSourceId: dataSourceId,
         catalog: objInfo[0],

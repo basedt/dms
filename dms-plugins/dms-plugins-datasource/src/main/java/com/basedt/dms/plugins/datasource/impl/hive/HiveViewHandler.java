@@ -43,7 +43,10 @@ public class HiveViewHandler extends JdbcViewHandler {
     public List<ViewDTO> listViewDetails(String catalog, String schema, String viewName) throws SQLException {
         try {
             List<ViewDTO> result = new ArrayList<>();
-            HiveMetaStoreClient client = getHmsClient();
+            String uris = this.config.get(METASTORE_URIS);
+            Configuration conf = new Configuration();
+            conf.set("hive.metastore.uris", uris);
+            HiveMetaStoreClient client = new HiveMetaStoreClient(conf);
             List<String> tables = client.getAllTables(null, schema);
             List<Table> tableList = client.getTableObjectsByName(null, schema, tables);
             for (Table table : tableList) {
@@ -69,14 +72,6 @@ public class HiveViewHandler extends JdbcViewHandler {
         } catch (TException e) {
             throw new SQLException(e.getMessage());
         }
-    }
-
-    private HiveMetaStoreClient getHmsClient() throws MetaException {
-        String uris = this.config.get(METASTORE_URIS);
-        Configuration conf = new Configuration();
-        conf.set("hive.metastore.uris", uris);
-        HiveMetaStoreClient client = new HiveMetaStoreClient(conf);
-        return client;
     }
 
 }

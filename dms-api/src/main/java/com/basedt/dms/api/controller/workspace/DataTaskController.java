@@ -84,7 +84,7 @@ public class DataTaskController {
     @AuditLogging
     @Operation(summary = "new data export task", description = "new data export task")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> newExportTask(@Validated @RequestBody final DmsDataTaskDTO dataTaskDTO) {
+    public ResponseEntity<ResponseVO<Object>> newExportTask(@Validated @RequestBody final DmsDataTaskDTO dataTaskDTO) throws SQLException {
         if (Objects.isNull(dataTaskDTO.getFileEncoding())) {
             dataTaskDTO.setFileEncoding(UTF8.toDict());
         }

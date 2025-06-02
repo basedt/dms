@@ -36,16 +36,6 @@ import java.util.Map;
 
 public class JdbcForeignTableHandler extends JdbcTableHandler implements ForeignTableHandler {
 
-    protected DataSource dataSource;
-
-    protected Map<String, String> config;
-
-    @Override
-    public void initialize(DataSource dataSource, Map<String, String> config) {
-        this.dataSource = dataSource;
-        this.config = config;
-    }
-
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
         return listTableDetails(catalog, schemaPattern, tablePattern, DbObjectType.FOREIGN_TABLE);

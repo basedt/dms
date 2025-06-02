@@ -214,7 +214,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
 
     @Override
     @Async("asyncExecutor")
-    public void createExportTask(Long taskId, String script) {
+    public void createExportTask(Long taskId, String script) throws SQLException {
         DmsDataTaskDTO dmsDataTaskDTO = this.selectOne(taskId);
         dmsDataTaskDTO.setSqlScript(script);
         // 1. create local tmp folder
@@ -230,7 +230,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
         this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "begin init datasource."));
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dmsDataTaskDTO.getDatasourceId());
         DataSourcePlugin plugin = this.metaDataService.getDataSourcePluginInstance(DataSourceConvert.toDataSource(dto));
-        Connection connection = plugin.getConnection();
+        Connection connection = plugin.getDataSource().getConnection();
         PreparedStatement pstm = null;
         ResultSet rs = null;
         this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "connected to the database success."));

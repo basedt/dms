@@ -325,6 +325,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       label: intl.formatMessage({
         id: 'dms.console.workspace.dataquery.rename',
       }),
+      disabled: datasource?.datasourceType?.value === 'oracle',
       onClick: () => {
         setRenameData({
           open: true,
@@ -347,7 +348,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       onClick: () => {
         Modal.confirm({
           title: intl.formatMessage({ id: 'dms.common.operate.delete.confirm.title' }),
-          content: node.type + ' : ' + node.title,
+          content: node.type.replace('_', ' ') + ' : ' + node.title,
           onOk: () => {
             MetaDataService.dropObject(datasourceId, node.identifier, node.type).then((resp) => {
               if (resp.success) {

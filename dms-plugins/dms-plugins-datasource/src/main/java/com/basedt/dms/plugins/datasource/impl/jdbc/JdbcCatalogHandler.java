@@ -77,6 +77,7 @@ public class JdbcCatalogHandler implements CatalogHandler {
 
     /**
      * list schemas with catalog and schema pattern
+     *
      * @param catalog
      * @param schemaPattern
      * @return
@@ -98,6 +99,7 @@ public class JdbcCatalogHandler implements CatalogHandler {
 
     /**
      * get object types
+     *
      * @return
      * @throws SQLException
      */

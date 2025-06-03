@@ -25,14 +25,12 @@ import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JdbcForeignTableHandler extends JdbcTableHandler implements ForeignTableHandler {
 
@@ -57,8 +55,8 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
         }
         List<TableDTO> result = new ArrayList<>();
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             TableDTO tableDTO = new TableDTO();
             tableDTO.setCatalogName(rs.getString("catalog_name"));
@@ -70,7 +68,8 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
             tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(tableDTO);
         }
-        JdbcUtil.close(conn, pstm, rs);
+        JdbcUtil.close(conn, ps, rs);
         return result;
     }
+
 }

@@ -84,8 +84,8 @@ public class JdbcFunctionHandler implements FunctionHandler {
         }
         List<FunctionDTO> result = new ArrayList<>();
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             FunctionDTO function = new FunctionDTO();
             function.setCatalogName(rs.getString("catalog_name"));
@@ -97,7 +97,7 @@ public class JdbcFunctionHandler implements FunctionHandler {
             function.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(function);
         }
-        JdbcUtil.close(conn, pstm, rs);
+        JdbcUtil.close(conn, ps, rs);
         return result;
     }
 }

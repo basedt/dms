@@ -213,6 +213,8 @@ const DmsGrid: React.FC<DmsGridProps> = ({
                     ) : (
                       <span>{res.value}</span>
                     )}
+                    <br />
+                    <br />
                   </span>
                 );
               })}

@@ -34,4 +34,8 @@ public interface MaterializedViewHandler {
     List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
 
     MaterializedViewDTO getMViewDetail(String catalog, String schemaPattern, String mViewPattern) throws SQLException;
+
+    void dropMView(String schema, String mViewName) throws SQLException;
+
+    void renameMView(String schema, String mViewName, String newName) throws SQLException;
 }

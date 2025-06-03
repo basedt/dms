@@ -19,11 +19,16 @@
 package com.basedt.dms.plugins.datasource.impl.oracle;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.sql.SqlUtil;
+import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcMaterializedViewHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
 
@@ -35,7 +40,7 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
                 "    o.object_name as object_name," +
                 "    'MATERIALIZED_VIEW' as object_type," +
                 "    t.mview_name as table_name," +
-                "    t.query as query_sql," +
+                "    null as query_sql," +
                 "    null as remark," +
                 "    null as data_bytes," +
                 "    o.created as create_time," +
@@ -44,11 +49,12 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
                 " join all_mviews t" +
                 " on o.owner = t.owner" +
                 " and o.object_name = t.mview_name" +
-                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
+                " where o.object_type = 'MATERIALIZED VIEW'" +
+                " and o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(mViewPattern)) {
             sql += " and o.object_name = '" + mViewPattern.toUpperCase() + "'";
         }
-        return super.listMViewFromDB(sql);
+        return listMViewFromDB(sql);
     }
 
     @Override
@@ -74,10 +80,54 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
                 " left join all_tab_comments c" +
                 " on t.owner = c.owner" +
                 " and t.mview_name = c.table_name " +
-                " where o.owner = '" + schemaPattern.toUpperCase() + "'";
+                " where o.object_type = 'MATERIALIZED VIEW'" +
+                " and o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(mViewPattern)) {
             sql += " and o.object_name = '" + mViewPattern.toUpperCase() + "'";
         }
-        return super.listMViewFromDB(sql);
+        return listMViewFromDB(sql);
     }
+
+    @Override
+    protected List<MaterializedViewDTO> listMViewFromDB(String sql) throws SQLException {
+        if (StrUtil.isBlank(sql)) {
+            return List.of();
+        }
+        List<MaterializedViewDTO> result = new ArrayList<>();
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            MaterializedViewDTO matView = new MaterializedViewDTO();
+            matView.setCatalogName(rs.getString("catalog_name"));
+            matView.setSchemaName(rs.getString("schema_name"));
+            matView.setObjectName(rs.getString("object_name"));
+            matView.setObjectType(rs.getString("object_type"));
+            matView.setRemark(rs.getString("remark"));
+            matView.setDataBytes(rs.getLong("data_bytes"));
+            Clob clob = rs.getClob("query_sql");
+            if (Objects.nonNull(clob)) {
+                matView.setQuerySql(SqlUtil.clobToStr(clob));
+            } else {
+                matView.setQuerySql("");
+            }
+            matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
+            matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
+            result.add(matView);
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return result;
+    }
+
+    @Override
+    protected String generateCreateSQL(String schema, String mViewName) {
+        // TODO SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW', 'MV_NAME', 'SCHEMA_NAME') FROM DUAL;
+        return "";
+    }
+
+    @Override
+    public void renameMView(String schema, String mViewName, String newName) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

@@ -34,4 +34,10 @@ public class ClickHouseMaterializedViewHandler extends JdbcMaterializedViewHandl
         }
         return super.listMViewFromDB(sql);
     }
+
+    @Override
+    protected String generateCreateSQL(String schema, String mViewName) {
+        // TODO
+        return "";
+    }
 }

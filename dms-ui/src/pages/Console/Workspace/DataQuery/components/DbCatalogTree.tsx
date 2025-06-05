@@ -117,7 +117,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
               (item) => item.type == 'G_TABLE_COLUMN',
             ) as DMS.CatalogTreeNode<string>[];
 
-            if (childs.length == 1) {
+            if (childs?.length == 1) {
               const columns = childs[0];
               idbAPI.getTableByIdentifier(datasourceId as string, columns.identifier).then((t) => {
                 let columnList: string[] = [];
@@ -224,8 +224,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   };
 
   const nodeTitleContextmenuItems = (node: DMS.CatalogTreeNode<string>) => {
+    const nodeInfo: string[] = node.identifier.split('.');
     const menuItems: MenuProps['items'] = [];
-    if (node.type === 'TABLE') {
+    if (
+      datasource?.datasourceType?.value === 'doris' &&
+      nodeInfo[0] != 'internal' &&
+      !node.type.startsWith('G_')
+    ) {
+      copyMenuItem(node, menuItems);
+    } else if (node.type === 'TABLE') {
       tableMenuItems(node, menuItems);
     } else if (node.type === 'VIEW') {
       viewMenuItems(node, menuItems);
@@ -325,7 +332,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       label: intl.formatMessage({
         id: 'dms.console.workspace.dataquery.rename',
       }),
-      disabled: datasource?.datasourceType?.value === 'oracle',
+      disabled: !supportRename(node),
       onClick: () => {
         setRenameData({
           open: true,
@@ -336,6 +343,22 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         });
       },
     });
+  };
+
+  const supportRename = (node: DMS.CatalogTreeNode<string>): boolean => {
+    if (
+      (datasource?.datasourceType?.value === 'oracle' ||
+        datasource?.datasourceType?.value === 'apachehive' ||
+        datasource?.datasourceType?.value === 'doris' ||
+        datasource?.datasourceType?.value === 'clickhouse') &&
+      node.type === 'MATERIALIZED_VIEW'
+    ) {
+      return false;
+    } else if (datasource?.datasourceType?.value === 'doris' && node.type === 'VIEW') {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const dropMenuItem = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

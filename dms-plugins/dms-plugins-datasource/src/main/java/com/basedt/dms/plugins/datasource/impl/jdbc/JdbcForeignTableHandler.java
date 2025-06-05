@@ -40,13 +40,13 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
     }
 
     @Override
-    protected String generateDropSQL(String schema, String viewName) {
-        return StrUtil.format("DROP FOREIGN TABLE {}.{}", schema, viewName);
+    protected String generateDropSQL(String schema, String tableName) {
+        return StrUtil.format("DROP FOREIGN TABLE {}.{}", schema, tableName);
     }
 
     @Override
-    protected String generateRenameSQL(String schema, String viewName, String newName) {
-        return StrUtil.format("ALTER FOREIGN TABLE {}.{} RENAME TO {}", schema, viewName, newName);
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("ALTER FOREIGN TABLE {}.{} RENAME TO {}", schema, tableName, newName);
     }
 
     protected List<TableDTO> listFgnTableFromDB(String sql) throws SQLException {

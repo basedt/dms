@@ -17,8 +17,10 @@
  */
 package com.basedt.dms.api.vo;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.enums.DataType;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import lombok.Data;
@@ -51,7 +53,7 @@ public class ResultSetVO {
         this.columns = new ArrayList<>(cols.length);
         for (DynaProperty col : cols) {
             ColumnVO columnVO = new ColumnVO();
-            String name = col.getName();
+            String name = formatColumnName(col.getName());
             Class<?> type = col.getType();
             columnVO.setKey(name);
             columnVO.setTitle(name);
@@ -121,30 +123,31 @@ public class ResultSetVO {
             DynaProperty[] cols = bean.getDynaClass().getDynaProperties();
             JSONObject node = JSONUtil.createObj();
             for (DynaProperty col : cols) {
+                String colName = formatColumnName(col.getName());
                 if (col.getType().getName().equals(Timestamp.class.getName())) {
                     Timestamp value = (Timestamp) bean.get(col.getName());
                     if (Objects.isNull(value)) {
-                        node.set(col.getName(), null);
+                        node.set(colName, null);
                     } else {
-                        node.set(col.getName(), DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATETIME_MS_PATTERN));
+                        node.set(colName, DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATETIME_MS_PATTERN));
                     }
                 } else if (col.getType().getName().equals(Date.class.getName())) {
                     Date value = (Date) bean.get(col.getName());
                     if (Objects.isNull(value)) {
-                        node.set(col.getName(), null);
+                        node.set(colName, null);
                     } else {
-                        node.set(col.getName(), DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
+                        node.set(colName, DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
                     }
                 } else if (col.getType().getName().equals(java.sql.Array.class.getName())) {
                     Object value = bean.get(col.getName());
                     if (Objects.isNull(value)) {
-                        node.set(col.getName(), null);
+                        node.set(colName, null);
                     } else {
-                        node.set(col.getName(), String.valueOf(value));
+                        node.set(colName, String.valueOf(value));
                     }
                 } else {
                     Object value = bean.get(col.getName());
-                    node.set(col.getName(), value);
+                    node.set(colName, value);
                 }
             }
             resultList.add(node);
@@ -153,6 +156,16 @@ public class ResultSetVO {
             }
         }
         return resultList;
+    }
+
+    private String formatColumnName(String originName){
+        if (StrUtil.isEmpty(originName)){
+            return "";
+        }else if (originName.contains(Constants.SEPARATOR_DOT)){
+            return StrUtil.subAfter(originName, Constants.SEPARATOR_DOT,false);
+        }else {
+            return originName;
+        }
     }
 
 

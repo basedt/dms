@@ -96,7 +96,7 @@ public class MssqlTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateRenameSQL(String schema, String viewName, String newName) {
-        return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, viewName, newName);
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, tableName, newName);
     }
 }

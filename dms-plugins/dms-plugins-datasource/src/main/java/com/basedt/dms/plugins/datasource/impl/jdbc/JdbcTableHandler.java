@@ -142,12 +142,12 @@ public class JdbcTableHandler implements TableHandler {
         return result;
     }
 
-    protected String generateDropSQL(String schema, String viewName) {
-        return StrUtil.format("DROP TABLE {}.{}", schema, viewName);
+    protected String generateDropSQL(String schema, String tableName) {
+        return StrUtil.format("DROP TABLE {}.{}", schema, tableName);
     }
 
-    protected String generateRenameSQL(String schema, String viewName, String newName) {
-        return StrUtil.format("ALTER TABLE {}.{} RENAME TO {}", schema, viewName, newName);
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("ALTER TABLE {}.{} RENAME TO {}", schema, tableName, newName);
     }
 
     protected List<TableDTO> listTableFromDB(String sql) throws SQLException {

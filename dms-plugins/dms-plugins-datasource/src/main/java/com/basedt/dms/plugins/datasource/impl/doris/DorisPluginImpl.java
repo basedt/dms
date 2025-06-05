@@ -81,4 +81,19 @@ public class DorisPluginImpl extends MysqlPluginImpl {
         handler.initialize(getDataSource(), new HashMap<>());
         return handler;
     }
+
+    @Override
+    public TableHandler getTableHandler() {
+        DorisTableHandler handler = new DorisTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
+    @Override
+    public ViewHandler getViewHandler() {
+        DorisViewHandler handler = new DorisViewHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
 }

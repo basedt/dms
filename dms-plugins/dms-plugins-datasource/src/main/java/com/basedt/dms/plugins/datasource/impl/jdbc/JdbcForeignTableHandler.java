@@ -25,14 +25,12 @@ import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JdbcForeignTableHandler extends JdbcTableHandler implements ForeignTableHandler {
 
@@ -42,13 +40,13 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
     }
 
     @Override
-    protected String generateDropSQL(String schema, String viewName) {
-        return StrUtil.format("DROP FOREIGN TABLE {}.{}", schema, viewName);
+    protected String generateDropSQL(String schema, String tableName) {
+        return StrUtil.format("DROP FOREIGN TABLE {}.{}", schema, tableName);
     }
 
     @Override
-    protected String generateRenameSQL(String schema, String viewName, String newName) {
-        return StrUtil.format("ALTER FOREIGN TABLE {}.{} RENAME TO {}", schema, viewName, newName);
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("ALTER FOREIGN TABLE {}.{} RENAME TO {}", schema, tableName, newName);
     }
 
     protected List<TableDTO> listFgnTableFromDB(String sql) throws SQLException {
@@ -57,8 +55,8 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
         }
         List<TableDTO> result = new ArrayList<>();
         Connection conn = dataSource.getConnection();
-        PreparedStatement pstm = conn.prepareStatement(sql);
-        ResultSet rs = pstm.executeQuery();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             TableDTO tableDTO = new TableDTO();
             tableDTO.setCatalogName(rs.getString("catalog_name"));
@@ -70,7 +68,8 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
             tableDTO.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(tableDTO);
         }
-        JdbcUtil.close(conn, pstm, rs);
+        JdbcUtil.close(conn, ps, rs);
         return result;
     }
+
 }

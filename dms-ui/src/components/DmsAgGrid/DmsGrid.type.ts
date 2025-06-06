@@ -60,6 +60,7 @@ export interface DmsGridProps {
   >;
   workspaceId: number | string;
   datasourceId: number | string;
+  dataColumnsRef?: number;
 }
 
 export interface DmsGridRef {

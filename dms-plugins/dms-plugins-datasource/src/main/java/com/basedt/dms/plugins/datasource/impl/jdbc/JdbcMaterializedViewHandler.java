@@ -48,7 +48,7 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
 
     @Override
     public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        return listMViewDetails(catalog,schemaPattern,mViewPattern);
+        return listMViewDetails(catalog, schemaPattern, mViewPattern);
     }
 
     @Override
@@ -63,6 +63,20 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
             return mvs.get(0);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public void dropMView(String schema, String mViewName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateDropSQL(schema, mViewName));
+        }
+    }
+
+    @Override
+    public void renameMView(String schema, String mViewName, String newName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateRenameSQL(schema, mViewName, newName));
         }
     }
 
@@ -81,8 +95,8 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
             matView.setObjectName(rs.getString("object_name"));
             matView.setObjectType(rs.getString("object_type"));
             matView.setRemark(rs.getString("remark"));
-            matView.setQuerySql(rs.getString("query_sql"));
             matView.setDataBytes(rs.getLong("data_bytes"));
+            matView.setQuerySql(rs.getString("query_sql"));
             matView.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
             matView.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(matView);
@@ -90,4 +104,17 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
         JdbcUtil.close(conn, ps, rs);
         return result;
     }
+
+    protected String generateDropSQL(String schema, String mViewName) {
+        return StrUtil.format("DROP MATERIALIZED VIEW {}.{}", schema, mViewName);
+    }
+
+    protected String generateRenameSQL(String schema, String mViewName, String newName) {
+        return StrUtil.format("ALTER MATERIALIZED VIEW {}.{} RENAME TO {}", schema, mViewName, newName);
+    }
+
+    protected String generateCreateSQL(String schema, String mViewName) {
+        return "";
+    }
+
 }

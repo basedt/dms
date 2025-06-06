@@ -436,6 +436,12 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
+    public String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
+        //TODO
+        return "";
+    }
+
+    @Override
     public void renameObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
@@ -443,16 +449,12 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getTableHandler().renameTable(schemaName, objectName, newName);
             } else if (VIEW.name().equals(objectType)) {
                 dataSourcePlugin.getViewHandler().renameView(schemaName, objectName, newName);
+            } else if (MATERIALIZED_VIEW.name().equals(objectType)) {
+                dataSourcePlugin.getMaterializedViewHandler().renameMView(schemaName, objectName, newName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
-    }
-
-    @Override
-    public String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
-        //TODO
-        return "";
     }
 
     @Override
@@ -463,6 +465,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getTableHandler().dropTable(schemaName, objectName);
             } else if (VIEW.name().equals(objectType)) {
                 dataSourcePlugin.getViewHandler().dropView(schemaName, objectName);
+            } else if (MATERIALIZED_VIEW.name().equals(objectType)) {
+                dataSourcePlugin.getMaterializedViewHandler().dropMView(schemaName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

@@ -63,4 +63,10 @@ public class PostgreMaterializedViewHandler extends JdbcMaterializedViewHandler 
         return super.listMViewFromDB(sql);
 
     }
+
+    @Override
+    protected String generateCreateSQL(String schema, String mViewName) {
+        // TODO
+        return "";
+    }
 }

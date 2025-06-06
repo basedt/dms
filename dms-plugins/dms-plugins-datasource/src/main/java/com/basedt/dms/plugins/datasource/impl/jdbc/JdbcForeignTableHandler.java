@@ -40,6 +40,20 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
     }
 
     @Override
+    public void dropForeignTable(String schema, String tableName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateDropSQL(schema, tableName));
+        }
+    }
+
+    @Override
+    public void renameForeignTable(String schema, String tableName, String newName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateRenameSQL(schema, tableName, newName));
+        }
+    }
+
+    @Override
     protected String generateDropSQL(String schema, String tableName) {
         return StrUtil.format("DROP FOREIGN TABLE {}.{}", schema, tableName);
     }

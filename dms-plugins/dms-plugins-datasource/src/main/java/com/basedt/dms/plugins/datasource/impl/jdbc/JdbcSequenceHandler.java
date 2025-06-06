@@ -66,6 +66,20 @@ public class JdbcSequenceHandler implements SequenceHandler {
         }
     }
 
+    @Override
+    public void dropSequence(String schema, String sequenceName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateDropSQL(schema, sequenceName));
+        }
+    }
+
+    @Override
+    public void renameSequence(String schema, String sequenceName, String newName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateRenameSQL(schema, sequenceName, newName));
+        }
+    }
+
     protected List<SequenceDTO> listSequenceFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();
@@ -96,5 +110,13 @@ public class JdbcSequenceHandler implements SequenceHandler {
         }
         JdbcUtil.close(conn, ps, rs);
         return result;
+    }
+
+    protected String generateDropSQL(String schema, String sequenceName) {
+        return StrUtil.format("DROP SEQUENCE {}.{}", schema, sequenceName);
+    }
+
+    protected String generateRenameSQL(String schema, String sequenceName, String newName) {
+        return StrUtil.format("ALTER SEQUENCE {}.{} RENAME TO {}", schema, sequenceName, newName);
     }
 }

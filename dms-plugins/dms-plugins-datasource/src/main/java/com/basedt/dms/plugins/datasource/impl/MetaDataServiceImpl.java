@@ -451,6 +451,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getViewHandler().renameView(schemaName, objectName, newName);
             } else if (MATERIALIZED_VIEW.name().equals(objectType)) {
                 dataSourcePlugin.getMaterializedViewHandler().renameMView(schemaName, objectName, newName);
+            } else if (SEQUENCE.name().equals(objectType)) {
+                dataSourcePlugin.getSequenceHandler().renameSequence(schemaName, objectName, newName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
@@ -467,6 +469,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getViewHandler().dropView(schemaName, objectName);
             } else if (MATERIALIZED_VIEW.name().equals(objectType)) {
                 dataSourcePlugin.getMaterializedViewHandler().dropMView(schemaName, objectName);
+            } else if (SEQUENCE.name().equals(objectType)) {
+                dataSourcePlugin.getSequenceHandler().dropSequence(schemaName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

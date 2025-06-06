@@ -59,4 +59,6 @@ public class PostgreViewHandler extends JdbcViewHandler {
         }
         return super.listViewFromDB(sql);
     }
+
+
 }

@@ -78,4 +78,9 @@ public class OracleSequenceHandler extends JdbcSequenceHandler {
         }
         return super.listSequenceFromDB(sql);
     }
+
+    @Override
+    protected String generateRenameSQL(String schema, String sequenceName, String newName) {
+        return StrUtil.format("RENAME {} TO {}",sequenceName,newName);
+    }
 }

@@ -35,4 +35,8 @@ public interface SequenceHandler {
 
     SequenceDTO getSequenceDetail(String catalog, String schemaPattern, String sequencePattern) throws SQLException;
 
+    void dropSequence(String schema, String sequenceName) throws SQLException;
+
+    void renameSequence(String schema, String sequenceName, String newName) throws SQLException;
+
 }

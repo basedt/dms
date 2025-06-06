@@ -40,4 +40,8 @@ public class MssqlSequenceHandler extends JdbcSequenceHandler {
         return super.listSequenceFromDB(sql);
     }
 
+    @Override
+    protected String generateRenameSQL(String schema, String sequenceName, String newName) {
+        return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, sequenceName, newName);
+    }
 }

@@ -68,6 +68,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
   const [dataColumns, setDataColumns] = useState<any[]>([]);
   const [consoleList, setConsoleList] = useState<any[]>([]);
   const file: any = useRef(null);
+  const dataColumnsRef = useRef<number>(0);
   const [sqlScript, setSqlScript] = useState<any>(''); // sql编辑器内容
   const [selectedContent, setSelectedContent] = useState<ContentItem | null>(); // 存储当前点击的右侧标题
   const [totalButtonDisable, setTotalButtonDisable] = useState<DMS.sqlTopButton>({
@@ -85,10 +86,12 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
     });
 
     socket.on('resultSet', (value) => {
+      dataColumnsRef.current = 1
       sqlListData(value);
     });
 
     socket.on('info', (value) => {
+      dataColumnsRef.current = 0
       setConsoleList((prevDataColumns) => [...prevDataColumns, { value, type: 'info' }]);
     });
 
@@ -219,7 +222,6 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
       };
       setTotalButtonDisable(runningResults);
       totalButtonDisableRef.current = runningResults;
-
       socket.emit('exec', {
         script: sql,
         dataSourceId: dataSourceId,
@@ -242,6 +244,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
         consoleList={consoleList}
         workspaceId={workspaceId as string}
         datasourceId={dataSourceId}
+        dataColumnsRef={dataColumnsRef.current}
       />
     );
   }, [labelCounterRef.current, consoleList]);
@@ -251,9 +254,8 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
       const newColumn = {
         ...value,
         key: Math.random().toString(36).substr(2, 6),
-        label: `${intl.formatMessage({ id: 'dms.common.tabs.result' })}${
-          labelCounterRef.current + 1
-        }`,
+        label: `${intl.formatMessage({ id: 'dms.common.tabs.result' })}${labelCounterRef.current + 1
+          }`,
       };
       labelCounterRef.current += 1;
       return [...prevDataColumns, newColumn];
@@ -343,7 +345,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
           id: 'dms.common.message.operate.formatting.success',
         }),
       );
-    } catch (error) {}
+    } catch (error) { }
   };
 
   type ContentItem = {

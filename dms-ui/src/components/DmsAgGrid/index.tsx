@@ -3,7 +3,7 @@ import { exportDataToExcel } from '@/utils/ExcelUtil';
 import { SettingOutlined } from '@ant-design/icons';
 import { useIntl } from '@umijs/max';
 import { Button, Checkbox, Dropdown, Popover, Space, Tooltip } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import DataExportModal from './DataExportModal';
 import DmsAgGrid from './DmsGrid';
 import { DmsGridProps, TabItem } from './DmsGrid.type';
@@ -16,6 +16,7 @@ const DmsGrid: React.FC<DmsGridProps> = ({
   consoleList,
   workspaceId,
   datasourceId,
+  dataColumnsRef,
 }) => {
   const intl = useIntl();
   const [dataList, setDataList] = useState<
@@ -28,7 +29,6 @@ const DmsGrid: React.FC<DmsGridProps> = ({
   const [dataExportData, setDataExportData] = useState<DMS.ModalProps<DMS.DataTask>>({
     open: false,
   });
-
   // 使用useMemo优化列选项计算
   const columnsOptions = useMemo(() => {
     const options: Record<string, string[]> = {};
@@ -93,7 +93,7 @@ const DmsGrid: React.FC<DmsGridProps> = ({
       })),
     ];
     setDataList(initialDataList);
-    setActiveKey(initialDataList.at(-1)?.key || '');
+    setActiveKey(dataColumnsRef ? initialDataList.at(-1)?.key || '0' : '0');
   }, [dataColumns]);
 
   const renderColumnSettings = (item: {
@@ -257,38 +257,38 @@ const DmsGrid: React.FC<DmsGridProps> = ({
         }}
         items={items?.map(
           (item) =>
-            ({
-              label:
-                item.key !== '0' ? (
-                  <Tooltip
-                    title={
-                      <div
-                        style={{
-                          color: '#000',
-                          maxHeight: '300px',
-                          overflow: 'scroll',
-                        }}
-                      >
-                        {item.tooltipTitle}
-                      </div>
-                    }
-                    color="#f5f7f7"
-                  >
-                    <span
-                      onClick={() => {
-                        setActiveKey(item?.key);
+          ({
+            label:
+              item.key !== '0' ? (
+                <Tooltip
+                  title={
+                    <div
+                      style={{
+                        color: '#000',
+                        maxHeight: '300px',
+                        overflow: 'scroll',
                       }}
                     >
-                      {item.label}
-                    </span>
-                  </Tooltip>
-                ) : (
-                  <span>{item.label}</span>
-                ),
-              key: item.key,
-              closable: item.key === '0' ? false : true,
-              children: item.children,
-            } as any),
+                      {item.tooltipTitle}
+                    </div>
+                  }
+                  color="#f5f7f7"
+                >
+                  <span
+                    onClick={() => {
+                      setActiveKey(item?.key);
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                </Tooltip>
+              ) : (
+                <span>{item.label}</span>
+              ),
+            key: item.key,
+            closable: item.key === '0' ? false : true,
+            children: item.children,
+          } as any),
         )}
       />
       {dataExportData.open && (

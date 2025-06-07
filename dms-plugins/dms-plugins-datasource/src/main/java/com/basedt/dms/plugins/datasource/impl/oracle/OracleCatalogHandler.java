@@ -41,7 +41,6 @@ public class OracleCatalogHandler extends JdbcCatalogHandler {
             add(TABLE.name());
             add(VIEW.name());
             add(MATERIALIZED_VIEW.name());
-            add(FOREIGN_TABLE.name());
             add(FUNCTION.name());
             add(INDEX.name());
             add(SEQUENCE.name());

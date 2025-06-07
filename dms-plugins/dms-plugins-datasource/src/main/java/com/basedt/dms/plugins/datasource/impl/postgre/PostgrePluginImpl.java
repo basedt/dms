@@ -25,7 +25,6 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
 import com.google.auto.service.AutoService;
 
 import java.math.BigDecimal;
@@ -87,7 +86,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
 
     @Override
     public ForeignTableHandler getForeignTableHandler() {
-        JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
+        PostgreFgnTableHandler handler = new PostgreFgnTableHandler();
         handler.initialize(getDataSource(), new HashMap<>());
         return handler;
     }

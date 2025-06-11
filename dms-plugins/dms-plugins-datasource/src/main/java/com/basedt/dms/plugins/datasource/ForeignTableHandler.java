@@ -18,16 +18,16 @@
 
 package com.basedt.dms.plugins.datasource;
 
-import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public interface ForeignTableHandler {
 
     List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
 
+    void dropForeignTable(String schema, String tableName) throws SQLException;
+
+    void renameForeignTable(String schema, String tableName, String newName) throws SQLException;
 }

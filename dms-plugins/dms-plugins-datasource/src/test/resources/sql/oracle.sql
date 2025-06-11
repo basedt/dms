@@ -62,3 +62,29 @@ as select product_id, quantity,price FROM sales_orders
 ;
 
 create sequence seq_test_01;
+
+-- foreign table
+CREATE OR REPLACE DIRECTORY csv_dir AS '/home/oracle/csv';
+
+GRANT READ ON DIRECTORY csv_dir TO pdbadmin;
+
+CREATE TABLE csv_external_table (
+  id   NUMBER,
+  name VARCHAR2(500),
+  age  NUMBER
+)
+ORGANIZATION EXTERNAL (
+  TYPE ORACLE_LOADER
+  DEFAULT DIRECTORY csv_dir
+  ACCESS PARAMETERS (
+    RECORDS DELIMITED BY NEWLINE
+    FIELDS TERMINATED BY ','
+    MISSING FIELD VALUES ARE NULL
+    (
+      id   CHAR(10),
+      name CHAR(100),
+      age  CHAR(10)
+    )
+  )
+  LOCATION ('test.csv')
+);

@@ -18,6 +18,7 @@
 package com.basedt.dms.api.vo;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.sql.SqlUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.basedt.dms.common.constant.Constants;
@@ -28,10 +29,7 @@ import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaProperty;
 import org.apache.commons.beanutils.ResultSetDynaClass;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -145,6 +143,13 @@ public class ResultSetVO {
                     } else {
                         node.set(colName, String.valueOf(value));
                     }
+                } else if (col.getType().getName().equals("oracle.jdbc.OracleClob")) {
+                    Clob value = (Clob) bean.get(col.getName());
+                    if (Objects.isNull(value)) {
+                        node.set(colName, null);
+                    } else {
+                        node.set(colName, SqlUtil.clobToStr(value));
+                    }
                 } else {
                     Object value = bean.get(col.getName());
                     node.set(colName, value);
@@ -158,12 +163,12 @@ public class ResultSetVO {
         return resultList;
     }
 
-    private String formatColumnName(String originName){
-        if (StrUtil.isEmpty(originName)){
+    private String formatColumnName(String originName) {
+        if (StrUtil.isEmpty(originName)) {
             return "";
-        }else if (originName.contains(Constants.SEPARATOR_DOT)){
-            return StrUtil.subAfter(originName, Constants.SEPARATOR_DOT,false);
-        }else {
+        } else if (originName.contains(Constants.SEPARATOR_DOT)) {
+            return StrUtil.subAfter(originName, Constants.SEPARATOR_DOT, false);
+        } else {
             return originName;
         }
     }

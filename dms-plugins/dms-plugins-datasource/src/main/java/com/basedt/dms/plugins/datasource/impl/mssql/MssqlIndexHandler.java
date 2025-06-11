@@ -22,7 +22,7 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
 
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         String sql = "select" +
                 "    db_name() as catalog_name," +
                 "    s.name as schema_name," +
@@ -48,6 +48,9 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
         }
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and o.name = '" + tableName + "'";
+        }
+        if (StrUtil.isNotEmpty(indexName)) {
+            sql += " and i.name = '" + indexName + "'";
         }
         return super.listIndexFromDB(sql);
     }

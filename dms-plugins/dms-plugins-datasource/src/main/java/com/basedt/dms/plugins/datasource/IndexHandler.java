@@ -32,15 +32,15 @@ public interface IndexHandler {
 
     List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException;
 
-    List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException;
+    List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException;
 
-    IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName) throws SQLException;
+    IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException;
 
     List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
 
     List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
 
-    void dropIndex(String schema,String indexName) throws SQLException;
+    void dropIndex(String schema, String indexName) throws SQLException;
 
-    void renameIndex(String schema,String indexName,String newName) throws SQLException;
+    void renameIndex(String schema, String indexName, String newName) throws SQLException;
 }

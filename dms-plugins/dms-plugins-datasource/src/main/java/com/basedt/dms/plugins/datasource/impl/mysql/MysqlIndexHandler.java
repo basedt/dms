@@ -24,6 +24,7 @@ import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,15 +32,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.FK;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
 
 public class MysqlIndexHandler extends JdbcIndexHandler {
 
-
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         String sql = "select " +
                 " null as catalog_name," +
                 " t.index_schema as schema_name," +
@@ -59,6 +60,9 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
         }
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and t.table_name = '" + tableName + "'";
+        }
+        if (StrUtil.isNotEmpty(indexName)) {
+            sql += " and t.index_name = '" + indexName + "'";
         }
         sql += " group by t.index_schema,t.index_name,t.index_type,t.table_name";
         return super.listIndexFromDB(sql);
@@ -109,5 +113,21 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
         }
         JdbcUtil.close(conn, pstm, rs);
         return constraints;
+    }
+
+    @SneakyThrows
+    @Override
+    protected String generateDropSQL(String schema, String indexName) {
+        IndexDTO index = getIndexDetail(null, schema, null, indexName);
+        if (Objects.nonNull(index)) {
+            return StrUtil.format("DROP INDEX {} ON {}", index.getIndexName(), index.getTableName());
+        } else {
+            return super.generateDropSQL(schema, indexName);
+        }
+    }
+
+    @Override
+    public void renameIndex(String schema, String indexName, String newName) throws SQLException {
+        throw new UnsupportedOperationException("rename index not supported");
     }
 }

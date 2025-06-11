@@ -49,17 +49,17 @@ public class JdbcIndexHandler implements IndexHandler {
 
     @Override
     public List<IndexDTO> listIndexes(String catalog, String schemaPattern, String tableName) throws SQLException {
-        return listIndexDetails(catalog, schemaPattern, tableName);
+        return listIndexDetails(catalog, schemaPattern, tableName, null);
     }
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         return List.of();
     }
 
     @Override
-    public IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName) throws SQLException {
-        List<IndexDTO> indexes = listIndexDetails(catalog, schemaPattern, tableName);
+    public IndexDTO getIndexDetail(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
+        List<IndexDTO> indexes = listIndexDetails(catalog, schemaPattern, tableName, indexName);
         if (CollectionUtil.isNotEmpty(indexes)) {
             return indexes.get(0);
         } else {

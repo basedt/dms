@@ -372,6 +372,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       return false;
     } else if (datasource?.datasourceType?.value === 'doris' && node.type === 'VIEW') {
       return false;
+    } else if (datasource?.datasourceType?.value === 'mysql' && node.type === 'INDEX') {
+      return false;
     } else {
       return true;
     }

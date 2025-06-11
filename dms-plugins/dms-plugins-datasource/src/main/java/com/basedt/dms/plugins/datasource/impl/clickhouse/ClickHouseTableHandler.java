@@ -39,7 +39,8 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
                 " left join system.tables st" +
                 " on t.table_schema = st.database" +
                 " and t.table_name = st.name" +
-                " where t.table_type in ('BASE TABLE')";
+                " where t.table_type in ('BASE TABLE')" +
+                " and t.table_name not like ('.inner_id%')";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and t.table_schema = '" + schemaPattern + "'";
         }

@@ -84,7 +84,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
                 " on n.nspname = t.table_schema" +
                 " and c.relname = t.table_name" +
                 " and attr.attname = t.column_name" +
-                " where c.relkind in ('r','v','m')" +
+                " where c.relkind in ('r','v','m','f')" +
                 " and attr.attnum > 0";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and coalesce(t.table_schema,n.nspname) = '" + schemaPattern + "'";

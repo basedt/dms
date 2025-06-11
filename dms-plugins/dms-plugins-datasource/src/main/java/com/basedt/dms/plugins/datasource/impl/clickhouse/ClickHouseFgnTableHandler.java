@@ -32,4 +32,15 @@ public class ClickHouseFgnTableHandler extends JdbcForeignTableHandler {
         }
         return super.listFgnTableFromDB(sql);
     }
+
+    @Override
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("RENAME TABLE {}.{} to {}", schema, tableName, newName);
+    }
+
+    @Override
+    protected String generateDropSQL(String schema, String tableName) {
+        return StrUtil.format(" DROP TABLE IF EXISTS {}.{}", schema, tableName);
+    }
+
 }

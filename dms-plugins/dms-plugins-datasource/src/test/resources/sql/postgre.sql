@@ -62,3 +62,17 @@ SELECT
     c.name
 FROM
     customers c;
+
+-- foreign table
+CREATE EXTENSION file_fdw;
+
+CREATE SERVER csv_server
+  FOREIGN DATA WRAPPER file_fdw;
+
+CREATE FOREIGN TABLE csv_table (
+  id INT,
+  name TEXT,
+  age INT
+)
+SERVER csv_server
+OPTIONS (filename '/opt/csv/file.csv', format 'csv');

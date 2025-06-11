@@ -10,6 +10,11 @@ import java.util.List;
 public class ClickHouseViewHandler extends JdbcViewHandler {
 
     @Override
+    public List<ViewDTO> listViews(String catalog, String schema, String viewName) throws SQLException {
+        return listViewDetails(catalog, schema, viewName);
+    }
+
+    @Override
     public List<ViewDTO> listViewDetails(String catalog, String schema, String viewName) throws SQLException {
         String sql = "select" +
                 "    v.table_catalog as catalog_name," +
@@ -35,7 +40,6 @@ public class ClickHouseViewHandler extends JdbcViewHandler {
         if (StrUtil.isNotEmpty(viewName)) {
             sql += " and v.table_name = '" + viewName + "'";
         }
-
         return super.listViewFromDB(sql);
     }
 

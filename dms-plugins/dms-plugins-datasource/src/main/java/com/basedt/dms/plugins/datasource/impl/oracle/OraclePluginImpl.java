@@ -25,6 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
 import com.google.auto.service.AutoService;
 
 import java.math.BigDecimal;
@@ -83,9 +84,12 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
         return handler;
     }
 
+    /**
+     * all_external_tables
+     */
     @Override
     public ForeignTableHandler getForeignTableHandler() {
-        OracleFgnTableHandler handler = new OracleFgnTableHandler();
+        JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
         handler.initialize(getDataSource(), new HashMap<>());
         return handler;
     }

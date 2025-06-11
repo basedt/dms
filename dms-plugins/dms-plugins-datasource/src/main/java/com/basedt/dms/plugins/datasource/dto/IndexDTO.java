@@ -53,7 +53,7 @@ public class IndexDTO extends ObjectDTO {
     @Override
     public TreeNodeVO toTreeNodeVO(TreeNodeVO parent) {
         TreeNodeVO vo = new TreeNodeVO();
-        String keyStr = StrUtil.join(Constants.SEPARATOR_DOT, getTableName(), getIndexName()).toLowerCase();
+        String keyStr = getIndexName().toLowerCase();
         String key = DigestUtil.md5Hex(parent.getKey() + keyStr);
         vo.setKey(key);
         vo.setTitle(keyStr);

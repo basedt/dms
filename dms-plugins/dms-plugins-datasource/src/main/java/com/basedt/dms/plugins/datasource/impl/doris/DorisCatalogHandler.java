@@ -73,15 +73,8 @@ public class DorisCatalogHandler extends MysqlCatalogHandler {
     @Override
     public List<String> listObjectTypes() throws SQLException {
         List<String> objectTypes = super.listObjectTypes();
-//        objectTypes.add(FOREIGN_TABLE.name());
         objectTypes.add(MATERIALIZED_VIEW.name());
-        return objectTypes.stream().filter(s -> {
-            if (INDEX.name().equalsIgnoreCase(s)) {
-                return false;
-            } else {
-                return true;
-            }
-        }).collect(Collectors.toList());
+        return objectTypes;
     }
 
     protected boolean isInternalCatalog(String catalog) throws SQLException {

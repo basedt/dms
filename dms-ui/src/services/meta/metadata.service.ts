@@ -53,7 +53,7 @@ export const MetaDataService = {
         dataSourceId: dataSourceId,
         catalog: objInfo[0],
         schemaName: objInfo[1],
-        objectName: objInfo[2],
+        objectName: type === 'INDEX' ? objInfo[3] : objInfo[2],
         objectType: type,
         newName: newName,
       },
@@ -67,7 +67,7 @@ export const MetaDataService = {
         dataSourceId: dataSourceId,
         catalog: objInfo[0],
         schemaName: objInfo[1],
-        objectName: objInfo[2],
+        objectName: type === 'INDEX' ? objInfo[3] : objInfo[2],
         objectType: type,
       },
     });

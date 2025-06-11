@@ -77,6 +77,20 @@ public class JdbcIndexHandler implements IndexHandler {
         return List.of();
     }
 
+    @Override
+    public void dropIndex(String schema, String indexName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateDropSQL(schema, indexName));
+        }
+    }
+
+    @Override
+    public void renameIndex(String schema, String indexName, String newName) throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            JdbcUtil.execute(conn, generateRenameSQL(schema, indexName, newName));
+        }
+    }
+
     protected List<IndexDTO> listIndexFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();
@@ -103,4 +117,13 @@ public class JdbcIndexHandler implements IndexHandler {
         JdbcUtil.close(conn, ps, rs);
         return result;
     }
+
+    protected String generateDropSQL(String schema, String indexName) {
+        return StrUtil.format("DROP INDEX {}.{}", schema, indexName);
+    }
+
+    protected String generateRenameSQL(String schema, String indexName, String newName) {
+        return StrUtil.format("ALTER INDEX {}.{} RENAME TO {}", schema, indexName, newName);
+    }
+
 }

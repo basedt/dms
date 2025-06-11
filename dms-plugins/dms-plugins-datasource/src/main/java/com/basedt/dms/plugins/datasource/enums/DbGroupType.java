@@ -24,13 +24,12 @@ public enum DbGroupType {
     G_TABLE,
     G_VIEW,
     G_MATERIALIZED_VIEW,
-    G_INDEX,
     G_FUNCTION,
     G_SEQUENCE,
     G_FOREIGN_TABLE,
-    G_TABLE_COLUMN,
-    G_TABLE_PK,
-    G_TABLE_FK,
-    G_TABLE_INDEX,
+    G_COLUMN,
+    G_PK,
+    G_FK,
+    G_INDEX,
     G_DEFAULT;
 }

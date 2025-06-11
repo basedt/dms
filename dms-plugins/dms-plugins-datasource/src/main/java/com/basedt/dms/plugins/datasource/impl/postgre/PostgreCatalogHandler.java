@@ -60,7 +60,6 @@ public class PostgreCatalogHandler extends JdbcCatalogHandler {
             add(MATERIALIZED_VIEW.name());
             add(FOREIGN_TABLE.name());
             add(FUNCTION.name());
-            add(INDEX.name());
             add(SEQUENCE.name());
         }};
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());

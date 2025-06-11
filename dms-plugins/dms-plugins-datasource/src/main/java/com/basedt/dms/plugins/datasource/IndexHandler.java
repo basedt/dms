@@ -40,4 +40,7 @@ public interface IndexHandler {
 
     List<ObjectDTO> listFkByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
 
+    void dropIndex(String schema,String indexName) throws SQLException;
+
+    void renameIndex(String schema,String indexName,String newName) throws SQLException;
 }

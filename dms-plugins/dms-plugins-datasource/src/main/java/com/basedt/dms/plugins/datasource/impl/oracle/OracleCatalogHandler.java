@@ -42,7 +42,6 @@ public class OracleCatalogHandler extends JdbcCatalogHandler {
             add(VIEW.name());
             add(MATERIALIZED_VIEW.name());
             add(FUNCTION.name());
-            add(INDEX.name());
             add(SEQUENCE.name());
         }};
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());

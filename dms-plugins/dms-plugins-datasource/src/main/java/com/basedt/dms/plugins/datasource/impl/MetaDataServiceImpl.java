@@ -134,8 +134,6 @@ public class MetaDataServiceImpl implements MetaDataService {
             return listViews(identifier, key, dataSourcePlugin);
         } else if (G_MATERIALIZED_VIEW.name().equalsIgnoreCase(type)) {
             return listMViews(identifier, key, dataSourcePlugin);
-        } else if (G_INDEX.name().equalsIgnoreCase(type)) {
-            return listIndex(identifier, key, dataSourcePlugin);
         } else if (G_FUNCTION.name().equalsIgnoreCase(type)) {
             return listFunction(identifier, key, dataSourcePlugin);
         } else if (G_SEQUENCE.name().equalsIgnoreCase(type)) {
@@ -146,6 +144,14 @@ public class MetaDataServiceImpl implements MetaDataService {
             return listTableChild(identifier, key, dataSourcePlugin);
         } else if (VIEW.name().equalsIgnoreCase(type) || FOREIGN_TABLE.name().equalsIgnoreCase(type) || MATERIALIZED_VIEW.name().equalsIgnoreCase(type)) {
             return listViewColumn(identifier, key, dataSourcePlugin);
+        } else if (G_COLUMN.name().equalsIgnoreCase(type)) {
+            return listTableChild(identifier, key, dataSourcePlugin, COLUMN);
+        } else if (G_INDEX.name().equalsIgnoreCase(type)) {
+            return listTableChild(identifier, key, dataSourcePlugin, INDEX);
+        } else if (G_PK.name().equalsIgnoreCase(type)) {
+            return listTableChild(identifier, key, dataSourcePlugin, PK);
+        } else if (G_FK.name().equalsIgnoreCase(type)) {
+            return listTableChild(identifier, key, dataSourcePlugin, FK);
         } else {
             return null;
         }
@@ -319,6 +325,46 @@ public class MetaDataServiceImpl implements MetaDataService {
         return buildTreeList(treeList, key);
     }
 
+    private List<Tree<String>> listTableChild(String identifier, String key, DataSourcePlugin dataSourcePlugin, DbObjectType type) throws DmsException, SQLException {
+        List<TreeNodeVO> treeList = new ArrayList<>();
+        String catalog = parseIdentifier(identifier, 1);
+        String schema = parseIdentifier(identifier, 2);
+        String tableName = parseIdentifier(identifier, 3);
+        TreeNodeVO parent = new TreeNodeVO();
+        parent.setIdentifier(identifier);
+        parent.setKey(key);
+        if (Objects.isNull(type)) {
+            return buildTreeList(treeList, key);
+        }
+        switch (type) {
+            case COLUMN:
+                List<TreeNodeVO> columns = listColumnNode(catalog, schema, tableName, dataSourcePlugin, parent);
+                if (CollectionUtil.isNotEmpty(columns)) {
+                    treeList.addAll(columns);
+                }
+                break;
+            case INDEX:
+                List<TreeNodeVO> indexes = listIndexesNode(catalog, schema, tableName, dataSourcePlugin, parent);
+                if (CollectionUtil.isNotEmpty(indexes)) {
+                    treeList.addAll(indexes);
+                }
+                break;
+            case PK:
+                List<TreeNodeVO> pks = listPkNode(catalog, schema, tableName, dataSourcePlugin, parent);
+                if (CollectionUtil.isNotEmpty(pks)) {
+                    treeList.addAll(pks);
+                }
+                break;
+            case FK:
+                List<TreeNodeVO> fks = listFkNode(catalog, schema, tableName, dataSourcePlugin, parent);
+                if (CollectionUtil.isNotEmpty(fks)) {
+                    treeList.addAll(fks);
+                }
+                break;
+        }
+        return buildTreeList(treeList, key);
+    }
+
     private List<TreeNodeVO> listColumnNode(String catalog, String schema, String tableName, DataSourcePlugin dataSourcePlugin, TreeNodeVO parent) throws SQLException {
         List<ColumnDTO> columnList = dataSourcePlugin.getTableHandler().listColumnsByTable(catalog, schema, tableName);
         List<TreeNodeVO> treeList = new ArrayList<>();
@@ -455,6 +501,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getSequenceHandler().renameSequence(schemaName, objectName, newName);
             } else if (FOREIGN_TABLE.name().equals(objectType)) {
                 dataSourcePlugin.getForeignTableHandler().renameForeignTable(schemaName, objectName, newName);
+            } else if (INDEX.name().equals(objectType)) {
+                dataSourcePlugin.getIndexHandler().renameIndex(schemaName, objectName, newName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
@@ -475,6 +523,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getSequenceHandler().dropSequence(schemaName, objectName);
             } else if (FOREIGN_TABLE.name().equals(objectType)) {
                 dataSourcePlugin.getForeignTableHandler().dropForeignTable(schemaName, objectName);
+            } else if (INDEX.name().equals(objectType)) {
+                dataSourcePlugin.getIndexHandler().dropIndex(schemaName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
@@ -628,20 +678,20 @@ public class MetaDataServiceImpl implements MetaDataService {
                 return new GroupDTO(G_VIEW.name(), I18nUtil.get("dms.meta.catalog.view"), G_VIEW.name(), "02");
             case MATERIALIZED_VIEW:
                 return new GroupDTO(G_MATERIALIZED_VIEW.name(), I18nUtil.get("dms.meta.catalog.materializedView"), G_MATERIALIZED_VIEW.name(), "03");
-            case INDEX:
-                return new GroupDTO(G_INDEX.name(), I18nUtil.get("dms.meta.catalog.index"), G_INDEX.name(), "04");
             case FUNCTION:
-                return new GroupDTO(G_FUNCTION.name(), I18nUtil.get("dms.meta.catalog.function"), G_FUNCTION.name(), "05");
+                return new GroupDTO(G_FUNCTION.name(), I18nUtil.get("dms.meta.catalog.function"), G_FUNCTION.name(), "04");
             case SEQUENCE:
-                return new GroupDTO(G_SEQUENCE.name(), I18nUtil.get("dms.meta.catalog.sequence"), G_SEQUENCE.name(), "06");
+                return new GroupDTO(G_SEQUENCE.name(), I18nUtil.get("dms.meta.catalog.sequence"), G_SEQUENCE.name(), "05");
             case FOREIGN_TABLE:
-                return new GroupDTO(G_FOREIGN_TABLE.name(), I18nUtil.get("dms.meta.catalog.foreignTable"), G_FOREIGN_TABLE.name(), "07");
+                return new GroupDTO(G_FOREIGN_TABLE.name(), I18nUtil.get("dms.meta.catalog.foreignTable"), G_FOREIGN_TABLE.name(), "06");
             case COLUMN:
-                return new GroupDTO(G_TABLE_COLUMN.name(), I18nUtil.get("dms.meta.catalog.table.column"), G_TABLE_COLUMN.name(), "08");
+                return new GroupDTO(G_COLUMN.name(), I18nUtil.get("dms.meta.catalog.table.column"), G_COLUMN.name(), "010");
+            case INDEX:
+                return new GroupDTO(G_INDEX.name(), I18nUtil.get("dms.meta.catalog.table.index"), G_INDEX.name(), "011");
             case PK:
-                return new GroupDTO(G_TABLE_PK.name(), I18nUtil.get("dms.meta.catalog.table.pk"), G_TABLE_PK.name(), "09");
+                return new GroupDTO(G_PK.name(), I18nUtil.get("dms.meta.catalog.table.pk"), G_PK.name(), "012");
             case FK:
-                return new GroupDTO(G_TABLE_FK.name(), I18nUtil.get("dms.meta.catalog.table.fk"), G_TABLE_FK.name(), "10");
+                return new GroupDTO(G_FK.name(), I18nUtil.get("dms.meta.catalog.table.fk"), G_FK.name(), "013");
             default:
                 return new GroupDTO(G_DEFAULT.name(), I18nUtil.get("dms.meta.catalog.object"), G_DEFAULT.name(), "99");
         }

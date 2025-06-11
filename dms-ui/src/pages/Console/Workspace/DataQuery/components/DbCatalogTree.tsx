@@ -95,10 +95,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   const onLoadData = (node: DMS.CatalogTreeNode<string>) =>
     new Promise<void>((resolve) => {
-      const { key, children, type, identifier } = node;
+      const { key, children, type, identifier, parentId } = node;
       if (type) {
         MetaDataService.listChild(datasourceId as string, identifier, key, type).then((resp) => {
-          if (type == 'G_TABLE' || type == 'G_VIEW') {
+          if (
+            type == 'G_TABLE' ||
+            type == 'G_VIEW' ||
+            type == 'G_MATERIALIZED_VIEW' ||
+            type == 'G_FOREIGN_TABLE'
+          ) {
             const tables: DMS.CatalogTreeNode<string>[] =
               resp.data as DMS.CatalogTreeNode<string>[];
             tables?.map((table) => {
@@ -112,9 +117,14 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
               };
               idbAPI.upsertTable(t);
             });
-          } else if (type == 'TABLE' || type == 'VIEW') {
+          } else if (
+            type == 'TABLE' ||
+            type == 'VIEW' ||
+            type == 'MATERIALIZED_VIEW' ||
+            type == 'FOREIGN_TABLE'
+          ) {
             const childs: DMS.CatalogTreeNode<string>[] = resp.data?.filter(
-              (item) => item.type == 'G_TABLE_COLUMN',
+              (item) => item.type == 'G_COLUMN',
             ) as DMS.CatalogTreeNode<string>[];
 
             if (childs?.length == 1) {
@@ -202,21 +212,27 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         'VIEW',
         'G_MATERIALIZED_VIEW',
         'MATERIALIZED_VIEW',
-        'G_INDEX',
-        'INDEX',
         'G_FUNCTION',
         'FUNCTION',
         'G_SEQUENCE',
         'SEQUENCE',
         'G_FOREIGN_TABLE',
         'FOREIGN_TABLE',
+        'G_INDEX',
+        'INDEX',
+        'G_COLUMN',
+        'COLUMN',
+        'G_PK',
+        'PK',
+        'G_FK',
+        'FK',
       ];
-
       let targetList = getTreeObj(
         findObjectById(updateTree(node, expandedParentKeys), node.key),
         updateTree(node, expandedParentKeys),
         typeArray,
       );
+      // console.log('targetList', targetList, node);
       onLoadData(targetList);
       setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
       setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));
@@ -565,7 +581,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   const indexMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
     copyMenuItem(node, menuItems);
-    refreshMenuItem(node, menuItems);
+    // refreshMenuItem(node, menuItems);
     dividerMenuItem(menuItems);
     editMenuItem(node, menuItems);
     renameMenuItem(node, menuItems);
@@ -717,7 +733,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         }
         return true;
       }
-
       // 递归检查子节点
       for (let child of node.child) {
         if (findAndUpdateNode(child)) {
@@ -726,7 +741,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       }
       return false;
     }
-
     if (!tree.id) {
       // 如果树为空，初始化根节点
       tree = { id: key, child: [], type, identifier, key, parentId };

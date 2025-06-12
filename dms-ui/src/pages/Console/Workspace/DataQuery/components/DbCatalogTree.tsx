@@ -372,7 +372,13 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       return false;
     } else if (datasource?.datasourceType?.value === 'doris' && node.type === 'VIEW') {
       return false;
-    } else if (datasource?.datasourceType?.value === 'mysql' && node.type === 'INDEX') {
+    } else if (
+      (datasource?.datasourceType?.value === 'mysql' ||
+        datasource?.datasourceType?.value === 'mariadb' ||
+        datasource?.datasourceType?.value === 'polardb_mysql' ||
+        datasource?.datasourceType?.value === 'doris') &&
+      node.type === 'INDEX'
+    ) {
       return false;
     } else {
       return true;

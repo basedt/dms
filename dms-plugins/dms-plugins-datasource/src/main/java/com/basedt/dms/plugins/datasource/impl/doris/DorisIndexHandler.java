@@ -62,4 +62,14 @@ public class DorisIndexHandler extends JdbcIndexHandler {
         }
         return indexList;
     }
+
+    @Override
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
+        return StrUtil.format("DROP INDEX {} ON {}.{}", indexName, schema, tableName);
+    }
+
+    @Override
+    protected String generateRenameSQL(String schema, String tableName, String indexName, String newName) {
+        throw new UnsupportedOperationException("rename index not supported");
+    }
 }

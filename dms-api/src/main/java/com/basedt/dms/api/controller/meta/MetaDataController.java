@@ -112,21 +112,41 @@ public class MetaDataController {
 
     @AuditLogging
     @GetMapping(path = "/obj/rename")
-    @Operation(summary = "rename object", description = "rename object")
+    @Operation(summary = "rename database object", description = "rename database object")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> renameObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType, String newName) throws DmsException {
+    public ResponseEntity<ResponseVO<Object>> renameDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType, String newName) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        metaDataService.renameObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectType, objectName, newName);
+        metaDataService.renameDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectType, objectName, newName);
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @GetMapping(path = "/obj/table/rename")
+    @Operation(summary = "rename table object", description = "rename table object")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Object>> renameTableObject(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType, String newName) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        metaDataService.renameTableObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectType, objectName, newName);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
     @AuditLogging
     @GetMapping(path = "/obj/drop")
-    @Operation(summary = "drop object", description = "drop object")
+    @Operation(summary = "drop database object", description = "drop database object")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> dropObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+    public ResponseEntity<ResponseVO<Object>> dropDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        metaDataService.dropObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, objectType);
+        metaDataService.dropDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, objectType);
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @GetMapping(path = "/obj/table/drop")
+    @Operation(summary = "drop table object", description = "drop table object")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Object>> dropTableObject(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        metaDataService.dropTableObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectName, objectType);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 

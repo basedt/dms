@@ -488,7 +488,7 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
-    public void renameObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
+    public void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
             if (TABLE.name().equals(objectType)) {
@@ -501,8 +501,6 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getSequenceHandler().renameSequence(schemaName, objectName, newName);
             } else if (FOREIGN_TABLE.name().equals(objectType)) {
                 dataSourcePlugin.getForeignTableHandler().renameForeignTable(schemaName, objectName, newName);
-            } else if (INDEX.name().equals(objectType)) {
-                dataSourcePlugin.getIndexHandler().renameIndex(schemaName, objectName, newName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
@@ -510,7 +508,19 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
-    public void dropObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+    public void renameTableObject(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectType, String objectName, String newName) throws DmsException {
+        try {
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            if (INDEX.name().equals(objectType)) {
+                dataSourcePlugin.getIndexHandler().renameIndex(schemaName, tableName, objectName, newName);
+            }
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void dropDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
             if (TABLE.name().equals(objectType)) {
@@ -523,14 +533,25 @@ public class MetaDataServiceImpl implements MetaDataService {
                 dataSourcePlugin.getSequenceHandler().dropSequence(schemaName, objectName);
             } else if (FOREIGN_TABLE.name().equals(objectType)) {
                 dataSourcePlugin.getForeignTableHandler().dropForeignTable(schemaName, objectName);
-            } else if (INDEX.name().equals(objectType)) {
-                dataSourcePlugin.getIndexHandler().dropIndex(schemaName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
 
     }
+
+    @Override
+    public void dropTableObject(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException {
+        try {
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            if (INDEX.name().equals(objectType)) {
+                dataSourcePlugin.getIndexHandler().dropIndex(schemaName, tableName, objectName);
+            }
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
 
     @Override
     public String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException {

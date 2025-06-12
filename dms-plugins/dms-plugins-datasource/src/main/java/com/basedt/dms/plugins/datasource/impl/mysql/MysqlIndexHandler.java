@@ -32,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.FK;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
@@ -117,17 +116,12 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
 
     @SneakyThrows
     @Override
-    protected String generateDropSQL(String schema, String indexName) {
-        IndexDTO index = getIndexDetail(null, schema, null, indexName);
-        if (Objects.nonNull(index)) {
-            return StrUtil.format("DROP INDEX {} ON {}", index.getIndexName(), index.getTableName());
-        } else {
-            return super.generateDropSQL(schema, indexName);
-        }
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
+        return StrUtil.format("DROP INDEX {}.{} ON {}", schema, indexName, tableName);
     }
 
     @Override
-    public void renameIndex(String schema, String indexName, String newName) throws SQLException {
+    public void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException {
         throw new UnsupportedOperationException("rename index not supported");
     }
 }

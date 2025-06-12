@@ -78,16 +78,16 @@ public class JdbcIndexHandler implements IndexHandler {
     }
 
     @Override
-    public void dropIndex(String schema, String indexName) throws SQLException {
+    public void dropIndex(String schema, String tableName, String indexName) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            JdbcUtil.execute(conn, generateDropSQL(schema, indexName));
+            JdbcUtil.execute(conn, generateDropSQL(schema, tableName, indexName));
         }
     }
 
     @Override
-    public void renameIndex(String schema, String indexName, String newName) throws SQLException {
+    public void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
-            JdbcUtil.execute(conn, generateRenameSQL(schema, indexName, newName));
+            JdbcUtil.execute(conn, generateRenameSQL(schema, tableName, indexName, newName));
         }
     }
 
@@ -118,11 +118,11 @@ public class JdbcIndexHandler implements IndexHandler {
         return result;
     }
 
-    protected String generateDropSQL(String schema, String indexName) {
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
         return StrUtil.format("DROP INDEX {}.{}", schema, indexName);
     }
 
-    protected String generateRenameSQL(String schema, String indexName, String newName) {
+    protected String generateRenameSQL(String schema, String tableName, String indexName, String newName) {
         return StrUtil.format("ALTER INDEX {}.{} RENAME TO {}", schema, indexName, newName);
     }
 

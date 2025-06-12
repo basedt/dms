@@ -26,7 +26,6 @@ public class MssqlCatalogHandler extends JdbcCatalogHandler {
             add(TABLE.name());
             add(VIEW.name());
             add(FUNCTION.name());
-            add(INDEX.name());
             add(SEQUENCE.name());
         }};
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());

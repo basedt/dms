@@ -34,7 +34,7 @@ import java.util.List;
 public class DorisIndexHandler extends JdbcIndexHandler {
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         List<IndexDTO> indexList = new ArrayList<>();
         DorisCatalogHandler handler = new DorisCatalogHandler();
         handler.initialize(this.dataSource, new HashMap<>(), catalog);
@@ -52,10 +52,24 @@ public class DorisIndexHandler extends JdbcIndexHandler {
                 index.setIndexType(rs.getString("index_type"));
                 index.setColumns(rs.getString("column_name"));
                 index.setIsUniqueness(false);
-                indexList.add(index);
+                if (StrUtil.isNotEmpty(indexName) && indexName.equals(index.getIndexName())) {
+                    indexList.add(index);
+                } else if (StrUtil.isEmpty(indexName)) {
+                    indexList.add(index);
+                }
             }
             JdbcUtil.close(conn, st, rs);
         }
         return indexList;
+    }
+
+    @Override
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
+        return StrUtil.format("DROP INDEX {} ON {}.{}", indexName, schema, tableName);
+    }
+
+    @Override
+    protected String generateRenameSQL(String schema, String tableName, String indexName, String newName) {
+        throw new UnsupportedOperationException("rename index not supported");
     }
 }

@@ -14,7 +14,6 @@ const DbRenameModal: React.FC<DMS.ModalProps<DbRenameModalProps>> = (props) => {
   const { open, data, handleOk, handleCancel } = props;
   const [loading, setLoading] = useState<boolean>(false);
   const objectInfo: string[] = data?.node.identifier.split('.') as string[];
-
   return (
     <Modal
       title={intl.formatMessage({
@@ -59,7 +58,7 @@ const DbRenameModal: React.FC<DMS.ModalProps<DbRenameModalProps>> = (props) => {
         form={form}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ name: objectInfo[2] }}
+        initialValues={{ name: data?.node.type === 'INDEX' ? objectInfo[3] : objectInfo[2] }}
       >
         <Form.Item
           label={intl.formatMessage({

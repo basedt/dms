@@ -47,30 +47,69 @@ export const MetaDataService = {
   },
   renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {
     const objInfo: string[] = identifier.split('.') as string[];
-    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/rename`, {
-      method: 'GET',
-      params: {
-        dataSourceId: dataSourceId,
-        catalog: objInfo[0],
-        schemaName: objInfo[1],
-        objectName: objInfo[2],
-        objectType: type,
-        newName: newName,
-      },
-    });
+    if (
+      (type === 'INDEX' || type === 'PK' || type === 'FK' || type === 'COLUMN') &&
+      objInfo.length >= 4
+    ) {
+      return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/table/rename`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          tableName: objInfo[2],
+          objectName: objInfo[3],
+          objectType: type,
+          newName: newName,
+        },
+      });
+    } else if (objInfo.length >= 3) {
+      return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/rename`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          objectName: objInfo[2],
+          objectType: type,
+          newName: newName,
+        },
+      });
+    } else {
+      return Promise.reject(new Error('Invalid identifier format'));
+    }
   },
   dropObject(dataSourceId: number | string, identifier: string, type: string) {
     const objInfo: string[] = identifier.split('.') as string[];
-    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/drop`, {
-      method: 'GET',
-      params: {
-        dataSourceId: dataSourceId,
-        catalog: objInfo[0],
-        schemaName: objInfo[1],
-        objectName: objInfo[2],
-        objectType: type,
-      },
-    });
+    if (
+      (type === 'INDEX' || type === 'PK' || type === 'FK' || type === 'COLUMN') &&
+      objInfo.length >= 4
+    ) {
+      return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/table/drop`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          tableName: objInfo[2],
+          objectName: objInfo[3],
+          objectType: type,
+        },
+      });
+    } else if (objInfo.length >= 3) {
+      return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/obj/drop`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          objectName: objInfo[2],
+          objectType: type,
+        },
+      });
+    } else {
+      return Promise.reject(new Error('Invalid identifier format'));
+    }
   },
   generateDML(
     dataSourceId: number | string,

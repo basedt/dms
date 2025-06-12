@@ -7,6 +7,7 @@ import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import lombok.SneakyThrows;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,9 +21,8 @@ import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
 
 public class MssqlIndexHandler extends JdbcIndexHandler {
 
-
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         String sql = "select" +
                 "    db_name() as catalog_name," +
                 "    s.name as schema_name," +
@@ -48,6 +48,9 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
         }
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and o.name = '" + tableName + "'";
+        }
+        if (StrUtil.isNotEmpty(indexName)) {
+            sql += " and i.name = '" + indexName + "'";
         }
         return super.listIndexFromDB(sql);
     }
@@ -107,5 +110,17 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
         }
         JdbcUtil.close(conn, ps, rs);
         return list;
+    }
+
+    @SneakyThrows
+    @Override
+    protected String generateRenameSQL(String schema, String tableName, String indexName, String newName) {
+        return StrUtil.format("exec sp_rename '{}.{}.{}',{},'INDEX'", schema, tableName, indexName, newName);
+    }
+
+    @SneakyThrows
+    @Override
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
+        return StrUtil.format("DROP INDEX {} ON {}.{}", indexName, schema, tableName);
     }
 }

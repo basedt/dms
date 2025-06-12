@@ -38,7 +38,7 @@ import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
 public class OracleIndexHandler extends JdbcIndexHandler {
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         String sql = "select" +
                 "    null as catalog_name," +
                 "    i.owner as schema_name," +
@@ -64,6 +64,9 @@ public class OracleIndexHandler extends JdbcIndexHandler {
                 " where o.owner = '" + schemaPattern.toUpperCase() + "'";
         if (StrUtil.isNotEmpty(tableName)) {
             sql += " and i.table_name = '" + tableName.toUpperCase() + "'";
+        }
+        if (StrUtil.isNotEmpty(indexName)) {
+            sql += " and i.index_name = '" + indexName.toUpperCase() + "'";
         }
         return super.listIndexFromDB(sql);
     }

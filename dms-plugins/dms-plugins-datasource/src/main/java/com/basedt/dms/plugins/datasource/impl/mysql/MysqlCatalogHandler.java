@@ -64,7 +64,6 @@ public class MysqlCatalogHandler extends JdbcCatalogHandler {
             add(TABLE.name());
             add(VIEW.name());
             add(FUNCTION.name());
-            add(INDEX.name());
         }};
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());
     }

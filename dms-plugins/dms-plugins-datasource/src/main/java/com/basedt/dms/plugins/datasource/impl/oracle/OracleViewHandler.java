@@ -19,6 +19,8 @@
 package com.basedt.dms.plugins.datasource.impl.oracle;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.SQLUtils;
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcViewHandler;
 
@@ -62,5 +64,11 @@ public class OracleViewHandler extends JdbcViewHandler {
             sql += " and t.view_name = '" + viewName.toUpperCase() + "'";
         }
         return super.listViewFromDB(sql);
+    }
+
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        String ddl = super.getViewDdl(catalog, schema, viewName);
+        return SQLUtils.format(ddl, DbType.oracle);
     }
 }

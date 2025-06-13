@@ -23,6 +23,7 @@ import com.basedt.dms.plugins.datasource.dto.CatalogDTO;
 import com.basedt.dms.plugins.datasource.dto.DataSourceDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
+import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.enums.DmlType;
 
 import java.sql.SQLException;
@@ -61,8 +62,6 @@ public interface MetaDataService {
 
     String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException;
 
-//    String getDdlScript(DataSourceDTO dataSourceDTO) throws DmsException;
-
-//    String getDmlScript(DataSourceDTO dataSourceDTO) throws DmsException;
+    String generateDDL(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, DbObjectType type) throws DmsException;
 
 }

@@ -38,4 +38,6 @@ public interface ViewHandler {
     void dropView(String schema, String viewName) throws SQLException;
 
     void renameView(String schema, String viewName, String newName) throws SQLException;
+
+    String getViewDdl(String catalog, String schema, String viewName) throws SQLException;
 }

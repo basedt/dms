@@ -50,7 +50,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   const [renameData, setRenameData] = useState<DMS.ModalProps<DbRenameModalProps>>({
     open: false,
   });
-  const [sqlPriview, setSqlPriview] = useState<DMS.ModalProps<{ script: string }>>({
+  const [sqlPreview, setSqlPreview] = useState<DMS.ModalProps<{ script: string }>>({
     open: false,
   });
   const { setUpDateFile } = useModel('global');
@@ -438,7 +438,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           id: 'dms.console.workspace.dataquery.script.ddl',
         }),
         onClick: () => {
-          console.log('ddl', node);
+          MetaDataService.generateDDL(datasourceId, node.identifier, node.type).then((resp) => {
+            if (resp.success) {
+              setSqlPreview({ open: true, data: { script: resp.data as string } });
+            }
+          });
         },
       });
     }
@@ -451,7 +455,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         onClick: () => {
           MetaDataService.generateDML(datasourceId, node.identifier, 'SELECT').then((resp) => {
             if (resp.success) {
-              setSqlPriview({ open: true, data: { script: resp.data as string } });
+              setSqlPreview({ open: true, data: { script: resp.data as string } });
             }
           });
         },
@@ -466,7 +470,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         onClick: () => {
           MetaDataService.generateDML(datasourceId, node.identifier, 'INSERT').then((resp) => {
             if (resp.success) {
-              setSqlPriview({ open: true, data: { script: resp.data as string } });
+              setSqlPreview({ open: true, data: { script: resp.data as string } });
             }
           });
         },
@@ -481,7 +485,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         onClick: () => {
           MetaDataService.generateDML(datasourceId, node.identifier, 'UPDATE').then((resp) => {
             if (resp.success) {
-              setSqlPriview({ open: true, data: { script: resp.data as string } });
+              setSqlPreview({ open: true, data: { script: resp.data as string } });
             }
           });
         },
@@ -496,7 +500,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         onClick: () => {
           MetaDataService.generateDML(datasourceId, node.identifier, 'DELETE').then((resp) => {
             if (resp.success) {
-              setSqlPriview({ open: true, data: { script: resp.data as string } });
+              setSqlPreview({ open: true, data: { script: resp.data as string } });
             }
           });
         },
@@ -921,15 +925,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           }}
         ></DbRenameModal>
       )}
-      {sqlPriview.open && (
+      {sqlPreview.open && (
         <ScriptPreviewModal
-          open={sqlPriview.open}
-          data={sqlPriview.data}
+          open={sqlPreview.open}
+          data={sqlPreview.data}
           handleOk={(isOpen: boolean) => {
-            setSqlPriview({ open: isOpen });
+            setSqlPreview({ open: isOpen });
           }}
           handleCancel={() => {
-            setSqlPriview({ open: false });
+            setSqlPreview({ open: false });
           }}
         ></ScriptPreviewModal>
       )}

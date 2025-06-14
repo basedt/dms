@@ -19,12 +19,13 @@
 package com.basedt.dms.plugins.datasource.impl.hive;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.SQLUtils;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcViewHandler;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
-import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 
@@ -74,4 +75,9 @@ public class HiveViewHandler extends JdbcViewHandler {
         }
     }
 
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        String ddl = super.getViewDdl(catalog, schema, viewName);
+        return SQLUtils.format(ddl, DbType.hive, SQLUtils.DEFAULT_LCASE_FORMAT_OPTION);
+    }
 }

@@ -19,6 +19,7 @@
 package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.ViewHandler;
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
@@ -31,6 +32,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JdbcViewHandler implements ViewHandler {
 
@@ -90,6 +92,28 @@ public class JdbcViewHandler implements ViewHandler {
     public void renameView(String schema, String viewName, String newName) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             JdbcUtil.execute(conn, generateRenameSQL(schema, viewName, newName));
+        }
+    }
+
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        if (StrUtil.isEmpty(viewName)) {
+            return "";
+        }
+        ViewDTO viewInfo = getViewDetail(catalog, schema, viewName);
+        if (Objects.nonNull(viewInfo)) {
+            StringBuilder ddlBuilder = new StringBuilder();
+            ddlBuilder.append("CREATE OR REPLACE VIEW ")
+                    .append(viewInfo.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(viewInfo.getViewName())
+                    .append("\n AS \n");
+            if (StrUtil.isNotEmpty(viewInfo.getQuerySql())) {
+                ddlBuilder.append(viewInfo.getQuerySql());
+            }
+            return ddlBuilder.toString();
+        } else {
+            throw new SQLException(StrUtil.format("view {} does not exist in {}", viewName, schema));
         }
     }
 

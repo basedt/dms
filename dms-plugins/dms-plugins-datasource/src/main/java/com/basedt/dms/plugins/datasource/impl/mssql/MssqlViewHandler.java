@@ -19,11 +19,14 @@
 package com.basedt.dms.plugins.datasource.impl.mssql;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.SQLUtils;
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcViewHandler;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class MssqlViewHandler extends JdbcViewHandler {
 
@@ -59,5 +62,15 @@ public class MssqlViewHandler extends JdbcViewHandler {
     @Override
     protected String generateRenameSQL(String schema, String viewName, String newName) {
         return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, viewName, newName);
+    }
+
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        ViewDTO viewInfo = getViewDetail(catalog, schema, viewName);
+        if (Objects.nonNull(viewInfo)) {
+            return SQLUtils.format(viewInfo.getQuerySql(), DbType.sqlserver);
+        } else {
+            throw new SQLException(StrUtil.format("view {} does not exist in {}", viewName, schema));
+        }
     }
 }

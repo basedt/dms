@@ -18,10 +18,16 @@
 
 package com.basedt.dms.plugins.datasource.impl.doris;
 
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.SQLUtils;
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
 import com.basedt.dms.plugins.datasource.impl.mysql.MysqlViewHandler;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,4 +55,17 @@ public class DorisViewHandler extends MysqlViewHandler {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(StrUtil.format("show create view {}.{}", schema, viewName));
+        ) {
+            while (rs.next()) {
+                String ddl = rs.getString(2);
+                return SQLUtils.format(ddl, DbType.doris);
+            }
+            return "";
+        }
+    }
 }

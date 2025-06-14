@@ -128,4 +128,17 @@ export const MetaDataService = {
       },
     });
   },
+  generateDDL(dataSourceId: number | string, identifier: string, objectType: string) {
+    const objInfo: string[] = identifier.split('.') as string[];
+    return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/obj/ddl`, {
+      method: 'GET',
+      params: {
+        dataSourceId: dataSourceId,
+        catalog: objInfo[0],
+        schemaName: objInfo[1],
+        objectName: objInfo[2],
+        objectType: objectType,
+      },
+    });
+  },
 };

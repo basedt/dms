@@ -26,6 +26,7 @@ import com.basedt.dms.common.vo.ResponseVO;
 import com.basedt.dms.plugins.datasource.MetaDataService;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
+import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.enums.DmlType;
 import com.basedt.dms.plugins.datasource.param.MetaObjectParam;
 import com.basedt.dms.plugins.datasource.param.TableInfoParam;
@@ -165,8 +166,9 @@ public class MetaDataController {
     @Operation(summary = "get object ddl", description = "get object ddl")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
     public ResponseEntity<ResponseVO<String>> viewDdl(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
-        //todo
-        return new ResponseEntity<>(ResponseVO.success(""), HttpStatus.OK);
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, DbObjectType.valueOf(objectType));
+        return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
     }
 
     @AuditLogging
@@ -182,8 +184,6 @@ public class MetaDataController {
             // TODO 当前数据库中没有相关表，判定为新建表，生成建表语句
         } else {
             // TODO 判定为修改表，如果对比后发现没有修改任何内容，则返回原始表的DDL语句
-
-
 //             需要注意顺序，例如先处理表名修改，再处理列的增删，然后是索引和分区
 //             1. 改表名
 //             2. 改表注释

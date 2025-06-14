@@ -578,6 +578,25 @@ public class MetaDataServiceImpl implements MetaDataService {
         }
     }
 
+    @Override
+    public String generateDDL(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, DbObjectType type) throws DmsException {
+        String result = "";
+        if (Objects.isNull(type)) {
+            return result;
+        }
+        try {
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            switch (type) {
+                case VIEW:
+                    result = dataSourcePlugin.getViewHandler().getViewDdl(catalog, schemaName, objectName);
+                    break;
+            }
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+        return result;
+    }
+
     private String generateSelect(TableDTO table) {
         if (Objects.nonNull(table) && !CollectionUtils.isEmpty(table.getColumns())) {
             StringBuilder buffer = new StringBuilder();

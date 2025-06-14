@@ -16,28 +16,20 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource;
+package com.basedt.dms.plugins.datasource.impl.gaussdb;
 
-import com.basedt.dms.plugins.datasource.dto.ViewDTO;
+import com.alibaba.druid.DbType;
+import com.alibaba.druid.sql.SQLUtils;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
-public interface ViewHandler {
+public class GaussdbViewHandler extends PostgreViewHandler {
 
-    void initialize(DataSource dataSource, Map<String, String> config);
+    @Override
+    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+        String ddl = super.getViewDdl(catalog, schema, viewName);
+        return SQLUtils.format(ddl, DbType.gaussdb);
+    }
 
-    ViewDTO getViewDetail(String catalog, String schema, String viewName) throws SQLException;
-
-    List<ViewDTO> listViews(String catalog, String schema, String viewName) throws SQLException;
-
-    List<ViewDTO> listViewDetails(String catalog, String schema, String viewName) throws SQLException;
-
-    void dropView(String schema, String viewName) throws SQLException;
-
-    void renameView(String schema, String viewName, String newName) throws SQLException;
-
-    String getViewDdl(String catalog, String schema, String viewName) throws SQLException;
 }

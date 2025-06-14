@@ -38,6 +38,7 @@ const ScriptPreviewModal: React.FC<DMS.ModalProps<{ script: string }>> = (props)
         height={480}
         value={data?.script}
         language="sql"
+        options={{ readOnly: true }}
         onChange={(value) => {
           setSqlScript(value || '');
         }}

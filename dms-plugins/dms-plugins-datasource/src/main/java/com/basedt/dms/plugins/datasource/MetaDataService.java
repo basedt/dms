@@ -50,8 +50,6 @@ public interface MetaDataService {
 
     TableDTO getTableInfo(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
 
-    String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException;
-
     void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException;
 
     void renameTableObject(DataSourceDTO dataSource, String catalog, String schemaName,String tableName, String objectType, String objectName, String newName) throws DmsException;

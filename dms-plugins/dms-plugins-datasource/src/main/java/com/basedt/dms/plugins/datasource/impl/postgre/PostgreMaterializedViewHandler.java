@@ -65,8 +65,12 @@ public class PostgreMaterializedViewHandler extends JdbcMaterializedViewHandler 
     }
 
     @Override
-    protected String generateCreateSQL(String schema, String mViewName) {
-        // TODO
-        return "";
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        String ddl = super.getMViewDdl(catalog, schema, mViewName);
+        if (StrUtil.isNotEmpty(ddl)) {
+            return StrUtil.concat(true, ddl.replace(";", ""), " \n WITH DATA;");
+        } else {
+            return "";
+        }
     }
 }

@@ -126,7 +126,16 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
 
     @Override
     public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
-        // TODO SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW', 'MV_NAME', 'SCHEMA_NAME') FROM DUAL;
-        return super.getMViewDdl(catalog, schema, mViewName);
+        String ddl = "";
+        String sql = "SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW', ?, ?) AS ddl FROM DUAL";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, StrUtil.isEmpty(mViewName) ? "" : mViewName.toUpperCase());
+        ps.setString(2, StrUtil.isEmpty(schema) ? "" : schema.toUpperCase());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString("ddl");
+        }
+        return ddl;
     }
 }

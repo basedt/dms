@@ -74,4 +74,16 @@ public class DorisMaterializedViewHandler extends JdbcMaterializedViewHandler {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        try (Connection conn = dataSource.getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(StrUtil.format("show create materialized view {}.{}", schema, mViewName));
+        ) {
+            while (rs.next()) {
+                return rs.getString(2);
+            }
+            return "";
+        }
+    }
 }

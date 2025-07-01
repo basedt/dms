@@ -111,6 +111,17 @@ create user gptest with password 'Passwd@123';
 create database sample;
 grant all privileges on database sample to gptest;
 ```
+### Gaussdb
+启动docker容器
+```shell
+cd scripts/docker/thirdparties/gaussdb
+docker compose up -d
+```
+登录并创建数据库
+```sql
+-- 默认账号密码 gaussdb/Passwd@123
+create database sample;
+```
 
 ### Hive
 启动docker容器,连接beeline

@@ -23,7 +23,6 @@ import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcMaterializedViewHandler;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.MATERIALIZED_VIEW;
@@ -32,7 +31,6 @@ public class PostgreMaterializedViewHandler extends JdbcMaterializedViewHandler 
 
     @Override
     public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> viewList = new ArrayList<>();
         String sql = " select " +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +

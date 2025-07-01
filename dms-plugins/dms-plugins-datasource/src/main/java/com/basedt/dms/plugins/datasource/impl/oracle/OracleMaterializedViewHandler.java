@@ -136,6 +136,7 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
         while (rs.next()) {
             ddl = rs.getString("ddl");
         }
+        JdbcUtil.close(conn, ps, rs);
         return ddl;
     }
 }

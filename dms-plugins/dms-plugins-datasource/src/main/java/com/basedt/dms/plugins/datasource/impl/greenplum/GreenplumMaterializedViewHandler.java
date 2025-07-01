@@ -15,6 +15,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package com.basedt.dms.plugins.datasource.impl.greenplum;public class GreenplumMaterializedViewHandler {
+
+package com.basedt.dms.plugins.datasource.impl.greenplum;
+
+import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgreMaterializedViewHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class GreenplumMaterializedViewHandler extends PostgreMaterializedViewHandler {
+
+    @Override
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        String ddl = super.getMViewDdl(catalog, schema, mViewName);
+        if (StrUtil.isNotEmpty(ddl)) {
+            String distributedSQL = generateDistributedSQL(schema, mViewName);
+            return StrUtil.concat(true, ddl.replace(";", "\n"), distributedSQL, ";");
+        } else {
+            return "";
+        }
+    }
+
+    @Override
+    protected String generateDistributedSQL(String schema, String mViewName) throws SQLException {
+        String distributedDDL = "";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(GreenplumPluginImpl.DISTRIBUTED_SQL);
+        ps.setString(1, schema);
+        ps.setString(2, mViewName);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            distributedDDL = rs.getString("distributed_ddl");
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return distributedDDL;
+    }
+
 }

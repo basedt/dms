@@ -137,4 +137,8 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
         return StrUtil.format("ALTER MATERIALIZED VIEW {}.{} RENAME TO {}", schema, mViewName, newName);
     }
 
+    protected String generateDistributedSQL(String schema, String tableName) throws SQLException {
+        return "";
+    }
+
 }

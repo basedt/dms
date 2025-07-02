@@ -1,13 +1,36 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.basedt.dms.plugins.datasource.impl.gaussdb;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgreMaterializedViewHandler;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgreObjectTypeMapper;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.MATERIALIZED_VIEW;
 
@@ -15,7 +38,6 @@ public class GaussdbMaterializedViewHandler extends PostgreMaterializedViewHandl
 
     @Override
     public List<MaterializedViewDTO> listMViewDetails(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
-        List<MaterializedViewDTO> viewList = new ArrayList<>();
         String sql = " select " +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -46,4 +68,54 @@ public class GaussdbMaterializedViewHandler extends PostgreMaterializedViewHandl
         return super.listMViewFromDB(sql);
     }
 
+    @Override
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        if (StrUtil.isEmpty(mViewName)) {
+            return "";
+        }
+        MaterializedViewDTO mv = getMViewDetail(catalog, schema, mViewName);
+        if (Objects.nonNull(mv)) {
+            StringBuilder ddlBuilder = new StringBuilder();
+            if (isIncremental(schema, mViewName)) {
+                ddlBuilder.append("CREATE INCREMENTAL MATERIALIZED VIEW ");
+            } else {
+                ddlBuilder.append("CREATE MATERIALIZED VIEW ");
+            }
+            ddlBuilder.append(mv.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(mv.getMViewName())
+                    .append("\n AS \n");
+            if (StrUtil.isNotEmpty(mv.getQuerySql())) {
+                ddlBuilder.append(mv.getQuerySql());
+            }
+            return ddlBuilder.toString();
+        } else {
+            throw new SQLException(StrUtil.format("materialized view {} does not exist in {}", mViewName, schema));
+        }
+    }
+
+    private boolean isIncremental(String schema, String mViewName) throws SQLException {
+        boolean flag = false;
+        String sql = "select " +
+                "    n.nspname as schema," +
+                "    c.relname as object_name," +
+                "    v.ivm as incremental" +
+                " from pg_namespace n " +
+                " join pg_class c" +
+                " on n.oid = c.relnamespace" +
+                " join gs_matview v " +
+                " on c.oid = v.matviewid" +
+                " where n.nspname = ?" +
+                " and c.relname = ?";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, schema);
+        ps.setString(2, mViewName);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            flag = rs.getBoolean("incremental");
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return flag;
+    }
 }

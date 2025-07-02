@@ -3,7 +3,9 @@
 启动docker容器
 
 ```shell
-docker compose -p doris up -d
+cd scripts/docker/thirdparties/doris
+chmod 775 start-doris.sh
+./start-doris.sh
 ```
 
 数据库默认root和admin用户均没有密码，登录设置密码
@@ -15,6 +17,7 @@ mysql -uroot -P9030 -h127.0.0.1
 ```sql
 set password for 'root' = password('123456');
 set password for 'admin' = password('123456');
+create database sample;
 ```
 
 ### Oracle
@@ -110,6 +113,17 @@ cd /usr/local/gpdb/bin
 create user gptest with password 'Passwd@123';
 create database sample;
 grant all privileges on database sample to gptest;
+```
+### Gaussdb
+启动docker容器
+```shell
+cd scripts/docker/thirdparties/gaussdb
+docker compose up -d
+```
+登录并创建数据库
+```sql
+-- 默认账号密码 gaussdb/Passwd@123
+create database sample;
 ```
 
 ### Hive

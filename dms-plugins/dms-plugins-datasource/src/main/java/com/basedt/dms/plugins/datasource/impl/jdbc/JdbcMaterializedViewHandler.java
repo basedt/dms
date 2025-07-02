@@ -20,6 +20,7 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.MaterializedViewHandler;
 import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
 
@@ -80,6 +82,28 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
         }
     }
 
+    @Override
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        if (StrUtil.isEmpty(mViewName)) {
+            return "";
+        }
+        MaterializedViewDTO mv = getMViewDetail(catalog, schema, mViewName);
+        if (Objects.nonNull(mv)){
+            StringBuilder ddlBuilder = new StringBuilder();
+            ddlBuilder.append("CREATE MATERIALIZED VIEW ")
+                    .append(mv.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(mv.getMViewName())
+                    .append("\n AS \n");
+            if (StrUtil.isNotEmpty(mv.getQuerySql())){
+                ddlBuilder.append(mv.getQuerySql());
+            }
+            return ddlBuilder.toString();
+        }else {
+            throw new SQLException(StrUtil.format("materialized view {} does not exist in {}", mViewName, schema));
+        }
+    }
+
     protected List<MaterializedViewDTO> listMViewFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();
@@ -113,7 +137,7 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
         return StrUtil.format("ALTER MATERIALIZED VIEW {}.{} RENAME TO {}", schema, mViewName, newName);
     }
 
-    protected String generateCreateSQL(String schema, String mViewName) {
+    protected String generateDistributedSQL(String schema, String tableName) throws SQLException {
         return "";
     }
 

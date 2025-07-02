@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * https://doris.apache.org/zh-CN/docs/gettingStarted/quick-start
+ */
 @AutoService(DataSourcePlugin.class)
 public class DorisPluginImpl extends MysqlPluginImpl {
 

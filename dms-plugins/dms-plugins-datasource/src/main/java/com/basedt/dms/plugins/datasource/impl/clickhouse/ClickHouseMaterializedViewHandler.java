@@ -36,8 +36,12 @@ public class ClickHouseMaterializedViewHandler extends JdbcMaterializedViewHandl
     }
 
     @Override
-    protected String generateCreateSQL(String schema, String mViewName) {
-        // TODO
-        return "";
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        if (StrUtil.isEmpty(mViewName)) {
+            return "";
+        }
+        MaterializedViewDTO mv = getMViewDetail(catalog, schema, mViewName);
+        return mv.getQuerySql();
     }
+
 }

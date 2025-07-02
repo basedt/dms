@@ -482,12 +482,6 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
-    public String getTableDdl(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
-        //TODO
-        return "";
-    }
-
-    @Override
     public void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
@@ -589,6 +583,9 @@ public class MetaDataServiceImpl implements MetaDataService {
             switch (type) {
                 case VIEW:
                     result = dataSourcePlugin.getViewHandler().getViewDdl(catalog, schemaName, objectName);
+                    break;
+                case MATERIALIZED_VIEW:
+                    result = dataSourcePlugin.getMaterializedViewHandler().getMViewDdl(catalog, schemaName, objectName);
                     break;
             }
         } catch (Exception e) {

@@ -120,14 +120,23 @@ public class OracleMaterializedViewHandler extends JdbcMaterializedViewHandler {
     }
 
     @Override
-    protected String generateCreateSQL(String schema, String mViewName) {
-        // TODO SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW', 'MV_NAME', 'SCHEMA_NAME') FROM DUAL;
-        return "";
-    }
-
-    @Override
     public void renameMView(String schema, String mViewName, String newName) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public String getMViewDdl(String catalog, String schema, String mViewName) throws SQLException {
+        String ddl = "";
+        String sql = "SELECT DBMS_METADATA.GET_DDL('MATERIALIZED_VIEW', ?, ?) AS ddl FROM DUAL";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, StrUtil.isEmpty(mViewName) ? "" : mViewName.toUpperCase());
+        ps.setString(2, StrUtil.isEmpty(schema) ? "" : schema.toUpperCase());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString("ddl");
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return ddl;
+    }
 }

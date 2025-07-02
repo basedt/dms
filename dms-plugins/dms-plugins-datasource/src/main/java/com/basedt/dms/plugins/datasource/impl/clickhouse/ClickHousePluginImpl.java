@@ -41,6 +41,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * https://clickhouse.com/docs/data-modeling/overview
+ */
 @AutoService(DataSourcePlugin.class)
 public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
 

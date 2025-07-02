@@ -150,6 +150,10 @@ public class JdbcTableHandler implements TableHandler {
         return StrUtil.format("ALTER TABLE {}.{} RENAME TO {}", schema, tableName, newName);
     }
 
+    protected String generateDistributedSQL(String schema, String tableName) {
+        return "";
+    }
+
     protected List<TableDTO> listTableFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();

@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * https://doc.hcs.huawei.com/db/zh-cn/gaussdb/24.1.30/devg-dist/gaussdb-12-0320.html
+ */
 @AutoService(DataSourcePlugin.class)
 public class GaussdbPluginImpl extends PostgrePluginImpl {
 

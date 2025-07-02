@@ -17,13 +17,13 @@
 
 services:
   gaussdb:
-    image: enmotech/opengauss-lite:latest
+    image: enmotech/opengauss-lite:5.0.3
     privileged: true
     environment:
       - GS_PASSWORD=Passwd@123
       - GS_PORT=5432
-    volumes:
-      - ./data:/var/lib/opengauss
+#    volumes:
+#      - ./data:/var/lib/opengauss
     ports:
       - "25432:5432"
     networks:

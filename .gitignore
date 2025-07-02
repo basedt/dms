@@ -25,6 +25,7 @@ hs_err_pid*
 
 # idea
 /.idea/
+!/.idea/icon.svg
 *.iml
 **/.flattened-pom.xml
 

@@ -56,7 +56,7 @@ export default {
   'dms.console.workspace.dataquery.select': '选择数据库',
   'dms.console.workspace.dataquery.rename': '重命名',
   'dms.console.workspace.dataquery.rename.newName': '新名称',
-  'dms.console.workspace.dataquery.copy': '复制',
+  'dms.console.workspace.dataquery.copy': '复制名称',
   'dms.console.workspace.dataquery.drop': '删除',
   'dms.console.workspace.dataquery.open': '打开',
   'dms.console.workspace.dataquery.move': '移动',

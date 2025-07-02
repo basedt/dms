@@ -71,7 +71,7 @@ export default {
   'dms.common.tabs.result': 'Result',
   'dms.common.tabs.runLog': 'Console',
   'dms.common.modal.currentFieldValue': 'Current Field Value',
-  'dms.common.modal.copy': 'Copy',
+  'dms.common.operate.copy': 'Copy',
   'dms.common.modal.successful': 'Successful',
   'dms.common.operate.task.wait': 'Waiting',
   'dms.common.operate.task.running': 'Running',

@@ -69,7 +69,7 @@ export default {
   'dms.common.tabs.result': '结果',
   'dms.common.tabs.runLog': '运行日志',
   'dms.common.modal.currentFieldValue': '当前字段值',
-  'dms.common.modal.copy': '复制',
+  'dms.common.operate.copy': '复制',
   'dms.common.modal.successful': '成功',
   'dms.common.operate.task.wait': '等待',
   'dms.common.operate.task.running': '运行中',

@@ -56,7 +56,7 @@ export default {
   'dms.console.workspace.dataquery.file': 'File',
   'dms.console.workspace.dataquery.select': 'Select Database',
   'dms.console.workspace.dataquery.rename': 'Rename',
-  'dms.console.workspace.dataquery.copy': 'Copy',
+  'dms.console.workspace.dataquery.copy': 'Copy Name',
   'dms.console.workspace.dataquery.drop': 'Drop',
   'dms.console.workspace.dataquery.open': 'Open',
   'dms.console.workspace.dataquery.move': 'Move',

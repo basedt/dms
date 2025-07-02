@@ -1,11 +1,13 @@
 package com.basedt.dms.plugins.datasource.impl.mssql;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.SequenceDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcSequenceHandler;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class MssqlSequenceHandler extends JdbcSequenceHandler {
 
@@ -21,6 +23,7 @@ public class MssqlSequenceHandler extends JdbcSequenceHandler {
                 "    seq.maximum_value as max_value," +
                 "    seq.increment as increment_by," +
                 "    seq.is_cycling as is_cycle," +
+                "    seq.cache_size as cache_size," +
                 "    seq.last_used_value as last_value," +
                 "    o.create_date as create_time," +
                 "    o.modify_date as last_ddl_time" +
@@ -41,7 +44,37 @@ public class MssqlSequenceHandler extends JdbcSequenceHandler {
     }
 
     @Override
+    public List<SequenceDTO> listSequenceDetails(String catalog, String schemaPattern, String sequencePattern) throws SQLException {
+        return listSequences(catalog, schemaPattern, sequencePattern);
+    }
+
+    @Override
     protected String generateRenameSQL(String schema, String sequenceName, String newName) {
         return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, sequenceName, newName);
+    }
+
+    @Override
+    public String getSequenceDDL(String catalog, String schema, String sequenceName) throws SQLException {
+        StringBuilder builder = new StringBuilder();
+        SequenceDTO sequence = getSequenceDetail(catalog, schema, sequenceName);
+        if (Objects.nonNull(sequence)) {
+            builder.append("CREATE SEQUENCE ")
+                    .append(sequence.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(sequence.getSequenceName())
+                    .append("\n START WITH ")
+                    .append(sequence.getStartValue())
+                    .append("\n INCREMENT BY ")
+                    .append(sequence.getIncrementBy())
+                    .append("\n MINVALUE ")
+                    .append(sequence.getMinValue())
+                    .append("\n MAXVALUE ")
+                    .append(sequence.getMaxValue())
+                    .append(sequence.getIsCycle() ? "\n CYCLE" : "\n NO CYCLE")
+                    .append(Objects.nonNull(sequence.getCacheSize()) && sequence.getCacheSize() > 0L ? "\n CACHE " + sequence.getCacheSize() : "\n NO CACHE")
+                    .append(";");
+            return builder.toString();
+        }
+        return "";
     }
 }

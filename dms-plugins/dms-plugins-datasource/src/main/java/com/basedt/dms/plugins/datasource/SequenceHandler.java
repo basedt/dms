@@ -39,4 +39,5 @@ public interface SequenceHandler {
 
     void renameSequence(String schema, String sequenceName, String newName) throws SQLException;
 
+    String getSequenceDDL(String catalog,String schema,String seuenceName) throws SQLException;
 }

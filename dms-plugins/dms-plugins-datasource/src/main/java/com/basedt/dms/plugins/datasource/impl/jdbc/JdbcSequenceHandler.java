@@ -20,6 +20,7 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.SequenceHandler;
 import com.basedt.dms.plugins.datasource.dto.SequenceDTO;
@@ -33,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JdbcSequenceHandler implements SequenceHandler {
 
@@ -80,6 +82,32 @@ public class JdbcSequenceHandler implements SequenceHandler {
         }
     }
 
+    @Override
+    public String getSequenceDDL(String catalog, String schema, String sequenceName) throws SQLException {
+        StringBuilder builder = new StringBuilder();
+        SequenceDTO sequence = getSequenceDetail(catalog, schema, sequenceName);
+        if (Objects.nonNull(sequence)){
+            builder.append("CREATE SEQUENCE ")
+                    .append(sequence.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(sequence.getSequenceName())
+                    .append("\n INCREMENT BY ")
+                    .append(sequence.getIncrementBy())
+                    .append("\n MINVALUE ")
+                    .append(sequence.getMinValue())
+                    .append("\n MAXVALUE ")
+                    .append(sequence.getMaxValue())
+                    .append("\n START WITH ")
+                    .append(sequence.getStartValue())
+                    .append("\n CACHE ")
+                    .append(sequence.getCacheSize())
+                    .append(sequence.getIsCycle()? " \n CYCLE" : " \n NO CYCLE")
+                    .append(";");
+            return builder.toString();
+        }
+        return "";
+    }
+
     protected List<SequenceDTO> listSequenceFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();
@@ -104,6 +132,7 @@ public class JdbcSequenceHandler implements SequenceHandler {
             sequence.setIncrementBy(rs.getLong("increment_by"));
             sequence.setIsCycle(rs.getBoolean("is_cycle"));
             sequence.setLastValue(rs.getLong("last_value"));
+            sequence.setCacheSize(rs.getLong("cache_size"));
             sequence.setCreateTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("create_time")));
             sequence.setLastDdlTime(DateTimeUtil.toLocalDateTime(rs.getTimestamp("last_ddl_time")));
             result.add(sequence);

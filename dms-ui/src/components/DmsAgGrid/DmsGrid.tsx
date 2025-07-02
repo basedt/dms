@@ -89,7 +89,7 @@ const DmsAgGrid: React.FC<{ item: IItem; visibleColumns: string[] }> = ({
   const copyTableCell = () => {
     copy(isModalOpen.data);
     message.success(
-      intl.formatMessage({ id: 'dms.common.modal.copy' }) +
+      intl.formatMessage({ id: 'dms.common.operate.copy' }) +
         intl.formatMessage({ id: 'dms.common.modal.successful' }),
     );
   };
@@ -148,7 +148,7 @@ const DmsAgGrid: React.FC<{ item: IItem; visibleColumns: string[] }> = ({
           footer={[
             isModalOpen.data?.toString() && (
               <Button onClick={copyTableCell} key="copyTableCell">
-                {intl.formatMessage({ id: 'dms.common.modal.copy' })}
+                {intl.formatMessage({ id: 'dms.common.operate.copy' })}
               </Button>
             ),
             <Button

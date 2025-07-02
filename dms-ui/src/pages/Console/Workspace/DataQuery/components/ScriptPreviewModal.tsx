@@ -19,7 +19,7 @@ const ScriptPreviewModal: React.FC<DMS.ModalProps<{ script: string }>> = (props)
         handleOk?.(false);
         setLoading(false);
       }}
-      okText={intl.formatMessage({ id: 'dms.console.workspace.dataquery.copy' })}
+      okText={intl.formatMessage({ id: 'dms.common.operate.copy' })}
       onCancel={handleCancel}
       confirmLoading={loading}
       destroyOnHidden={true}

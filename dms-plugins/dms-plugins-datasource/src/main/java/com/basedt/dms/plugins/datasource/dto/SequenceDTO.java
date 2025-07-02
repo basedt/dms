@@ -38,6 +38,8 @@ public class SequenceDTO extends ObjectDTO {
 
     private Long lastValue;
 
+    private Long cacheSize;
+
     public String getSequenceName() {
         return this.getObjectName();
     }

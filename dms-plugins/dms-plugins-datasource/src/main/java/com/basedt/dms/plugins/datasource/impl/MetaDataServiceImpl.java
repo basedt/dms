@@ -587,6 +587,9 @@ public class MetaDataServiceImpl implements MetaDataService {
                 case MATERIALIZED_VIEW:
                     result = dataSourcePlugin.getMaterializedViewHandler().getMViewDdl(catalog, schemaName, objectName);
                     break;
+                case SEQUENCE:
+                    result = dataSourcePlugin.getSequenceHandler().getSequenceDDL(catalog, schemaName, objectName);
+                    break;
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

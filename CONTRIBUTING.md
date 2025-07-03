@@ -1,10 +1,10 @@
 # Contributing to Base DMS
 
-Thanks for your interest in Base DMS! Our goal is. We warmly welcome community members to participate in improving the
+Thanks for your interest in Base DMS! We warmly welcome community members to participate in improving the
 project, including code contributions ,documentation ,test , issue reporting ,feature suggestions, and more. Our goal is
 to develop an AI-powered intelligent data management system.
 
-Please read the following guidelines carefully before contribution.
+Please read the following guidelines carefully before contribution. Get started with our [Good first issues](https://github.com/basedt/dms/labels/good%20first%20issue).
 
 ## Getting Started
 
@@ -20,7 +20,7 @@ cd dms
 ### Development Setup
 
 Once you have cloned the [GitHub repository](https://github.com/gleiyu/dms), see [how to build](how-to-build.md) for
-instructions on how to build. Base DMS code is mainly divided into three parts (frontend,backend,docs).
+how to setup your local development environment. Base DMS code is mainly divided into three parts (frontend,backend,docs).
 
 | Module   | Name                                                       | Language |
 |----------|------------------------------------------------------------|----------|
@@ -56,4 +56,4 @@ git commit -m "Your commit message"
 git push your-branch-name
 ```
 
-4. After you have pushed your changes, create a pull request (PR) in the DMS repository.
+4. After you have pushed your changes, create a pull request (PR) in the DMS repository. 

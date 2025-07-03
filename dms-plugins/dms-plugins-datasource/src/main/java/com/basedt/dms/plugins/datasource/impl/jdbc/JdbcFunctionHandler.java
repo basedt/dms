@@ -31,6 +31,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JdbcFunctionHandler implements FunctionHandler {
 
@@ -75,6 +76,16 @@ public class JdbcFunctionHandler implements FunctionHandler {
             return functions.get(0);
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public String getFunctionDDL(String catalog, String schema, String functionName) throws SQLException {
+        FunctionDTO function = getFunctionDetail(catalog, schema, functionName);
+        if (Objects.isNull(function)) {
+            return "";
+        } else {
+            return function.getSourceCode();
         }
     }
 

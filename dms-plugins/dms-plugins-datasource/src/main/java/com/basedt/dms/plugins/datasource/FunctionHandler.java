@@ -35,4 +35,5 @@ public interface FunctionHandler {
 
     FunctionDTO getFunctionDetail(String catalog, String schemaPattern, String functionPattern) throws SQLException;
 
+    String getFunctionDDL(String catalog,String schema,String functionName) throws SQLException;
 }

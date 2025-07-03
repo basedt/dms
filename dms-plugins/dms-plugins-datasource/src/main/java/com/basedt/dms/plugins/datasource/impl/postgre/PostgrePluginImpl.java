@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * https://www.postgresql.org/docs/17/index.html
+ */
 @AutoService(DataSourcePlugin.class)
 public class PostgrePluginImpl extends AbstractDataSourcePlugin {
 

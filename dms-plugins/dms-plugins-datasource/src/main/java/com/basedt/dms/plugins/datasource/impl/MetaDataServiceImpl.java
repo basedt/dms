@@ -590,6 +590,8 @@ public class MetaDataServiceImpl implements MetaDataService {
                 case SEQUENCE:
                     result = dataSourcePlugin.getSequenceHandler().getSequenceDDL(catalog, schemaName, objectName);
                     break;
+                case FUNCTION:
+                    result = dataSourcePlugin.getFunctionHandler().getFunctionDDL(catalog, schemaName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

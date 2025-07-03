@@ -13,6 +13,9 @@ Base DMS is an open-source, free, and AI-powered intelligent data management sys
 - **Import/Export**: Supports data import/export operations, with split configuration for exporting large tables
 - **SQL Auditing**: Tracks historical SQL execution records for administrator auditing and traceability
 
+## Contributing
+Please refer [CONTRIBUTING.md](CONTRIBUTING.md) to see how to contribute to Base DMS.
+
 ## Try DMS
 
 [Get Started](https://basedt.github.io/dms-web/document/start/quickStart.html) Quickly to Learn How to Use DMS

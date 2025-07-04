@@ -59,7 +59,7 @@ public class MysqlFunctionHandler extends JdbcFunctionHandler {
         String sql = StrUtil.format("show create function {}.{}", schema, functionName);
         Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery(sql);
+        ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             ddl = rs.getString(3);
         }

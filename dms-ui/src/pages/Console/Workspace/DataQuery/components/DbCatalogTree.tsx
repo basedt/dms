@@ -57,7 +57,10 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
 
   useEffect(() => {
     idbAPI.cleanupOldMetadata();
-    if (!datasourceId) return;
+    if (!datasourceId) {
+      setTreeData([])
+      return
+    };
     initTreeData(datasourceId as string);
     DataSourceService.selectOne(datasourceId).then((resp) => {
       if (resp.success) {

@@ -56,23 +56,13 @@ public class OracleFunctionHandler extends JdbcFunctionHandler {
                 "     o.owner as schema_name," +
                 "     o.object_name as object_name," +
                 "     'FUNCTION' as object_type," +
-                "     source.source_code as source_code," +
+                "     dbms_metadata.get_ddl(o.object_type,o.object_name,o.owner) as source_code," +
                 "     o.created as create_time," +
                 "     o.last_ddl_time as last_ddl_time" +
                 " from all_objects o" +
                 " join all_procedures s" +
                 " on o.owner = s.owner" +
-                " and o.object_name = s.procedure_name" +
-                " left join" +
-                "     (" +
-                "         select" +
-                "             owner," +
-                "             name," +
-                "             xmlagg(xmlelement(e,text) order by line).extract('//text()')  source_code" +
-                "         from all_source group by owner,name" +
-                "     ) source" +
-                " on o.owner = source.owner" +
-                " and o.object_name = source.name" +
+                " and o.object_name = s.object_name" +
                 " where o.owner = '" + schemaPattern.toUpperCase() + "'" +
                 " and o.object_type = 'FUNCTION'";
         if (StrUtil.isNotEmpty(functionPattern)) {

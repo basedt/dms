@@ -16,24 +16,24 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource;
+package com.basedt.dms.plugins.datasource.impl.gaussdb;
 
-import com.basedt.dms.plugins.datasource.dto.FunctionDTO;
+import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgreFunctionHandler;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
-public interface FunctionHandler {
+public class GaussdbFunctionHandler extends PostgreFunctionHandler {
 
-    void initialize(DataSource dataSource, Map<String, String> config);
-
-    List<FunctionDTO> listFunctions(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    List<FunctionDTO> listFunctionDetails(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    FunctionDTO getFunctionDetail(String catalog, String schemaPattern, String functionPattern) throws SQLException;
-
-    String getFunctionDDL(String catalog,String schema,String functionName) throws SQLException;
+    @Override
+    public String getFunctionDDL(String catalog, String schema, String functionName) throws SQLException {
+        String ddl = super.getFunctionDDL(catalog, schema, functionName);
+        if (StrUtil.isEmpty(ddl)) {
+            return ddl;
+        } else {
+            int startIndex = ddl.indexOf("\"") + 1;
+            int endIndex = ddl.lastIndexOf("\"");
+            return ddl.substring(startIndex, endIndex);
+        }
+    }
 }

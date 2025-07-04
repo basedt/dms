@@ -437,6 +437,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         label: intl.formatMessage({
           id: 'dms.console.workspace.dataquery.script.ddl',
         }),
+        disabled: !supportDDL(node),
         onClick: () => {
           MetaDataService.generateDDL(datasourceId, node.identifier, node.type).then((resp) => {
             if (resp.success) {
@@ -507,6 +508,18 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       });
     }
     menuItems?.push(menu);
+  };
+
+  const supportDDL = (node: DMS.CatalogTreeNode<string>): boolean => {
+    if (
+      (datasource?.datasourceType?.value === 'clickhouse' ||
+        datasource?.datasourceType?.value === 'doris') &&
+      node.type === 'FUNCTION'
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const ioMenuItem = (

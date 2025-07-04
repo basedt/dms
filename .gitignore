@@ -35,3 +35,4 @@ hs_err_pid*
 # macos
 .DS_Store
 
+/scripts/docker/thirdparties/doris/docker-compose-doris.yaml

@@ -38,4 +38,9 @@ public class MssqlFunctionHandler extends JdbcFunctionHandler {
         }
         return super.listFunctionFromDB(sql);
     }
+
+    @Override
+    public String getFunctionDDL(String catalog, String schema, String functionName) throws SQLException {
+        return super.getFunctionDDL(catalog, schema, functionName);
+    }
 }

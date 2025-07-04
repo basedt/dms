@@ -21,7 +21,11 @@ package com.basedt.dms.plugins.datasource.impl.mysql;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.dto.FunctionDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcFunctionHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -47,5 +51,19 @@ public class MysqlFunctionHandler extends JdbcFunctionHandler {
             sql += " and r.routine_name = '" + functionPattern + "'";
         }
         return super.listFunctionFromDB(sql);
+    }
+
+    @Override
+    public String getFunctionDDL(String catalog, String schema, String functionName) throws SQLException {
+        String ddl = "";
+        String sql = StrUtil.format("show create function {}.{}", schema, functionName);
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString(3);
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return ddl;
     }
 }

@@ -49,7 +49,7 @@ public class PostgreFunctionHandler extends JdbcFunctionHandler {
                 "            n.nspname as schema_name," +
                 "            p.proname as function_name," +
                 "            'FUNCTION' as object_type," +
-                "            p.prosrc as source_code," +
+                "            pg_get_functiondef(p.oid) as source_code," +
                 "            row_number() over (partition by n.nspname,p.proname order by p.oid) as rn" +
                 "        from pg_catalog.pg_namespace n" +
                 "            join pg_catalog.pg_proc p" +

@@ -72,6 +72,22 @@ public class OracleIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        String ddl = "";
+        String sql = "SELECT DBMS_METADATA.GET_DDL('INDEX', ?, ?) AS ddl FROM DUAL";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, StrUtil.isEmpty(indexName) ? "" : indexName.toUpperCase());
+        ps.setString(2, StrUtil.isEmpty(schema) ? "" : schema.toUpperCase());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString("ddl");
+        }
+        JdbcUtil.close(conn, ps, rs);
+        return ddl;
+    }
+
+    @Override
     public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         return this.getConstraint(catalog, schemaPattern, tableName, "P");
     }

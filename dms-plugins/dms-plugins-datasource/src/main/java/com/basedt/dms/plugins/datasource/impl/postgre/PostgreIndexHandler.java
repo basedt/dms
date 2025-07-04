@@ -37,7 +37,7 @@ import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 public class PostgreIndexHandler extends JdbcIndexHandler {
 
     @Override
-    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName,String indexName) throws SQLException {
+    public List<IndexDTO> listIndexDetails(String catalog, String schemaPattern, String tableName, String indexName) throws SQLException {
         String sql = " select" +
                 " null as catalog_name," +
                 " n.nspname as schema_name," +
@@ -89,6 +89,22 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
             sql += " and c.relname = '" + indexName + "'";
         }
         return super.listIndexFromDB(sql);
+    }
+
+    @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        String ddl = "";
+        String sql = "select pg_get_indexdef(format('%I.%I', ?, ?)::regclass) as ddl";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, schema);
+        ps.setString(2, indexName);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString("ddl");
+
+        }
+        return ddl;
     }
 
     @Override

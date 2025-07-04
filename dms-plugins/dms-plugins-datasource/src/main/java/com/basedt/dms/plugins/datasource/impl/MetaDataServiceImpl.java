@@ -213,23 +213,6 @@ public class MetaDataServiceImpl implements MetaDataService {
         return buildTreeList(treeList, key);
     }
 
-    private List<Tree<String>> listIndex(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
-        String catalog = parseIdentifier(identifier, 1);
-        String schema = parseIdentifier(identifier, 2);
-        List<IndexDTO> list = dataSourcePlugin.getIndexHandler().listIndexes(catalog, schema, null);
-        List<TreeNodeVO> treeList = new ArrayList<>();
-        if (CollectionUtil.isNotEmpty(list)) {
-            TreeNodeVO parent = new TreeNodeVO();
-            parent.setKey(key);
-            parent.setIdentifier(identifier);
-            for (IndexDTO index : list) {
-                TreeNodeVO node = index.toTreeNodeVO(parent);
-                treeList.add(node);
-            }
-        }
-        return buildTreeList(treeList, key);
-    }
-
     private List<Tree<String>> listFunction(String identifier, String key, DataSourcePlugin dataSourcePlugin) throws DmsException, SQLException {
         String catalog = parseIdentifier(identifier, 1);
         String schema = parseIdentifier(identifier, 2);
@@ -590,8 +573,29 @@ public class MetaDataServiceImpl implements MetaDataService {
                 case SEQUENCE:
                     result = dataSourcePlugin.getSequenceHandler().getSequenceDDL(catalog, schemaName, objectName);
                     break;
+//                case INDEX:
+//                    result = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName,tablename objectName);
+//                    break;
                 case FUNCTION:
                     result = dataSourcePlugin.getFunctionHandler().getFunctionDDL(catalog, schemaName, objectName);
+                    break;
+            }
+        } catch (Exception e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+        return result;
+    }
+
+    @Override
+    public String generateDDL(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectName, DbObjectType type) throws DmsException {
+        String result = "";
+        if (Objects.isNull(type)) {
+            return result;
+        }
+        try {
+            DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+            if (INDEX.equals(type)) {
+                result = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName, tableName, objectName);
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

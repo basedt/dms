@@ -52,14 +52,16 @@ public interface MetaDataService {
 
     void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException;
 
-    void renameTableObject(DataSourceDTO dataSource, String catalog, String schemaName,String tableName, String objectType, String objectName, String newName) throws DmsException;
+    void renameTableObject(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectType, String objectName, String newName) throws DmsException;
 
     void dropDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, String objectType) throws DmsException;
 
-    void dropTableObject(DataSourceDTO dataSource, String catalog, String schemaName,String tableName, String objectName, String objectType) throws DmsException;
+    void dropTableObject(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException;
 
     String generateDml(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, DmlType type) throws DmsException;
 
     String generateDDL(DataSourceDTO dataSource, String catalog, String schemaName, String objectName, DbObjectType type) throws DmsException;
+
+    String generateDDL(DataSourceDTO dataSource, String catalog, String schemaName, String tableName, String objectName, DbObjectType type) throws DmsException;
 
 }

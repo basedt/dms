@@ -43,4 +43,7 @@ public interface IndexHandler {
     void dropIndex(String schema, String tableName, String indexName) throws SQLException;
 
     void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException;
+
+    String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException;
+
 }

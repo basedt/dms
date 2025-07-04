@@ -20,6 +20,7 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
@@ -34,6 +35,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JdbcIndexHandler implements IndexHandler {
 
@@ -88,6 +90,32 @@ public class JdbcIndexHandler implements IndexHandler {
     public void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException {
         try (Connection conn = dataSource.getConnection()) {
             JdbcUtil.execute(conn, generateRenameSQL(schema, tableName, indexName, newName));
+        }
+    }
+
+    @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        if (StrUtil.isEmpty(indexName)) {
+            return "";
+        } else {
+            IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
+            if (Objects.nonNull(index)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("CREATE ")
+                        .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
+                        .append(index.getIndexName())
+                        .append(" ON ")
+                        .append(index.getSchemaName())
+                        .append(Constants.SEPARATOR_DOT)
+                        .append(index.getTableName())
+                        .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
+                        .append(" (")
+                        .append(index.getColumns())
+                        .append(");");
+                return builder.toString();
+            } else {
+                throw new SQLException(StrUtil.format("index {} does not exist in {}", indexName, schema));
+            }
         }
     }
 

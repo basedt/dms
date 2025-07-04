@@ -38,6 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * https://dev.mysql.com/doc/refman/8.4/en/
+ */
 @AutoService(DataSourcePlugin.class)
 public class MysqlPluginImpl extends AbstractDataSourcePlugin {
 

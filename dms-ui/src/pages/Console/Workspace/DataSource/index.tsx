@@ -4,7 +4,7 @@ import { DataSourceService } from '@/services/workspace/datasource.service';
 import { FilterOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
 import { useEmotionCss } from '@ant-design/use-emotion-css';
-import { useAccess, useIntl, useSearchParams } from '@umijs/max';
+import { useAccess, useIntl, useSearchParams, useModel } from '@umijs/max';
 import {
   Badge,
   Button,
@@ -44,6 +44,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
   const [dataSourceType, setDataSourceType] = useState<DMS.ModalProps<DMS.DataSource>>({
     open: false,
   });
+  const { tableKey } = useModel('global');
 
   useEffect(() => {
     DictDataService.listByType(DICT_TYPE.datasourceType).then((resp) => {
@@ -176,6 +177,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
                         id: 'dms.common.message.operate.delete.success',
                       }),
                     );
+                    tableKey.current++;
                     actionRef.current?.reload();
                   }
                 });
@@ -223,9 +225,9 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
           <Badge
             dot={
               queryFormData.databaseName ||
-              queryFormData.datasourceName ||
-              queryFormData.datasourceType ||
-              queryFormData.hostName
+                queryFormData.datasourceName ||
+                queryFormData.datasourceType ||
+                queryFormData.hostName
                 ? true
                 : false
             }
@@ -310,6 +312,7 @@ const DataSourceView: React.FC<{ workspaceId: string | number }> = ({ workspaceI
                                 id: 'dms.common.message.operate.delete.success',
                               }),
                             );
+
                             onCleanSelected();
                             actionRef.current?.reload();
                           }

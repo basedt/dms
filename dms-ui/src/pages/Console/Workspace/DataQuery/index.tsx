@@ -79,7 +79,27 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
   useEffect(() => {
     DataSourceService.listByWorkspace(workspaceId as string).then((resp) => {
       if (resp.success) {
-        setDbList(resp.data as DMS.Dict[]);
+        // 获取当前存储的数据源ID
+        let dataSourceIdGlobal = JSON.parse(sessionStorage.getItem('dataSourceIdGlobal') as string);
+        // 设置数据源列表
+        setDbList(resp.data as DMS.Dict[] ?? []);
+
+        // 检查当前工作区的数据源ID是否在获取的列表中
+        if (dataSourceIdGlobal && dataSourceIdGlobal[workspaceId]) {
+          const currentId = dataSourceIdGlobal[workspaceId];
+          const idExists = (resp.data as DMS.Dict[] ?? []).some(item => item.value === currentId);
+
+          // 如果ID不存在于列表中，则清空该ID
+          if (!idExists) {
+            const updatedDataSourceIdGlobal = { ...dataSourceIdGlobal };
+            delete updatedDataSourceIdGlobal[workspaceId];
+            sessionStorage.setItem('dataSourceIdGlobal', JSON.stringify(updatedDataSourceIdGlobal));
+            // 如果当前组件状态中使用了这个ID，也需要清空
+            if (datasourceId === currentId) {
+              setDataSourceId(undefined);
+            }
+          }
+        }
       }
     });
   }, [tableKey.current]);

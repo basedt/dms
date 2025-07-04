@@ -40,7 +40,11 @@ const FileCatalogTreeView: React.FC<FileCatalogTreeViewProps> = (props) => {
   });
 
   useEffect(() => {
-    if (!workspaceId || !datasourceId) return;
+    if (!workspaceId || !datasourceId) {
+      setTreeData([]);
+      setDefaultData([]);
+      return
+    };
     reloadTreeData();
   }, [workspaceId, datasourceId]);
 

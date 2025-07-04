@@ -160,7 +160,7 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
     @SneakyThrows
     @Override
     protected String generateDropSQL(String schema, String tableName, String indexName) {
-        return StrUtil.format("DROP INDEX {}.{} ON {}", schema, indexName, tableName);
+        return StrUtil.format("DROP INDEX {} ON {}.{}", indexName, schema, tableName);
     }
 
     @Override

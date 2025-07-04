@@ -23,6 +23,7 @@ import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.FunctionHandler;
 import com.basedt.dms.plugins.datasource.MaterializedViewHandler;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
@@ -66,4 +67,12 @@ public class GaussdbPluginImpl extends PostgrePluginImpl {
         handler.initialize(getDataSource(), new HashMap<>());
         return handler;
     }
+
+    @Override
+    public FunctionHandler getFunctionHandler() {
+        GaussdbFunctionHandler handler = new GaussdbFunctionHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
+    }
+
 }

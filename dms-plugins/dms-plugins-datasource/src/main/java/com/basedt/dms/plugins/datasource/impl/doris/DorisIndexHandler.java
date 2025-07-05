@@ -30,6 +30,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class DorisIndexHandler extends JdbcIndexHandler {
 
@@ -71,5 +72,31 @@ public class DorisIndexHandler extends JdbcIndexHandler {
     @Override
     protected String generateRenameSQL(String schema, String tableName, String indexName, String newName) {
         throw new UnsupportedOperationException("rename index not supported");
+    }
+
+    @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        if (StrUtil.isEmpty(indexName)) {
+            return "";
+        } else {
+            IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
+            if (Objects.nonNull(index)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("CREATE INDEX IF NOT EXISTS ")
+                        .append(index.getIndexName())
+                        .append(" ON ")
+                        .append(index.getSchemaName())
+                        .append(Constants.SEPARATOR_DOT)
+                        .append(index.getTableName())
+                        .append(" (")
+                        .append(index.getColumns())
+                        .append(")")
+                        .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
+                        .append(";");
+                return builder.toString();
+            } else {
+                throw new SQLException(StrUtil.format("index {} does not exist in {}", indexName, schema));
+            }
+        }
     }
 }

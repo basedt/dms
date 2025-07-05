@@ -9,6 +9,7 @@ import { createStyles } from 'antd-style';
 import React, { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import DbCatalogTreeView from './components/DbCatalogTree';
+import DbObjectInfoView from './components/DbObjectInfo';
 import DbSelectModal from './components/DbSelectModal';
 import DbTableInfoView from './components/DbTableInfo';
 import FileCatalogTreeView from './components/FileCatalogTree';
@@ -82,12 +83,14 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
         // 获取当前存储的数据源ID
         let dataSourceIdGlobal = JSON.parse(sessionStorage.getItem('dataSourceIdGlobal') as string);
         // 设置数据源列表
-        setDbList(resp.data as DMS.Dict[] ?? []);
+        setDbList((resp.data as DMS.Dict[]) ?? []);
 
         // 检查当前工作区的数据源ID是否在获取的列表中
         if (dataSourceIdGlobal && dataSourceIdGlobal[workspaceId]) {
           const currentId = dataSourceIdGlobal[workspaceId];
-          const idExists = (resp.data as DMS.Dict[] ?? []).some(item => item.value === currentId);
+          const idExists = ((resp.data as DMS.Dict[]) ?? []).some(
+            (item) => item.value === currentId,
+          );
 
           // 如果ID不存在于列表中，则清空该ID
           if (!idExists) {
@@ -215,12 +218,21 @@ const DataQueryView: React.FC<{ workspaceId: string | number }> = ({ workspaceId
       return (
         <DbTableInfoView
           workspaceId={workspaceId}
-          // datasourceId={datasourceId as string}
           datasource={datasource as DMS.DataSource}
           maxHeight={windowSize.height - 110}
           node={node}
           action={action}
         ></DbTableInfoView>
+      );
+    } else if (type === 'objInfo') {
+      return (
+        <DbObjectInfoView
+          workspaceId={workspaceId}
+          datasource={datasource as DMS.DataSource}
+          maxHeight={windowSize.height - 110}
+          node={node}
+          action={action}
+        ></DbObjectInfoView>
       );
     } else {
       return <></>;

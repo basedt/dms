@@ -23,10 +23,12 @@ import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
+import com.basedt.dms.plugins.datasource.TableHandler;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
 import com.google.auto.service.AutoService;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -52,6 +54,13 @@ public class HologresPluginImpl extends PostgrePluginImpl {
         setPluginInfo(new PluginInfo(StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, DataSourceType.HOLOGRES.getValue()).toUpperCase(),
                 PluginType.DATASOURCE));
         setDriverClassName("org.postgresql.Driver");
+    }
+
+    @Override
+    public TableHandler getTableHandler() {
+        HologresTableHandler handler = new HologresTableHandler();
+        handler.initialize(getDataSource(), new HashMap<>());
+        return handler;
     }
 
 }

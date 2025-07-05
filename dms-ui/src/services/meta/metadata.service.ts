@@ -130,15 +130,31 @@ export const MetaDataService = {
   },
   generateDDL(dataSourceId: number | string, identifier: string, objectType: string) {
     const objInfo: string[] = identifier.split('.') as string[];
-    return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/obj/ddl`, {
-      method: 'GET',
-      params: {
-        dataSourceId: dataSourceId,
-        catalog: objInfo[0],
-        schemaName: objInfo[1],
-        objectName: objInfo[2],
-        objectType: objectType,
-      },
-    });
+    if (objectType === 'INDEX' && objInfo.length >= 4) {
+      return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/obj/table/ddl`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          tableName: objInfo[2],
+          objectName: objInfo[3],
+          objectType: objectType,
+        },
+      });
+    } else if (objInfo.length >= 3) {
+      return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/obj/ddl`, {
+        method: 'GET',
+        params: {
+          dataSourceId: dataSourceId,
+          catalog: objInfo[0],
+          schemaName: objInfo[1],
+          objectName: objInfo[2],
+          objectType: objectType,
+        },
+      });
+    } else {
+      return Promise.reject(new Error('Invalid identifier format'));
+    }
   },
 };

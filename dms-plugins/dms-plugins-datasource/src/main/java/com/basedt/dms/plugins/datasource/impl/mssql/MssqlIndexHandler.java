@@ -1,6 +1,7 @@
 package com.basedt.dms.plugins.datasource.impl.mssql;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
@@ -15,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.FK;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
@@ -53,6 +55,40 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
             sql += " and i.name = '" + indexName + "'";
         }
         return super.listIndexFromDB(sql);
+    }
+
+    /**
+     * https://learn.microsoft.com/en-us/sql/t-sql/statements/create-index-transact-sql?view=sql-server-ver17#syntax
+     */
+    @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        if (StrUtil.isEmpty(indexName)) {
+            return "";
+        } else {
+            IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
+            if (Objects.nonNull(index)) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("CREATE ");
+                if (index.getIsUniqueness()) {
+                    builder.append(" UNIQUE ");
+                } else if ("CLUSTERED".equalsIgnoreCase(index.getIndexType()) || "NONCLUSTERED".equalsIgnoreCase(index.getIndexType())) {
+                    builder.append(index.getIndexType());
+                }
+                builder.append(" INDEX ")
+                        .append(index.getIndexName())
+                        .append(" ON ")
+                        .append(index.getSchemaName())
+                        .append(Constants.SEPARATOR_DOT)
+                        .append(index.getTableName())
+                        .append(" (")
+                        .append(index.getColumns())
+                        .append(");");
+                return builder.toString();
+            } else {
+                throw new SQLException(StrUtil.format("index {} does not exist in {}", indexName, schema));
+
+            }
+        }
     }
 
     @Override

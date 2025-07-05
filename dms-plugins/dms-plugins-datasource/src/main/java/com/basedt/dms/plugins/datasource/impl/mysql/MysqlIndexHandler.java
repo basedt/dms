@@ -19,6 +19,7 @@
 package com.basedt.dms.plugins.datasource.impl.mysql;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -32,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.FK;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
@@ -65,6 +67,47 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
         }
         sql += " group by t.index_schema,t.index_name,t.index_type,t.table_name";
         return super.listIndexFromDB(sql);
+    }
+
+    /**
+     * https://dev.mysql.com/doc/refman/8.4/en/create-index.html
+     */
+    @Override
+    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
+        if (Objects.isNull(index)) {
+            return "";
+        } else {
+            StringBuilder builder = new StringBuilder();
+            if (index.getIndexName().equalsIgnoreCase("PRIMARY")) {
+                builder.append("ALTER TABLE ")
+                        .append(index.getSchemaName())
+                        .append(Constants.SEPARATOR_DOT)
+                        .append(index.getTableName())
+                        .append(" ADD CONSTRAINT `")
+                        .append(index.getIndexName())
+                        .append("` PRIMARY KEY (")
+                        .append(index.getColumns())
+                        .append(");");
+            } else {
+                builder.append("CREATE ");
+                if ("FULLTEXT".equalsIgnoreCase(index.getIndexType()) || "SPATIAL".equalsIgnoreCase(index.getIndexType())) {
+                    builder.append(index.getIndexType());
+                } else if (index.getIsUniqueness()) {
+                    builder.append("UNIQUE ");
+                }
+                builder.append(" INDEX ")
+                        .append(index.getIndexName())
+                        .append(" ON ")
+                        .append(index.getSchemaName())
+                        .append(Constants.SEPARATOR_DOT)
+                        .append(index.getTableName())
+                        .append(" (")
+                        .append(index.getColumns())
+                        .append(");");
+            }
+            return builder.toString();
+        }
     }
 
     @Override

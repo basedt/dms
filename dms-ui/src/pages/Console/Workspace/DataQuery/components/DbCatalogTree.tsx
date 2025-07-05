@@ -58,9 +58,9 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
   useEffect(() => {
     idbAPI.cleanupOldMetadata();
     if (!datasourceId) {
-      setTreeData([])
-      return
-    };
+      setTreeData([]);
+      return;
+    }
     initTreeData(datasourceId as string);
     DataSourceService.selectOne(datasourceId).then((resp) => {
       if (resp.success) {
@@ -518,6 +518,12 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       (datasource?.datasourceType?.value === 'clickhouse' ||
         datasource?.datasourceType?.value === 'doris') &&
       node.type === 'FUNCTION'
+    ) {
+      return false;
+    } else if (
+      node.type === 'INDEX' &&
+      (datasource?.datasourceType?.value === 'clickhouse' ||
+        datasource?.datasourceType?.value === 'hologres')
     ) {
       return false;
     } else {

@@ -165,9 +165,19 @@ public class MetaDataController {
     @GetMapping(path = "/obj/ddl")
     @Operation(summary = "get object ddl", description = "get object ddl")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<String>> viewDdl(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+    public ResponseEntity<ResponseVO<String>> viewObjectDdl(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
         String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, DbObjectType.valueOf(objectType));
+        return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @GetMapping(path = "/obj/table/ddl")
+    @Operation(summary = "get table object ddl", description = "get table object ddl")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<String>> viewTableObjectDdl(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectName, DbObjectType.valueOf(objectType));
         return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
     }
 

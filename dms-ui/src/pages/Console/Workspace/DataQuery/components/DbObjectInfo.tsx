@@ -28,7 +28,13 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
     if (action === 'create' && (node.type === 'G_VIEW' || node.type === 'VIEW')) {
       const createViewScript = `CREATE VIEW ${objInfo[1]}.newView AS\nSELECT \n\t* \nFROM \n;`;
       setScript(createViewScript);
-    } else if (action === 'edit' && node.type === 'VIEW') {
+    } else if (
+      action === 'create' &&
+      (node.type === 'G_MATERIALIZED_VIEW' || node.type === 'MATERIALIZED_VIEW')
+    ) {
+      const createMviewScript = `CREATE MATERIALIZED VIEW ${objInfo[1]}.newMaterializedView AS\nSELECT \n\t* \nFROM \n;`;
+      setScript(createMviewScript);
+    } else if (action === 'edit' && (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW')) {
       MetaDataService.generateDDL(datasource.id as string, node.identifier, node.type).then(
         (resp) => {
           if (resp.success) {

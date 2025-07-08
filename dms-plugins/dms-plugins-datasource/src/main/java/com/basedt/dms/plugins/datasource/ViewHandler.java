@@ -19,6 +19,7 @@
 package com.basedt.dms.plugins.datasource;
 
 import com.basedt.dms.plugins.datasource.dto.ViewDTO;
+import org.apache.jute.compiler.JString;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -40,4 +41,8 @@ public interface ViewHandler {
     void renameView(String schema, String viewName, String newName) throws SQLException;
 
     String getViewDdl(String catalog, String schema, String viewName) throws SQLException;
+
+    String getDropDDL( String schema, String viewName) throws SQLException;
+
+    String getRenameDDL( String schema, String viewName, String newName) throws SQLException;
 }

@@ -117,6 +117,16 @@ public class JdbcViewHandler implements ViewHandler {
         }
     }
 
+    @Override
+    public String getDropDDL(String schema, String viewName) throws SQLException {
+        return generateDropSQL(schema, viewName);
+    }
+
+    @Override
+    public String getRenameDDL(String schema, String viewName, String newName) throws SQLException {
+        return generateRenameSQL(schema, viewName, newName);
+    }
+
     protected String generateDropSQL(String schema, String viewName) {
         return StrUtil.format("DROP VIEW {}.{}", schema, viewName);
     }

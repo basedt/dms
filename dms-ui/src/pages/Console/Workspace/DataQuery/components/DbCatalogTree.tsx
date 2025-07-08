@@ -269,8 +269,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       gTableMenuItems(node, menuItems);
     } else if (node.type === 'G_VIEW') {
       gViewMenuItems(node, menuItems);
+    } else if (node.type === 'G_MATERIALIZED_VIEW') {
+      gMviewMenuItems(node, menuItems);
     }
-    if (node.type.startsWith('G_') && node.type !== 'G_TABLE' && node.type !== 'G_VIEW') {
+    if (
+      node.type.startsWith('G_') &&
+      node.type !== 'G_TABLE' &&
+      node.type !== 'G_VIEW' &&
+      node.type !== 'G_MATERIALIZED_VIEW'
+    ) {
       refreshMenuItem(node, menuItems);
     }
     return menuItems;
@@ -304,13 +311,18 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
             'tableInfo',
             'create',
           );
-        } else if (node.type === 'VIEW' || node.type === 'G_VIEW') {
+        } else if (
+          node.type === 'VIEW' ||
+          node.type === 'G_VIEW' ||
+          node.type === 'MATERIALIZED_VIEW' ||
+          node.type === 'G_MATERIALIZED_VIEW'
+        ) {
           onCallback(
             intl.formatMessage(
               {
                 id: 'dms.console.workspace.dataquery.new',
               },
-              { type: 'VIEW' },
+              { type: node.type.replace('G_', '').replace('_', ' ') },
             ),
             { ...node, key: uuidv4() },
             'objInfo',
@@ -354,7 +366,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       onClick: () => {
         if (node.type === 'TABLE') {
           onCallback(node.title, node, 'tableInfo', 'edit');
-        } else if (node.type === 'VIEW') {
+        } else if (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW') {
           onCallback(node.title, node, 'objInfo', 'edit');
         }
       },
@@ -619,6 +631,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     dividerMenuItem(menuItems);
     ioMenuItem(node, menuItems, true, false);
     scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const gMviewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const mviewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

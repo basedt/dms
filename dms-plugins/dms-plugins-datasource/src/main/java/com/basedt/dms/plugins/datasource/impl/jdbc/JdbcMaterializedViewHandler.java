@@ -88,20 +88,30 @@ public class JdbcMaterializedViewHandler implements MaterializedViewHandler {
             return "";
         }
         MaterializedViewDTO mv = getMViewDetail(catalog, schema, mViewName);
-        if (Objects.nonNull(mv)){
+        if (Objects.nonNull(mv)) {
             StringBuilder ddlBuilder = new StringBuilder();
             ddlBuilder.append("CREATE MATERIALIZED VIEW ")
                     .append(mv.getSchemaName())
                     .append(Constants.SEPARATOR_DOT)
                     .append(mv.getMViewName())
                     .append("\n AS \n");
-            if (StrUtil.isNotEmpty(mv.getQuerySql())){
+            if (StrUtil.isNotEmpty(mv.getQuerySql())) {
                 ddlBuilder.append(mv.getQuerySql());
             }
             return ddlBuilder.toString();
-        }else {
+        } else {
             throw new SQLException(StrUtil.format("materialized view {} does not exist in {}", mViewName, schema));
         }
+    }
+
+    @Override
+    public String getDropDDL(String schema, String mViewName) throws SQLException {
+        return generateDropSQL(schema, mViewName);
+    }
+
+    @Override
+    public String getRenameDDL(String schema, String mViewName, String newName) throws SQLException {
+        return generateRenameSQL(schema, mViewName, newName);
     }
 
     protected List<MaterializedViewDTO> listMViewFromDB(String sql) throws SQLException {

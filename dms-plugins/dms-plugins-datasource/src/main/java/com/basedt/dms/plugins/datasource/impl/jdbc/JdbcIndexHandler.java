@@ -119,6 +119,16 @@ public class JdbcIndexHandler implements IndexHandler {
         }
     }
 
+    @Override
+    public String getDropDDL(String schema, String tableName, String indexName) throws SQLException {
+        return generateDropSQL(schema, tableName, indexName);
+    }
+
+    @Override
+    public String getRenameDDL(String schema, String tableName, String indexName, String newName) throws SQLException {
+        return generateRenameSQL(schema, tableName, indexName, newName);
+    }
+
     protected List<IndexDTO> listIndexFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();

@@ -44,4 +44,8 @@ public interface TableHandler {
     void renameTable(String schema, String tableName, String newName) throws SQLException;
 
     List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException;
+
+    String getDropDDL(String schema, String tableName) throws SQLException;
+
+    String getRenameDDL(String schema, String tableName, String newName) throws SQLException;
 }

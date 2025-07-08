@@ -142,6 +142,16 @@ public class JdbcTableHandler implements TableHandler {
         return result;
     }
 
+    @Override
+    public String getDropDDL(String schema, String tableName) throws SQLException {
+        return generateDropSQL(schema, tableName);
+    }
+
+    @Override
+    public String getRenameDDL(String schema, String tableName, String newName) throws SQLException {
+        return generateRenameSQL(schema, tableName, newName);
+    }
+
     protected String generateDropSQL(String schema, String tableName) {
         return StrUtil.format("DROP TABLE {}.{}", schema, tableName);
     }

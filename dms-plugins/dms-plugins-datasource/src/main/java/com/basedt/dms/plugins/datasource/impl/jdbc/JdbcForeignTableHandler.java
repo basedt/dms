@@ -86,4 +86,13 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
         return result;
     }
 
+    @Override
+    public String getForeignTableDropDDL(String schema, String tableName) throws SQLException {
+        return generateDropSQL(schema, tableName);
+    }
+
+    @Override
+    public String getForeignTableRenameDDL(String schema, String tableName, String newName) throws SQLException {
+        return generateRenameSQL(schema, tableName, newName);
+    }
 }

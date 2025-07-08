@@ -267,8 +267,10 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       funMenuItems(node, menuItems);
     } else if (node.type === 'G_TABLE') {
       gTableMenuItems(node, menuItems);
+    } else if (node.type === 'G_VIEW') {
+      gViewMenuItems(node, menuItems);
     }
-    if (node.type.startsWith('G_') && node.type !== 'G_TABLE') {
+    if (node.type.startsWith('G_') && node.type !== 'G_TABLE' && node.type !== 'G_VIEW') {
       refreshMenuItem(node, menuItems);
     }
     return menuItems;
@@ -300,6 +302,18 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
             ),
             { ...node, key: uuidv4() },
             'tableInfo',
+            'create',
+          );
+        } else if (node.type === 'VIEW' || node.type === 'G_VIEW') {
+          onCallback(
+            intl.formatMessage(
+              {
+                id: 'dms.console.workspace.dataquery.new',
+              },
+              { type: 'VIEW' },
+            ),
+            { ...node, key: uuidv4() },
+            'objInfo',
             'create',
           );
         }
@@ -340,6 +354,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       onClick: () => {
         if (node.type === 'TABLE') {
           onCallback(node.title, node, 'tableInfo', 'edit');
+        } else if (node.type === 'VIEW') {
+          onCallback(node.title, node, 'objInfo', 'edit');
         }
       },
     });
@@ -585,6 +601,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     dividerMenuItem(menuItems);
     ioMenuItem(node, menuItems, true, true);
     scriptMenuItem(node, menuItems, true, true, true, true, true);
+  };
+
+  const gViewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const viewMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

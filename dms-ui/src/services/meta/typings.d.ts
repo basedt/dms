@@ -99,4 +99,10 @@ declare namespace DMS {
     tableName: string;
     tableInfo?: DMS.Table;
   };
+
+  type sqlScriptParam = {
+    workspaceId: string | number;
+    dataSourceId: string | number;
+    script: string;
+  };
 }

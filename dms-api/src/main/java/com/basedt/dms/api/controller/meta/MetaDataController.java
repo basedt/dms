@@ -17,12 +17,17 @@
  */
 package com.basedt.dms.api.controller.meta;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.api.annotation.AuditLogging;
 import com.basedt.dms.api.vo.meta.TableInfoConvert;
 import com.basedt.dms.api.vo.meta.TableInfoVO;
+import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.common.enums.ResponseCode;
 import com.basedt.dms.common.exception.DmsException;
 import com.basedt.dms.common.vo.ResponseVO;
+import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.MetaDataService;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
@@ -33,6 +38,7 @@ import com.basedt.dms.plugins.datasource.param.TableInfoParam;
 import com.basedt.dms.service.workspace.DmsDataSourceService;
 import com.basedt.dms.service.workspace.convert.DataSourceConvert;
 import com.basedt.dms.service.workspace.dto.DmsDataSourceDTO;
+import com.basedt.dms.service.workspace.param.DmsSqlExecParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -43,7 +49,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -179,6 +188,28 @@ public class MetaDataController {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
         String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectName, DbObjectType.valueOf(objectType));
         return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @PostMapping(path = "/ddl/exec")
+    @Operation(summary = "get table object ddl", description = "get table object ddl")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Object>> executeDDL(@Validate @RequestBody final DmsSqlExecParam param) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(param.getDataSourceId());
+        DataSourcePlugin plugin = metaDataService.getDataSourcePluginInstance(DataSourceConvert.toDataSource(dto));
+        List<String> sqlArray = Arrays.stream(param.getScript().split(Constants.SEPARATOR_SEMICOLON)).filter(StrUtil::isNotBlank).toList();
+        try {
+            if (CollectionUtil.isNotEmpty(sqlArray)) {
+                Connection conn = plugin.getDataSource().getConnection();
+                for (String sql : sqlArray) {
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                    ps.execute();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
     @AuditLogging

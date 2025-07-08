@@ -34,7 +34,13 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
     ) {
       const createMviewScript = `CREATE MATERIALIZED VIEW ${objInfo[1]}.newMaterializedView AS\nSELECT \n\t* \nFROM \n;`;
       setScript(createMviewScript);
-    } else if (action === 'edit' && (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW')) {
+    } else if (action === 'create' && (node.type === 'G_SEQUENCE' || node.type === 'SEQUENCE')) {
+      const createSeqScript = `CREATE SEQUENCE ${objInfo[1]}.newSequence;`;
+      setScript(createSeqScript);
+    } else if (
+      action === 'edit' &&
+      (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW' || node.type === 'SEQUENCE')
+    ) {
       MetaDataService.generateDDL(datasource.id as string, node.identifier, node.type).then(
         (resp) => {
           if (resp.success) {
@@ -80,20 +86,22 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
           >
             {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
           </Button>
-          <Button
-            size="small"
-            style={{ height: 22, fontSize: 12, marginLeft: 6 }}
-            onClick={() => {
-              generateScript();
-              message.success(
-                intl.formatMessage({
-                  id: 'dms.common.message.operate.success',
-                }),
-              );
-            }}
-          >
-            {intl.formatMessage({ id: 'dms.common.operate.refresh' })}
-          </Button>
+          {action === 'edit' && (
+            <Button
+              size="small"
+              style={{ height: 22, fontSize: 12, marginLeft: 6 }}
+              onClick={() => {
+                generateScript();
+                message.success(
+                  intl.formatMessage({
+                    id: 'dms.common.message.operate.success',
+                  }),
+                );
+              }}
+            >
+              {intl.formatMessage({ id: 'dms.common.operate.refresh' })}
+            </Button>
+          )}
         </Space>
       </div>
       <div style={{ maxHeight: maxHeight - 36, overflowY: 'auto' }}>

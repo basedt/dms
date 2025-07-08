@@ -1,6 +1,7 @@
+import { MetaDataService } from '@/services/meta/metadata.service';
 import { Editor } from '@monaco-editor/react';
 import { useIntl } from '@umijs/max';
-import { Button, Space, Spin } from 'antd';
+import { Button, message, Space, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
 export type DbObjectInfoProps = {
@@ -25,8 +26,16 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
     setLoading(true);
     const objInfo: string[] = node.identifier.split('.') as string[];
     if (action === 'create' && (node.type === 'G_VIEW' || node.type === 'VIEW')) {
-      const createViewScript = `-- DROP VIEW ${objInfo[1]}.newView;\n\nCREATE VIEW ${objInfo[1]}.newView AS\nSELECT \n\t* \nFROM \n;`;
+      const createViewScript = `CREATE VIEW ${objInfo[1]}.newView AS\nSELECT \n\t* \nFROM \n;`;
       setScript(createViewScript);
+    } else if (action === 'edit' && node.type === 'VIEW') {
+      MetaDataService.generateDDL(datasource.id as string, node.identifier, node.type).then(
+        (resp) => {
+          if (resp.success) {
+            setScript(resp.data || '');
+          }
+        },
+      );
     }
     setLoading(false);
     return node.type;
@@ -47,18 +56,52 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
             style={{ height: 22, fontSize: 12, marginLeft: 6 }}
             onClick={() => {
               setLoading(true);
-              // TODO handle the action
+              MetaDataService.executeDDL({
+                workspaceId: workspaceId,
+                dataSourceId: datasource.id as string,
+                script: script,
+              }).then((resp) => {
+                if (resp.success) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'dms.common.message.operate.success',
+                    }),
+                  );
+                }
+              });
               setLoading(false);
             }}
           >
             {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
+          </Button>
+          <Button
+            size="small"
+            style={{ height: 22, fontSize: 12, marginLeft: 6 }}
+            onClick={() => {
+              generateScript();
+              message.success(
+                intl.formatMessage({
+                  id: 'dms.common.message.operate.success',
+                }),
+              );
+            }}
+          >
+            {intl.formatMessage({ id: 'dms.common.operate.refresh' })}
           </Button>
         </Space>
       </div>
       <div style={{ maxHeight: maxHeight - 36, overflowY: 'auto' }}>
         <div style={{ padding: '0px 6px', textAlign: 'left' }}>
           <Spin spinning={loading}>
-            <Editor width={'100%'} height={maxHeight - 100} value={script} language="sql"></Editor>
+            <Editor
+              width={'100%'}
+              height={maxHeight - 100}
+              value={script}
+              language="sql"
+              onChange={(value) => {
+                setScript(value || '');
+              }}
+            ></Editor>
           </Spin>
         </div>
       </div>

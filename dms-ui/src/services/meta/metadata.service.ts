@@ -157,4 +157,10 @@ export const MetaDataService = {
       return Promise.reject(new Error('Invalid identifier format'));
     }
   },
+  executeDDL(param: DMS.sqlScriptParam) {
+    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/ddl/exec`, {
+      method: 'POST',
+      data: param,
+    });
+  },
 };

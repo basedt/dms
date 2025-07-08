@@ -354,6 +354,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       onClick: () => {
         if (node.type === 'TABLE') {
           onCallback(node.title, node, 'tableInfo', 'edit');
+        } else if (node.type === 'VIEW') {
+          onCallback(node.title, node, 'objInfo', 'edit');
         }
       },
     });

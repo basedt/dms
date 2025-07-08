@@ -46,4 +46,8 @@ public interface IndexHandler {
 
     String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException;
 
+    String getDropDDL(String schema, String tableName, String indexName) throws SQLException;
+
+    String getRenameDDL(String schema, String tableName, String indexName, String newName) throws SQLException;
+
 }

@@ -30,4 +30,9 @@ public interface ForeignTableHandler {
     void dropForeignTable(String schema, String tableName) throws SQLException;
 
     void renameForeignTable(String schema, String tableName, String newName) throws SQLException;
+
+    String getForeignTableDropDDL(String schema, String tableName) throws SQLException;
+
+    String getForeignTableRenameDDL(String schema, String tableName, String newName) throws SQLException;
+
 }

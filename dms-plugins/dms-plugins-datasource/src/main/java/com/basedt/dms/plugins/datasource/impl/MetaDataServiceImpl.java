@@ -565,17 +565,20 @@ public class MetaDataServiceImpl implements MetaDataService {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
             switch (type) {
                 case VIEW:
-                    result = dataSourcePlugin.getViewHandler().getViewDdl(catalog, schemaName, objectName);
+                    String dropViewDDL = "-- " + dataSourcePlugin.getViewHandler().getDropDDL(schemaName, objectName);
+                    String createViewDDL = dataSourcePlugin.getViewHandler().getViewDdl(catalog, schemaName, objectName);
+                    result = dropViewDDL + ";\n\n" + createViewDDL;
                     break;
                 case MATERIALIZED_VIEW:
-                    result = dataSourcePlugin.getMaterializedViewHandler().getMViewDdl(catalog, schemaName, objectName);
+                    String dropMViewDDL = "-- " + dataSourcePlugin.getMaterializedViewHandler().getDropDDL(schemaName, objectName);
+                    String createMViewDDL = dataSourcePlugin.getMaterializedViewHandler().getMViewDdl(catalog, schemaName, objectName);
+                    result = dropMViewDDL + ";\n\n" + createMViewDDL;
                     break;
                 case SEQUENCE:
-                    result = dataSourcePlugin.getSequenceHandler().getSequenceDDL(catalog, schemaName, objectName);
+                    String dropSeqDDL = "-- " + dataSourcePlugin.getSequenceHandler().getDropDDL(schemaName, objectName);
+                    String createSeqDDL = dataSourcePlugin.getSequenceHandler().getSequenceDDL(catalog, schemaName, objectName);
+                    result = dropSeqDDL + ";\n\n" + createSeqDDL;
                     break;
-//                case INDEX:
-//                    result = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName,tablename objectName);
-//                    break;
                 case FUNCTION:
                     result = dataSourcePlugin.getFunctionHandler().getFunctionDDL(catalog, schemaName, objectName);
                     break;
@@ -595,7 +598,9 @@ public class MetaDataServiceImpl implements MetaDataService {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
             if (INDEX.equals(type)) {
-                result = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName, tableName, objectName);
+                String dropIdxDDL = "-- " + dataSourcePlugin.getIndexHandler().getDropDDL(schemaName, tableName, objectName);
+                String createIdxDDL = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName, tableName, objectName);
+                result = dropIdxDDL + ";\n\n" + createIdxDDL;
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

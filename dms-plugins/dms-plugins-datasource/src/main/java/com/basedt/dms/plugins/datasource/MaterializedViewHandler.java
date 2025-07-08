@@ -40,4 +40,8 @@ public interface MaterializedViewHandler {
     void renameMView(String schema, String mViewName, String newName) throws SQLException;
 
     String getMViewDdl(String catalog,String schema,String mViewName) throws SQLException;
+
+    String getDropDDL(String schema, String mViewName) throws SQLException;
+
+    String getRenameDDL(String schema, String mViewName, String newName) throws SQLException;
 }

@@ -108,6 +108,16 @@ public class JdbcSequenceHandler implements SequenceHandler {
         return "";
     }
 
+    @Override
+    public String getDropDDL(String schema, String sequenceName) throws SQLException {
+        return generateDropSQL(schema, sequenceName);
+    }
+
+    @Override
+    public String getRenameDDL(String schema, String sequenceName, String newName) throws SQLException {
+        return generateRenameSQL(schema, sequenceName, newName);
+    }
+
     protected List<SequenceDTO> listSequenceFromDB(String sql) throws SQLException {
         if (StrUtil.isBlank(sql)) {
             return List.of();

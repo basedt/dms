@@ -273,13 +273,16 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       gMviewMenuItems(node, menuItems);
     } else if (node.type === 'G_SEQUENCE') {
       gSeqMenuItems(node, menuItems);
+    } else if (node.type === 'G_INDEX') {
+      gIdxMenuItems(node, menuItems);
     }
     if (
       node.type.startsWith('G_') &&
       node.type !== 'G_TABLE' &&
       node.type !== 'G_VIEW' &&
       node.type !== 'G_MATERIALIZED_VIEW' &&
-      node.type !== 'G_SEQUENCE'
+      node.type !== 'G_SEQUENCE' &&
+      node.type !== 'G_INDEX'
     ) {
       refreshMenuItem(node, menuItems);
     }
@@ -320,7 +323,9 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           node.type === 'MATERIALIZED_VIEW' ||
           node.type === 'G_MATERIALIZED_VIEW' ||
           node.type === 'SEQUENCE' ||
-          node.type === 'G_SEQUENCE'
+          node.type === 'G_SEQUENCE' ||
+          node.type === 'INDEX' ||
+          node.type === 'G_INDEX'
         ) {
           onCallback(
             intl.formatMessage(
@@ -374,7 +379,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         } else if (
           node.type === 'VIEW' ||
           node.type === 'MATERIALIZED_VIEW' ||
-          node.type === 'SEQUENCE'
+          node.type === 'SEQUENCE' ||
+          node.type === 'INDEX'
         ) {
           onCallback(node.title, node, 'objInfo', 'edit');
         }
@@ -658,6 +664,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     dividerMenuItem(menuItems);
     ioMenuItem(node, menuItems, true, false);
     scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const gIdxMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const indexMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

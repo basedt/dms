@@ -271,12 +271,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       gViewMenuItems(node, menuItems);
     } else if (node.type === 'G_MATERIALIZED_VIEW') {
       gMviewMenuItems(node, menuItems);
+    } else if (node.type === 'G_SEQUENCE') {
+      gSeqMenuItems(node, menuItems);
     }
     if (
       node.type.startsWith('G_') &&
       node.type !== 'G_TABLE' &&
       node.type !== 'G_VIEW' &&
-      node.type !== 'G_MATERIALIZED_VIEW'
+      node.type !== 'G_MATERIALIZED_VIEW' &&
+      node.type !== 'G_SEQUENCE'
     ) {
       refreshMenuItem(node, menuItems);
     }
@@ -315,7 +318,9 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           node.type === 'VIEW' ||
           node.type === 'G_VIEW' ||
           node.type === 'MATERIALIZED_VIEW' ||
-          node.type === 'G_MATERIALIZED_VIEW'
+          node.type === 'G_MATERIALIZED_VIEW' ||
+          node.type === 'SEQUENCE' ||
+          node.type === 'G_SEQUENCE'
         ) {
           onCallback(
             intl.formatMessage(
@@ -366,7 +371,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       onClick: () => {
         if (node.type === 'TABLE') {
           onCallback(node.title, node, 'tableInfo', 'edit');
-        } else if (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW') {
+        } else if (
+          node.type === 'VIEW' ||
+          node.type === 'MATERIALIZED_VIEW' ||
+          node.type === 'SEQUENCE'
+        ) {
           onCallback(node.title, node, 'objInfo', 'edit');
         }
       },
@@ -673,6 +682,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     dividerMenuItem(menuItems);
     ioMenuItem(node, menuItems, true, false);
     scriptMenuItem(node, menuItems, true, true, false, false, false);
+  };
+
+  const gSeqMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const seqMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

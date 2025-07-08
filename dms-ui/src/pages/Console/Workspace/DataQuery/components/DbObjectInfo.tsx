@@ -37,9 +37,15 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
     } else if (action === 'create' && (node.type === 'G_SEQUENCE' || node.type === 'SEQUENCE')) {
       const createSeqScript = `CREATE SEQUENCE ${objInfo[1]}.newSequence;`;
       setScript(createSeqScript);
+    } else if (action === 'create' && (node.type === 'G_INDEX' || node.type === 'INDEX')) {
+      const createSeqScript = `CREATE INDEX idx_${objInfo[2]} on ${objInfo[2]} (col1,col2);`;
+      setScript(createSeqScript);
     } else if (
       action === 'edit' &&
-      (node.type === 'VIEW' || node.type === 'MATERIALIZED_VIEW' || node.type === 'SEQUENCE')
+      (node.type === 'VIEW' ||
+        node.type === 'MATERIALIZED_VIEW' ||
+        node.type === 'SEQUENCE' ||
+        node.type === 'INDEX')
     ) {
       MetaDataService.generateDDL(datasource.id as string, node.identifier, node.type).then(
         (resp) => {

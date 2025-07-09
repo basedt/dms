@@ -62,7 +62,6 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    // init values
     MetaDataService.listTypeInfo(datasource.id as string).then((resp) => {
       if (resp.success) {
         let data: { label: string; value: string }[] = [];
@@ -104,6 +103,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     }
     if (action === 'create') {
       form.setFieldsValue({ schemaName: nodeParams[1], tableName: 'newTable' });
+      setLoading(false);
     }
   }, []);
 

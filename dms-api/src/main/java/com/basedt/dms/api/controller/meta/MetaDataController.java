@@ -100,14 +100,6 @@ public class MetaDataController {
         return new ResponseEntity<>(ResponseVO.success(types), HttpStatus.OK);
     }
 
-    @AuditLogging
-    @PutMapping(path = "/table")
-    @Operation(summary = "create new table", description = "create new table")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> newTable(@Validate @RequestBody final TableInfoVO tableInfo) throws DmsException {
-        //TODO implement
-        return new ResponseEntity<>(ResponseVO.success(true), HttpStatus.OK);
-    }
 
     @AuditLogging
     @GetMapping(path = "/table")

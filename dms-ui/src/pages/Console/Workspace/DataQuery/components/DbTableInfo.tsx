@@ -81,7 +81,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
       })
         .then((resp) => {
           if (resp.success) {
-            const table: DMS.Table = resp.data;
+            const table: DMS.Table = resp.data as DMS.Table;
             form.setFieldsValue({
               schemaName: table.schemaName,
               tableName: table.tableName,
@@ -126,7 +126,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           name="tableName"
           rules={[{ required: true }]}
         >
-          <Input />
+          <Input disabled={action === 'edit'} />
         </Form.Item>
         <Form.Item
           label={intl.formatMessage({
@@ -633,6 +633,22 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           >
             {intl.formatMessage({ id: 'dms.common.operate.confirm' })}
           </Button>
+          {action === 'edit' && (
+            <Button
+              size="small"
+              style={{ height: 22, fontSize: 12, marginLeft: 6 }}
+              onClick={() => {
+                // TODO reload table info
+                message.success(
+                  intl.formatMessage({
+                    id: 'dms.common.message.operate.success',
+                  }),
+                );
+              }}
+            >
+              {intl.formatMessage({ id: 'dms.common.operate.refresh' })}
+            </Button>
+          )}
         </Space>
       </div>
       <div style={{ maxHeight: maxHeight - 36, overflowY: 'auto' }}>

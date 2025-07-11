@@ -19,46 +19,28 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.Objects;
+public class NClobType implements Type {
 
-@Getter
-@Setter
-public class CharType implements Type {
+    private static final NClobType INSTANCE = new NClobType();
 
-    private static final CharType INSTANCE = new CharType();
-
-    private Integer length;
-
-    private CharType() {
-    }
-
-    public CharType(Integer length) {
-        this.length = length;
-    }
-
-    public static CharType get() {
+    public static NClobType get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.CHAR;
+        return DbDataType.NCLOB;
     }
 
     @Override
     public String name() {
-        return "char";
+        return "nclob";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length)) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
+
 }

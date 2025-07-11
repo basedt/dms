@@ -26,31 +26,31 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class CharType implements Type {
+public class NCharType implements Type {
 
-    private static final CharType INSTANCE = new CharType();
+    private static final NCharType INSTANCE = new NCharType();
 
     private Integer length;
 
-    private CharType() {
+    private NCharType() {
     }
 
-    public CharType(Integer length) {
+    public NCharType(Integer length) {
         this.length = length;
     }
 
-    public static CharType get() {
+    public static NCharType get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.CHAR;
+        return DbDataType.NCHAR;
     }
 
     @Override
     public String name() {
-        return "char";
+        return "nchar";
     }
 
     @Override

@@ -26,31 +26,31 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class CharType implements Type {
+public class VarcharType implements Type {
 
-    private static final CharType INSTANCE = new CharType();
+    private static final VarcharType INSTANCE = new VarcharType();
 
     private Integer length;
 
-    private CharType() {
+    private VarcharType() {
     }
 
-    public CharType(Integer length) {
+    public VarcharType(Integer length) {
         this.length = length;
     }
 
-    public static CharType get() {
+    public static VarcharType get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.CHAR;
+        return DbDataType.VARCHAR;
     }
 
     @Override
     public String name() {
-        return "char";
+        return "varchar";
     }
 
     @Override

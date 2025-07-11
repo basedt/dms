@@ -50,11 +50,15 @@ public enum DbDataType {
      */
     TIMESTAMP_TZ,
 
-    STRUCT,
-    ARRAY,
     BLOB,
     CLOB,
     NCLOB,
-    BINARY
+    BINARY,
+    EXTENSION
+    // STRUCT,
+    // ARRAY,
+    // MAP,
+    // LIST,
+    // UNION
 
 }

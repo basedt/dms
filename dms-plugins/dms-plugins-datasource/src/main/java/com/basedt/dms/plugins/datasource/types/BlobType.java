@@ -19,46 +19,28 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.Objects;
+public class BlobType implements Type {
 
-@Getter
-@Setter
-public class CharType implements Type {
+    private static final BlobType INSTANCE = new BlobType();
 
-    private static final CharType INSTANCE = new CharType();
-
-    private Integer length;
-
-    private CharType() {
-    }
-
-    public CharType(Integer length) {
-        this.length = length;
-    }
-
-    public static CharType get() {
+    public static BlobType get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.CHAR;
+        return DbDataType.BLOB;
     }
 
     @Override
     public String name() {
-        return "char";
+        return "blob";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length)) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
+
 }

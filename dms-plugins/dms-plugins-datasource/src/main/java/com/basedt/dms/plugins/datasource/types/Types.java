@@ -32,4 +32,48 @@ public class Types {
 
     public static Type INTEGER = IntegerType.get();
 
+    public static Type BIGINT = BigintType.get();
+
+    public static Type REAL = RealType.get();
+
+    public static Type FLOAT = FloatType.get();
+
+    public static Type DOUBLE = DoubleType.get();
+
+    public static Type DECIMAL = DecimalType.get();
+
+    public static Type NUMERIC = NumericType.get();
+
+    public static Type NUMBER = NumberType.get();
+
+    public static Type CHAR = CharType.get();
+
+    public static Type VARCHAR = VarcharType.get();
+
+    public static Type NCHAR = NCharType.get();
+
+    public static Type NVARCHAR = NVarcharType.get();
+
+    public static Type STRING = StringType.get();
+
+    public static Type TEXT = TextType.get();
+
+    public static Type DATE = DateType.get();
+
+    public static Type TIME = TimeType.get();
+
+    public static Type DATETIME = DatetimeType.get();
+
+    public static Type TIMESTAMP = TimestampType.get();
+
+    public static Type TIMESTAMP_TZ = TimestampWithTimeZoneType.get();
+
+    public static Type BLOB = BlobType.get();
+
+    public static Type CLOB = ClobType.get();
+
+    public static Type NCLOB = NClobType.get();
+
+    public static Type BINARY = BinaryType.get();
+
 }

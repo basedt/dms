@@ -152,6 +152,24 @@ public class JdbcTableHandler implements TableHandler {
         return generateRenameSQL(schema, tableName, newName);
     }
 
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        TableDTO table = getTableDetail(catalog, schema, tableName, TABLE);
+        return getTableDDL(table);
+    }
+
+    /**
+     * Get the DDL of a table. Default implementation returns "not supported yet."
+     *
+     * @param table TableDTO object containing table information
+     * @return DDL of the table as a String
+     * @throws SQLException if an error occurs while retrieving the DDL
+     */
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        return "not supported yet.";
+    }
+
     protected String generateDropSQL(String schema, String tableName) {
         return StrUtil.format("DROP TABLE {}.{}", schema, tableName);
     }

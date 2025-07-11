@@ -16,19 +16,49 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+package com.basedt.dms.plugins.datasource.types;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.sql.SQLException;
+import java.util.Objects;
 
-public class HologresViewHandler extends PostgreViewHandler {
+@Getter
+@Setter
+public class BitType implements Type {
+
+    private static final BitType INSTANCE = new BitType();
+
+    private Integer length;
+
+    private BitType() {
+    }
+
+    public BitType(Integer length) {
+        this.length = length;
+    }
+
+    public static BitType get() {
+        return INSTANCE;
+    }
 
     @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
+    public DbDataType type() {
+        return DbDataType.BIT;
+    }
+
+    @Override
+    public String name() {
+        return "bit";
+    }
+
+    @Override
+    public String formatString() {
+        if (Objects.isNull(length)) {
+            return name();
+        } else {
+            return name() + "(" + length + ")";
+        }
     }
 }

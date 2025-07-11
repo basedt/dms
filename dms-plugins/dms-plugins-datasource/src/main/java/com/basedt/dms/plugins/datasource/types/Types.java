@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+package com.basedt.dms.plugins.datasource.types;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+public class Types {
 
-import java.sql.SQLException;
+    public static Type NULL = NullType.get();
 
-public class HologresViewHandler extends PostgreViewHandler {
+    public static Type BOOLEAN = BooleanType.get();
 
-    @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
-    }
+    public static Type BIT = BitType.get();
+
+    public static Type TINYINT = TinyintType.get();
+
+    public static Type SMALLINT = SmallIntType.get();
+
+    public static Type INTEGER = IntegerType.get();
+
 }

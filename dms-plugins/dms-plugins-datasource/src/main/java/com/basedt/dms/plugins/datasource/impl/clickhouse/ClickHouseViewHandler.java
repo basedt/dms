@@ -51,7 +51,7 @@ public class ClickHouseViewHandler extends JdbcViewHandler {
     }
 
     @Override
-    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
         ViewDTO viewInfo = getViewDetail(catalog, schema, viewName);
         if (Objects.nonNull(viewInfo)) {
             StringBuilder ddlBuilder = new StringBuilder();

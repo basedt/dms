@@ -16,19 +16,34 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+package com.basedt.dms.plugins.datasource.types;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.sql.SQLException;
+@Getter
+@Setter
+public class SmallIntType implements Type {
 
-public class HologresViewHandler extends PostgreViewHandler {
+    private static final SmallIntType INSTANCE = new SmallIntType();
+
+    public static SmallIntType get() {
+        return INSTANCE;
+    }
 
     @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
+    public DbDataType type() {
+        return DbDataType.SMALLINT;
+    }
+
+    @Override
+    public String name() {
+        return "smallint";
+    }
+
+    @Override
+    public String formatString() {
+        return name();
     }
 }

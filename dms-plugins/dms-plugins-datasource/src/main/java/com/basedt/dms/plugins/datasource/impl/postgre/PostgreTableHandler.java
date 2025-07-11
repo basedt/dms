@@ -19,13 +19,16 @@
 package com.basedt.dms.plugins.datasource.impl.postgre;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class PostgreTableHandler extends JdbcTableHandler {
 
@@ -93,5 +96,45 @@ public class PostgreTableHandler extends JdbcTableHandler {
             sql += " and coalesce(t.table_name,c.relname) = '" + tableName + "'";
         }
         return super.listColumnFromTable(sql);
+    }
+
+    /**
+     * create table : https://www.postgresql.org/docs/17/sql-createtable.html
+     * alter table : https://www.postgresql.org/docs/17/sql-altertable.html
+     */
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        if (Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table"));
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CREATE TABLE IF NOT EXISTS ")
+                    .append(table.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(table.getTableName())
+                    .append(" (\n");
+            if (!CollectionUtils.isEmpty(table.getColumns())) {
+                for (int i = 0; i < table.getColumns().size(); i++) {
+                    generateColumnDDL(table.getColumns().get(i), builder);
+                    if (i < table.getColumns().size() - 1) {
+                        builder.append(",\n");
+                    }
+                }
+            }
+            builder.append("\n);");
+            return builder.toString();
+        }
+    }
+
+    private void generateColumnDDL(ColumnDTO column, StringBuilder builder) {
+        if (Objects.nonNull(column)){
+            builder.append("\t")
+                    .append(column.getColumnName())
+                    .append(" ")
+                    .append(column.getDataType())
+                    .append("(")
+                    .append(column.get)
+                    .append(column.getIsNullable()?"":" NOT NULL");
+        }
     }
 }

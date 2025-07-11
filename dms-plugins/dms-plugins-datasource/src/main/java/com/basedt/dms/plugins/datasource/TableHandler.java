@@ -48,4 +48,8 @@ public interface TableHandler {
     String getDropDDL(String schema, String tableName) throws SQLException;
 
     String getRenameDDL(String schema, String tableName, String newName) throws SQLException;
+
+    String getTableDDL(String catalog, String schema, String tableName) throws SQLException;
+
+    String getTableDDL(TableDTO table) throws SQLException;
 }

@@ -465,6 +465,20 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
+    public String getTableDDL(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
+        //todo 判断是否修改表，判断是普通表还是外部表
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        if (Objects.isNull(dataSourcePlugin)) {
+            return "";
+        }
+        try {
+            return dataSourcePlugin.getTableHandler().getTableDDL(catalog, schemaName, tableName);
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
+        }
+    }
+
+    @Override
     public void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
@@ -566,7 +580,7 @@ public class MetaDataServiceImpl implements MetaDataService {
             switch (type) {
                 case VIEW:
                     String dropViewDDL = "-- " + dataSourcePlugin.getViewHandler().getDropDDL(schemaName, objectName);
-                    String createViewDDL = dataSourcePlugin.getViewHandler().getViewDdl(catalog, schemaName, objectName);
+                    String createViewDDL = dataSourcePlugin.getViewHandler().getViewDDL(catalog, schemaName, objectName);
                     result = dropViewDDL + ";\n\n" + createViewDDL;
                     break;
                 case MATERIALIZED_VIEW:

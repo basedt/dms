@@ -65,7 +65,7 @@ public class MssqlViewHandler extends JdbcViewHandler {
     }
 
     @Override
-    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
         ViewDTO viewInfo = getViewDetail(catalog, schema, viewName);
         if (Objects.nonNull(viewInfo)) {
             return SQLUtils.format(viewInfo.getQuerySql(), DbType.sqlserver);

@@ -59,6 +59,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
   const [ddlPriview, setDdlPriview] = useState<DMS.ModalProps<{ script: string }>>({
     open: false,
   });
+  const [script, setScript] = useState<string>('');
 
   useEffect(() => {
     setLoading(true);
@@ -444,17 +445,16 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     );
   };
 
-  const getDdlScript = () => {
-    return 'sql code here';
-  };
-
   const ddlTab = () => {
     return (
       <Editor
         width={'100%'}
         height={maxHeight - 100}
-        value={getDdlScript()}
+        value={script}
         language="sql"
+        onChange={(value) => {
+          setScript(value || '');
+        }}
       ></Editor>
     );
   };
@@ -622,7 +622,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     indexes: values.indexTable,
                   };
                   console.log('new table', values, node, table);
-                  setDdlPriview({ open: true, data: { script: getDdlScript() } });
+                  setDdlPriview({ open: true, data: { script: script } });
                 })
                 .catch((onrejected) => {
                   const errorInfo: string = onrejected.errorFields[0].errors[0];
@@ -701,7 +701,17 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     });
                     setColumnEnum(colMap);
                   } else if (activeKey === 'ddl') {
-                    //todo generate DDL script
+                    const nodeParams: string[] = node.identifier.split('.');
+                    MetaDataService.getTableDDL({
+                      dataSourceId: datasource.id as string,
+                      catalog: nodeParams[0],
+                      schemaName: nodeParams[1],
+                      tableName: nodeParams[2],
+                    }).then((resp) => {
+                      if (resp.success) {
+                        setScript(resp.data || '');
+                      }
+                    });
                   }
                 }}
               ></Tabs>

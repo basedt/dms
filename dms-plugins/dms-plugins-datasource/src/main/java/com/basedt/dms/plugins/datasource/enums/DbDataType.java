@@ -15,20 +15,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.basedt.dms.plugins.datasource.enums;
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+public enum DbDataType {
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+    NULL,
+    BOOLEAN,
+    BIT,
+    TINYINT,
+    SMALLINT,
+    INTEGER,
+    BIGINT,
+    REAL,
+    FLOAT,
+    DOUBLE,
+    DECIMAL,
+    NUMERIC,
+    NUMBER,
+    CHAR,
+    VARCHAR,
+    NCHAR,
+    NVARCHAR,
+    STRING,
+    TEXT,
+    DATE,
+    TIME,
+    DATETIME,
+    /**
+     * TIMESTAMP WITHOUT TIME ZONE
+     */
+    TIMESTAMP,
+    /**
+     * TIMESTAMP WITH TIME ZONE
+     */
+    TIMESTAMP_TZ,
 
-import java.sql.SQLException;
+    STRUCT,
+    ARRAY,
+    BLOB,
+    CLOB,
+    NCLOB,
+    BINARY
 
-public class HologresViewHandler extends PostgreViewHandler {
-
-    @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
-    }
 }

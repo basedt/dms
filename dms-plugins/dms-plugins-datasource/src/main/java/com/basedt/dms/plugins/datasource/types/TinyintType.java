@@ -16,19 +16,34 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+package com.basedt.dms.plugins.datasource.types;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.sql.SQLException;
+@Getter
+@Setter
+public class TinyintType implements Type {
 
-public class HologresViewHandler extends PostgreViewHandler {
+    private static final TinyintType INSTANCE = new TinyintType();
+
+    public static TinyintType get() {
+        return INSTANCE;
+    }
 
     @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
+    public DbDataType type() {
+        return DbDataType.TINYINT;
+    }
+
+    @Override
+    public String name() {
+        return "tinyint";
+    }
+
+    @Override
+    public String formatString() {
+        return name();
     }
 }

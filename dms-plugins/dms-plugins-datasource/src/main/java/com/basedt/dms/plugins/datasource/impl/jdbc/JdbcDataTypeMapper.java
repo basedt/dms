@@ -16,19 +16,27 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.impl.hologres;
+package com.basedt.dms.plugins.datasource.impl.jdbc;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.basedt.dms.plugins.datasource.impl.postgre.PostgreViewHandler;
+import com.basedt.dms.plugins.datasource.DataTypeMapper;
 
-import java.sql.SQLException;
+import java.sql.JDBCType;
+import java.util.Objects;
 
-public class HologresViewHandler extends PostgreViewHandler {
+public class JdbcDataTypeMapper implements DataTypeMapper<java.sql.JDBCType,Object> {
 
     @Override
-    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDDL(catalog, schema, viewName);
-        return SQLUtils.format(ddl, DbType.hologres);
+    public Object toType(JDBCType fromType) {
+        if (Objects.isNull(fromType)){
+            return Object.class;
+        }
+        switch ()
+//        return null;
     }
+
+    @Override
+    public JDBCType fromType(Object toType) {
+        return null;
+    }
+
 }

@@ -24,6 +24,7 @@ import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -93,6 +94,15 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
 
     @Override
     public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+        List<ObjectDTO> pks = listPkByTable(catalog, schema, tableName);
+        if (!CollectionUtils.isEmpty(pks)) {
+            IndexDTO indexInfo = getIndexDetail(catalog, schema, tableName, indexName);
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(indexName)) {
+                    return StrUtil.format("ALTER TABLE {}.{} ADD CONSTRAINT {} PRIMARY KEY ({});", schema, tableName, indexInfo.getIndexName(), indexInfo.getColumns());
+                }
+            }
+        }
         String ddl = "";
         String sql = "select pg_get_indexdef(format('%I.%I', ?, ?)::regclass) as ddl";
         Connection conn = dataSource.getConnection();
@@ -104,7 +114,7 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
             ddl = rs.getString("ddl");
 
         }
-        return ddl;
+        return ddl + ";";
     }
 
     @Override

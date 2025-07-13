@@ -28,19 +28,14 @@ import java.util.Objects;
 @Setter
 public class NVarcharType implements Type {
 
-    private static final NVarcharType INSTANCE = new NVarcharType();
-
     private Integer length;
-
-    private NVarcharType() {
-    }
 
     public NVarcharType(Integer length) {
         this.length = length;
     }
 
-    public static NVarcharType get() {
-        return INSTANCE;
+    public static NVarcharType get(Integer length) {
+        return new NVarcharType(length);
     }
 
     @Override

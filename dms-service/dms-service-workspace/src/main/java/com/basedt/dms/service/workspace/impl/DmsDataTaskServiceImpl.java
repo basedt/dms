@@ -68,8 +68,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.Date;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 @Service
@@ -118,7 +118,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
 
     @Override
     public void deleteBatch(List<Long> idList) {
-        this.dmsDataTaskMapper.deleteBatchIds(idList);
+        this.dmsDataTaskMapper.deleteByIds(idList);
     }
 
     @Override
@@ -359,14 +359,14 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
                 Timestamp value = (Timestamp) bean.get(col.getName());
                 if (value != null) {
                     list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATETIME_MS_PATTERN));
-                }else {
+                } else {
                     list.add(null);
                 }
             } else if (col.getType().getName().equals(Date.class.getName())) {
                 Date value = (Date) bean.get(col.getName());
                 if (value != null) {
                     list.add(DateTimeUtil.toChar(value.getTime(), DateTimeUtil.NORMAL_DATE_PATTERN));
-                }else {
+                } else {
                     list.add(null);
                 }
             } else {

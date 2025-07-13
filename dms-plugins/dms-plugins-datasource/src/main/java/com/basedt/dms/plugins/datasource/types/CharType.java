@@ -28,19 +28,14 @@ import java.util.Objects;
 @Setter
 public class CharType implements Type {
 
-    private static final CharType INSTANCE = new CharType();
-
     private Integer length;
-
-    private CharType() {
-    }
 
     public CharType(Integer length) {
         this.length = length;
     }
 
-    public static CharType get() {
-        return INSTANCE;
+    public static CharType get(Integer length) {
+        return new CharType(length);
     }
 
     @Override

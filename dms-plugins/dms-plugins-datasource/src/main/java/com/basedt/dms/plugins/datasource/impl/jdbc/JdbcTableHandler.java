@@ -21,6 +21,7 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.utils.DateTimeUtil;
+import com.basedt.dms.plugins.datasource.DataTypeMapper;
 import com.basedt.dms.plugins.datasource.TableHandler;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
@@ -30,9 +31,7 @@ import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
 
@@ -42,10 +41,13 @@ public class JdbcTableHandler implements TableHandler {
 
     protected Map<String, String> config;
 
+    protected DataTypeMapper typeMapper;
+
     @Override
-    public void initialize(DataSource dataSource, Map<String, String> config) {
+    public void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper) {
         this.dataSource = dataSource;
         this.config = config;
+        this.typeMapper = typeMapper;
     }
 
     @Override
@@ -155,6 +157,11 @@ public class JdbcTableHandler implements TableHandler {
     @Override
     public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
         TableDTO table = getTableDetail(catalog, schema, tableName, TABLE);
+        if (Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table {}", tableName));
+        }
+        List<ColumnDTO> columns = listColumnsByTable(catalog, schema, tableName);
+        table.setColumns(columns.stream().sorted(Comparator.comparing(ColumnDTO::getColumnOrdinal)).toList());
         return getTableDDL(table);
     }
 

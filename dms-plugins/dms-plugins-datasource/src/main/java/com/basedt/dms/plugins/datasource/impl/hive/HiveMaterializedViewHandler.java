@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.MaterializedViewDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcMaterializedViewHandler;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
 import org.apache.hadoop.conf.Configuration;
@@ -23,7 +24,7 @@ public class HiveMaterializedViewHandler extends JdbcMaterializedViewHandler {
     public List<MaterializedViewDTO> listMViews(String catalog, String schemaPattern, String mViewPattern) throws SQLException {
         List<MaterializedViewDTO> result = new ArrayList<>();
         JdbcTableHandler tableHandler = new JdbcTableHandler();
-        tableHandler.initialize(this.dataSource, new HashMap<>());
+        tableHandler.initialize(this.dataSource, new HashMap<>(),new JdbcDataTypeMapper());
         List<TableDTO> tables = tableHandler.listTables(catalog, schemaPattern, mViewPattern, MATERIALIZED_VIEW);
         for (TableDTO table : tables) {
             MaterializedViewDTO mvDTO = new MaterializedViewDTO();

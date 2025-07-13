@@ -40,7 +40,7 @@ public class DoubleType implements Type {
 
     @Override
     public String formatString() {
-        return name();
+        return "double precision";
     }
 
 }

@@ -10,13 +10,12 @@ public class ExtensionType implements Type {
 
     private String name;
 
-    private static final ExtensionType INSTANCE = new ExtensionType();
-
-    public ExtensionType() {
-    }
-
     public ExtensionType(String name) {
         this.name = name;
+    }
+
+    public static ExtensionType get(String name) {
+        return new ExtensionType(name);
     }
 
     @Override

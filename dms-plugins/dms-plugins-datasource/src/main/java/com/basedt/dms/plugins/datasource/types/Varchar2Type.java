@@ -26,26 +26,26 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class VarcharType implements Type {
+public class Varchar2Type implements Type {
 
     private Integer length;
 
-    public VarcharType(Integer length) {
+    public Varchar2Type(Integer length) {
         this.length = length;
     }
 
-    public static VarcharType get(Integer length) {
-        return new VarcharType(length);
+    public static Varchar2Type get(Integer length) {
+        return new Varchar2Type(length);
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.VARCHAR;
+        return DbDataType.VARCHAR2;
     }
 
     @Override
     public String name() {
-        return "varchar";
+        return "varchar2";
     }
 
     @Override

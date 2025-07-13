@@ -28,19 +28,14 @@ import java.util.Objects;
 @Setter
 public class BitType implements Type {
 
-    private static final BitType INSTANCE = new BitType();
-
     private Integer length;
-
-    private BitType() {
-    }
 
     public BitType(Integer length) {
         this.length = length;
     }
 
-    public static BitType get() {
-        return INSTANCE;
+    public static BitType get(Integer length) {
+        return new BitType(length);
     }
 
     @Override

@@ -28,22 +28,17 @@ import java.util.Objects;
 @Setter
 public class NumberType implements Type {
 
-    private static final NumberType INSTANCE = new NumberType();
-
     private Integer precision;
 
     private Integer scale;
-
-    private NumberType() {
-    }
 
     public NumberType(Integer precision, Integer scale) {
         this.precision = precision;
         this.scale = scale;
     }
 
-    public static NumberType get() {
-        return INSTANCE;
+    public static NumberType get(Integer precision, Integer scale) {
+        return new NumberType(precision, scale);
     }
 
     @Override

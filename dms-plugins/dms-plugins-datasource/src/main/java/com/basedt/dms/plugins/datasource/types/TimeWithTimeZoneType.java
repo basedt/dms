@@ -19,41 +19,28 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.util.Objects;
+public class TimeWithTimeZoneType implements Type {
 
-@Getter
-@Setter
-public class VarcharType implements Type {
+    private static final TimeWithTimeZoneType INSTANCE = new TimeWithTimeZoneType();
 
-    private Integer length;
-
-    public VarcharType(Integer length) {
-        this.length = length;
-    }
-
-    public static VarcharType get(Integer length) {
-        return new VarcharType(length);
+    public static TimeWithTimeZoneType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.VARCHAR;
+        return DbDataType.TIME_TZ;
     }
 
     @Override
     public String name() {
-        return "varchar";
+        return "time with time zone";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length)) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
+
 }

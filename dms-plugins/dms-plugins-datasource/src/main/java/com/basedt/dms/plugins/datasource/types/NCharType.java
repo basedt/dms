@@ -28,19 +28,14 @@ import java.util.Objects;
 @Setter
 public class NCharType implements Type {
 
-    private static final NCharType INSTANCE = new NCharType();
-
     private Integer length;
-
-    private NCharType() {
-    }
 
     public NCharType(Integer length) {
         this.length = length;
     }
 
-    public static NCharType get() {
-        return INSTANCE;
+    public static NCharType get(Integer length) {
+        return new NCharType(length);
     }
 
     @Override

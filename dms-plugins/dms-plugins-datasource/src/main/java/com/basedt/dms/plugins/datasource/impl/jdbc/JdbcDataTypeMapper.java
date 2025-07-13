@@ -23,96 +23,123 @@ import com.basedt.dms.plugins.datasource.DataTypeMapper;
 import com.basedt.dms.plugins.datasource.types.*;
 
 import java.sql.JDBCType;
-import java.util.Objects;
 
-public class JdbcDataTypeMapper implements DataTypeMapper<JDBCType, Type> {
-
+public class JdbcDataTypeMapper implements DataTypeMapper {
 
     @Override
-    public Type toType(JDBCType fromType) {
-        if (Objects.isNull(fromType)) {
-            return Types.NULL;
+    public Type toType(String typeName, Integer length, Integer precision, Integer scale) {
+        if (StrUtil.isEmpty(typeName)) {
+            return NullType.get();
         }
-        return switch (fromType) {
-            case BIT -> Types.BIT;
-            case TINYINT -> Types.TINYINT;
-            case SMALLINT -> Types.SMALLINT;
-            case INTEGER -> Types.INTEGER;
-            case BIGINT -> Types.BIGINT;
-            case FLOAT -> Types.FLOAT;
-            case REAL -> Types.REAL;
-            case DOUBLE -> Types.DOUBLE;
-            case NUMERIC -> Types.NUMERIC;
-            case DECIMAL -> Types.DECIMAL;
-            case CHAR -> Types.CHAR;
-            case VARCHAR -> Types.VARCHAR;
-            case DATE -> Types.DATE;
-            case TIME -> Types.TIME;
-            case TIMESTAMP -> Types.TIMESTAMP;
-            case BINARY -> Types.BINARY;
-            case BLOB, VARBINARY, LONGVARBINARY -> Types.BLOB;
-            case NULL -> Types.NULL;
-            case CLOB -> Types.CLOB;
-            case BOOLEAN -> Types.BOOLEAN;
-            case NCHAR -> Types.NCHAR;
-            case NVARCHAR -> Types.NVARCHAR;
-            case LONGVARCHAR, LONGNVARCHAR -> Types.TEXT;
-            case NCLOB -> Types.NCLOB;
-            case TIMESTAMP_WITH_TIMEZONE -> Types.TIMESTAMP_TZ;
-            default -> new ExtensionType(fromType.name().toLowerCase());
-        };
+        if (JDBCType.BIT.getName().equalsIgnoreCase(typeName)) {
+            return BitType.get(length);
+        } else if (JDBCType.TINYINT.getName().equalsIgnoreCase(typeName)) {
+            return TinyintType.get();
+        } else if (JDBCType.SMALLINT.getName().equalsIgnoreCase(typeName)) {
+            return SmallIntType.get();
+        } else if (JDBCType.INTEGER.getName().equalsIgnoreCase(typeName)) {
+            return IntegerType.get();
+        } else if (JDBCType.BIGINT.getName().equalsIgnoreCase(typeName)) {
+            return BigintType.get();
+        } else if (JDBCType.FLOAT.getName().equalsIgnoreCase(typeName)) {
+            return FloatType.get(length);
+        } else if (JDBCType.REAL.getName().equalsIgnoreCase(typeName)) {
+            return RealType.get();
+        } else if (JDBCType.DOUBLE.getName().equalsIgnoreCase(typeName)) {
+            return DoubleType.get();
+        } else if (JDBCType.NUMERIC.getName().equalsIgnoreCase(typeName)) {
+            return NumericType.get(precision, scale);
+        } else if (JDBCType.DECIMAL.getName().equalsIgnoreCase(typeName)) {
+            return DecimalType.get(precision, scale);
+        } else if (JDBCType.CHAR.getName().equalsIgnoreCase(typeName)) {
+            return CharType.get(length);
+        } else if (JDBCType.VARCHAR.getName().equalsIgnoreCase(typeName)) {
+            return VarcharType.get(length);
+        } else if (JDBCType.DATE.getName().equalsIgnoreCase(typeName)) {
+            return DateType.get();
+        } else if (JDBCType.TIME.getName().equalsIgnoreCase(typeName)) {
+            return TimeType.get();
+        } else if (JDBCType.TIMESTAMP.getName().equalsIgnoreCase(typeName)) {
+            return TimestampType.get();
+        } else if (JDBCType.BINARY.getName().equalsIgnoreCase(typeName)) {
+            return BinaryType.get();
+        } else if (JDBCType.BLOB.getName().equalsIgnoreCase(typeName) ||
+                JDBCType.VARBINARY.getName().equalsIgnoreCase(typeName) ||
+                JDBCType.LONGVARBINARY.getName().equalsIgnoreCase(typeName)) {
+            return BlobType.get();
+        } else if (JDBCType.NULL.getName().equalsIgnoreCase(typeName)) {
+            return NullType.get();
+        } else if (JDBCType.CLOB.getName().equalsIgnoreCase(typeName)) {
+            return ClobType.get();
+        } else if (JDBCType.BOOLEAN.getName().equalsIgnoreCase(typeName)) {
+            return BooleanType.get();
+        } else if (JDBCType.NCHAR.getName().equalsIgnoreCase(typeName)) {
+            return NCharType.get(length);
+        } else if (JDBCType.NVARCHAR.getName().equalsIgnoreCase(typeName)) {
+            return NVarcharType.get(length);
+        } else if (JDBCType.LONGVARCHAR.getName().equalsIgnoreCase(typeName) ||
+                JDBCType.LONGNVARCHAR.getName().equalsIgnoreCase(typeName)) {
+            return TextType.get();
+        } else if (JDBCType.NCLOB.getName().equalsIgnoreCase(typeName)) {
+            return NClobType.get();
+        } else if (JDBCType.TIME_WITH_TIMEZONE.getName().equalsIgnoreCase(typeName)) {
+            return TimestampWithTimeZoneType.get();
+        } else {
+            return new ExtensionType(typeName.toLowerCase());
+        }
     }
 
     @Override
-    public JDBCType fromType(Type type) {
+    public String fromType(Type type) {
         if (type instanceof NullType) {
-            return JDBCType.NULL;
+            return JDBCType.NULL.getName();
         } else if (type instanceof BooleanType) {
-            return JDBCType.BOOLEAN;
+            return JDBCType.BOOLEAN.getName();
         } else if (type instanceof BitType) {
-            return JDBCType.BIT;
+            return JDBCType.BIT.getName();
         } else if (type instanceof TinyintType) {
-            return JDBCType.TINYINT;
+            return JDBCType.TINYINT.getName();
         } else if (type instanceof SmallIntType) {
-            return JDBCType.SMALLINT;
+            return JDBCType.SMALLINT.getName();
         } else if (type instanceof IntegerType) {
-            return JDBCType.INTEGER;
+            return JDBCType.INTEGER.getName();
         } else if (type instanceof BigintType) {
-            return JDBCType.BIGINT;
+            return JDBCType.BIGINT.getName();
         } else if (type instanceof RealType) {
-            return JDBCType.REAL;
+            return JDBCType.REAL.getName();
         } else if (type instanceof FloatType) {
-            return JDBCType.FLOAT;
+            return JDBCType.FLOAT.getName();
         } else if (type instanceof DoubleType) {
-            return JDBCType.DOUBLE;
+            return JDBCType.DOUBLE.getName();
         } else if (type instanceof DecimalType) {
-            return JDBCType.DECIMAL;
+            return JDBCType.DECIMAL.getName();
         } else if (type instanceof NumericType || type instanceof NumberType) {
-            return JDBCType.NUMERIC;
+            return JDBCType.NUMERIC.getName();
         } else if (type instanceof CharType) {
-            return JDBCType.CHAR;
+            return JDBCType.CHAR.getName();
         } else if (type instanceof VarcharType || type instanceof StringType || type instanceof TextType) {
-            return JDBCType.VARCHAR;
+            return JDBCType.VARCHAR.getName();
         } else if (type instanceof NCharType) {
-            return JDBCType.NCHAR;
+            return JDBCType.NCHAR.getName();
         } else if (type instanceof DateType) {
-            return JDBCType.DATE;
+            return JDBCType.DATE.getName();
         } else if (type instanceof TimeType) {
-            return JDBCType.TIME;
+            return JDBCType.TIME.getName();
         } else if (type instanceof TimestampType || type instanceof DatetimeType) {
-            return JDBCType.TIMESTAMP;
+            return JDBCType.TIMESTAMP.getName();
         } else if (type instanceof TimestampWithTimeZoneType) {
-            return JDBCType.TIMESTAMP_WITH_TIMEZONE;
+            return JDBCType.TIMESTAMP_WITH_TIMEZONE.getName();
         } else if (type instanceof BlobType) {
-            return JDBCType.BLOB;
+            return JDBCType.BLOB.getName();
         } else if (type instanceof ClobType) {
-            return JDBCType.CLOB;
+            return JDBCType.CLOB.getName();
         } else if (type instanceof NClobType) {
-            return JDBCType.NCLOB;
+            return JDBCType.NCLOB.getName();
         } else if (type instanceof BinaryType) {
-            return JDBCType.BINARY;
+            return JDBCType.BINARY.getName();
         } else {
             throw new IllegalArgumentException(StrUtil.format("not supported type {}", type.name()));
         }
     }
+
 }

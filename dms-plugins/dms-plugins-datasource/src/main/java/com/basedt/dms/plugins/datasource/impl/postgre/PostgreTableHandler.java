@@ -20,13 +20,17 @@ package com.basedt.dms.plugins.datasource.impl.postgre;
 
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.types.Type;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,6 +112,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
             throw new SQLException(StrUtil.format("no such table"));
         } else {
             StringBuilder builder = new StringBuilder();
+            //create table
             builder.append("CREATE TABLE IF NOT EXISTS ")
                     .append(table.getSchemaName())
                     .append(Constants.SEPARATOR_DOT)
@@ -122,19 +127,55 @@ public class PostgreTableHandler extends JdbcTableHandler {
                 }
             }
             builder.append("\n);");
+            //constraints and indexes
+            IndexHandler indexHandler = new PostgreIndexHandler();
+            indexHandler.initialize(dataSource, new HashMap<>());
+            List<IndexDTO> indexes = indexHandler.listIndexDetails(table.getCatalogName(), table.getSchemaName(), table.getTableName(), null);
+            if (!CollectionUtils.isEmpty(indexes)) {
+                builder.append("\n")
+                        .append("-- constraint and index");
+                for (IndexDTO index : indexes) {
+                    builder.append("\n")
+                            .append(indexHandler.getIndexDdl(index.getCatalogName(), index.getSchemaName(), index.getTableName(), index.getIndexName()));
+                }
+            }
+            //comment on table
+            if (StrUtil.isNotEmpty(table.getRemark())) {
+                builder.append("\n")
+                        .append("-- comments")
+                        .append("\n")
+                        .append(StrUtil.format("COMMENT ON TABLE {}.{} IS '{}';",
+                                table.getSchemaName(), table.getTableName(), table.getRemark()))
+                        .append("\n");
+            }
+            //comment on columns
+            for (ColumnDTO column : table.getColumns()) {
+                if (StrUtil.isNotEmpty(column.getRemark())) {
+                    builder.append("\n")
+                            .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
+                                    column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
+                }
+            }
             return builder.toString();
         }
     }
 
+
     private void generateColumnDDL(ColumnDTO column, StringBuilder builder) {
-        if (Objects.nonNull(column)){
+        if (Objects.nonNull(column)) {
+            Type type = typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale());
             builder.append("\t")
                     .append(column.getColumnName())
-                    .append(" ")
-                    .append(column.getDataType())
-                    .append("(")
-                    .append(column.get)
-                    .append(column.getIsNullable()?"":" NOT NULL");
+                    .append(" ");
+            if (StrUtil.isNotEmpty(column.getDefaultValue()) && column.getDefaultValue().toLowerCase().startsWith("nextval")) {
+                //auto increment
+                builder.append("serial NOT NULL");
+            } else {
+                builder.append(type.formatString())
+                        .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                        .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " + column.getDefaultValue())
+                ;
+            }
         }
     }
 }

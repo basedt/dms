@@ -485,11 +485,25 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         }),
         disabled: !supportDDL(node),
         onClick: () => {
-          MetaDataService.generateDDL(datasourceId, node.identifier, node.type).then((resp) => {
-            if (resp.success) {
-              setSqlPreview({ open: true, data: { script: resp.data as string } });
-            }
-          });
+          if (node.type === 'TABLE') {
+            const objInfo: string[] = node.identifier.split('.') as string[];
+            MetaDataService.getTableDDL({
+              dataSourceId: datasource?.id as string,
+              catalog: objInfo[0],
+              schemaName: objInfo[1],
+              tableName: objInfo[2],
+            }).then((resp) => {
+              if (resp.success) {
+                setSqlPreview({ open: true, data: { script: resp.data as string } });
+              }
+            });
+          } else {
+            MetaDataService.generateDDL(datasourceId, node.identifier, node.type).then((resp) => {
+              if (resp.success) {
+                setSqlPreview({ open: true, data: { script: resp.data as string } });
+              }
+            });
+          }
         },
       });
     }

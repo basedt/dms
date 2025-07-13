@@ -28,22 +28,18 @@ import java.util.Objects;
 @Setter
 public class NumericType implements Type {
 
-    private static final NumericType INSTANCE = new NumericType();
 
     private Integer precision;
 
     private Integer scale;
-
-    private NumericType() {
-    }
 
     public NumericType(Integer precision, Integer scale) {
         this.precision = precision;
         this.scale = scale;
     }
 
-    public static NumericType get() {
-        return INSTANCE;
+    public static NumericType get(Integer precision, Integer scale) {
+        return new NumericType(precision, scale);
     }
 
     @Override

@@ -26,6 +26,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcSequenceHandler;
 import com.google.auto.service.AutoService;
@@ -77,7 +78,7 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         ClickHouseTableHandler handler = new ClickHouseTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
         return handler;
     }
 
@@ -91,7 +92,7 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         ClickHouseFgnTableHandler handler = new ClickHouseFgnTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
         return handler;
     }
 

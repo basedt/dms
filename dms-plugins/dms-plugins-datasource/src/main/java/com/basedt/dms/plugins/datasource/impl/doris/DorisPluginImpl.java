@@ -23,6 +23,7 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.mysql.MysqlPluginImpl;
 import com.google.auto.service.AutoService;
 
@@ -88,7 +89,7 @@ public class DorisPluginImpl extends MysqlPluginImpl {
     @Override
     public TableHandler getTableHandler() {
         DorisTableHandler handler = new DorisTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
         return handler;
     }
 

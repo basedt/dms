@@ -474,7 +474,7 @@ public class MetaDataServiceImpl implements MetaDataService {
         try {
             return dataSourcePlugin.getTableHandler().getTableDDL(catalog, schemaName, tableName);
         } catch (SQLException e) {
-            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), I18nUtil.get("response.error.datasource.catalog"));
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
     }
 

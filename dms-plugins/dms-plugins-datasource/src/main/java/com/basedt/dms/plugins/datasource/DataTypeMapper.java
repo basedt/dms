@@ -18,21 +18,60 @@
 
 package com.basedt.dms.plugins.datasource;
 
-public interface DataTypeMapper<F, T> {
+import com.basedt.dms.plugins.datasource.types.Type;
+
+public interface DataTypeMapper {
+
+    String BOOL = "bool";
+    String BOOLEAN = "boolean";
+    String BIT = "bit";
+    String TINYINT = "tinyint";
+    String SMALLINT = "smallint";
+    String INTEGER = "integer";
+    String BIGINT = "bigint";
+    String REAL = "real";
+    String FLOAT = "float";
+    String DOUBLE = "double";
+    String DOUBLE_PRECISION = "double precision";
+    String DECIMAL = "decimal";
+    String NUMERIC = "numeric";
+    String NUMBER = "number";
+    String CHAR = "char";
+    String VARCHAR = "varchar";
+    String TEXT = "text";
+    String NCHAR = "nchar";
+    String NVARCHAR = "nvarchar";
+    String STRING = "string";
+    String DATE = "date";
+    String TIME = "time";
+    String TIMESTAMP = "timestamp";
+    String BLOB = "blob";
+    String CLOB = "clob";
+    String NCLOB = "nclob";
+    String JSON = "json";
+    String JSONB = "jsonb";
+    String BINARY = "binary";
+    String VARBINARY = "varbinary";
+    String NULL = "null";
+
+
     /**
      * Convert from a source type to a target type.
      *
-     * @param fromType fromType
-     * @return toType
+     * @param typeName
+     * @param length
+     * @param precision
+     * @param scale
+     * @return
      */
-    T toType(F fromType);
+    Type toType(String typeName, Integer length, Integer precision, Integer scale);
 
     /**
      * Convert from a target type to a source type.
      *
-     * @param toType toType
+     * @param type type
      * @return fromType
      */
-    F fromType(T toType);
+    String fromType(Type type);
 
 }

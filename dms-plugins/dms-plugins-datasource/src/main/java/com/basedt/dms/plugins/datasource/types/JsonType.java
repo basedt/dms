@@ -22,38 +22,29 @@ import com.basedt.dms.plugins.datasource.enums.DbDataType;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
-
 @Getter
 @Setter
-public class VarcharType implements Type {
+public class JsonType implements Type {
 
-    private Integer length;
+    private static final JsonType INSTANCE = new JsonType();
 
-    public VarcharType(Integer length) {
-        this.length = length;
-    }
-
-    public static VarcharType get(Integer length) {
-        return new VarcharType(length);
+    public static JsonType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.VARCHAR;
+        return DbDataType.JSON;
     }
 
     @Override
     public String name() {
-        return "varchar";
+        return "json";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length)) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
+
 }

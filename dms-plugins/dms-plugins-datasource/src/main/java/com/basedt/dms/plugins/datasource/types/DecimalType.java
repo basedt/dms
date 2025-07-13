@@ -28,22 +28,17 @@ import java.util.Objects;
 @Setter
 public class DecimalType implements Type {
 
-    private static final DecimalType INSTANCE = new DecimalType();
-
     private Integer precision;
 
     private Integer scale;
-
-    private DecimalType() {
-    }
 
     public DecimalType(Integer precision, Integer scale) {
         this.precision = precision;
         this.scale = scale;
     }
 
-    public static DecimalType get() {
-        return INSTANCE;
+    public static DecimalType get(Integer precision, Integer scale) {
+        return new DecimalType(precision, scale);
     }
 
     @Override

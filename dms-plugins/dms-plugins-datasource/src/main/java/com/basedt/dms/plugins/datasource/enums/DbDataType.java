@@ -34,6 +34,7 @@ public enum DbDataType {
     NUMBER,
     CHAR,
     VARCHAR,
+    VARCHAR2,
     NCHAR,
     NVARCHAR,
     STRING,
@@ -49,6 +50,9 @@ public enum DbDataType {
      * TIMESTAMP WITH TIME ZONE
      */
     TIMESTAMP_TZ,
+    TIME_TZ,
+    JSON,
+    JSONB,
 
     BLOB,
     CLOB,

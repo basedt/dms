@@ -28,19 +28,14 @@ import java.util.Objects;
 @Setter
 public class FloatType implements Type {
 
-    private static final FloatType INSTANCE = new FloatType();
-
     private Integer length;
-
-    private FloatType() {
-    }
 
     public FloatType(Integer length) {
         this.length = length;
     }
 
-    public static FloatType get() {
-        return INSTANCE;
+    public static FloatType get(Integer length) {
+        return new FloatType(length);
     }
 
     @Override

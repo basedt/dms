@@ -54,7 +54,7 @@ public class PostgreDataTypeMapper implements DataTypeMapper {
             case NAME, VARCHAR, CHARACTER_VARYING -> VarcharType.get(length);
             case TEXT -> TextType.get();
             case INT2, SMALLINT -> SmallIntType.get();
-            case INT4 -> IntegerType.get();
+            case INT4, INTEGER -> IntegerType.get();
             case INT8, BIGINT -> BigintType.get();
             case FLOAT4 -> RealType.get();
             case FLOAT8, DOUBLE_PRECISION -> DoubleType.get();

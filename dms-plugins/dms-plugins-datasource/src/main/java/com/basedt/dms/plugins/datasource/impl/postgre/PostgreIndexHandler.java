@@ -114,6 +114,7 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
             ddl = rs.getString("ddl");
 
         }
+        JdbcUtil.close(conn,ps,rs);
         return ddl + ";";
     }
 

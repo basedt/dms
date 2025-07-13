@@ -171,7 +171,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
                 //auto increment
                 builder.append("serial NOT NULL");
             } else {
-                builder.append(type.formatString())
+                builder.append(typeMapper.fromType(type))
                         .append(column.getIsNullable() ? " NULL" : " NOT NULL")
                         .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " + column.getDefaultValue())
                 ;

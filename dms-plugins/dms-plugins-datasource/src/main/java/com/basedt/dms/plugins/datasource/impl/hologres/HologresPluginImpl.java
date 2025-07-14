@@ -60,7 +60,7 @@ public class HologresPluginImpl extends PostgrePluginImpl {
     @Override
     public TableHandler getTableHandler() {
         HologresTableHandler handler = new HologresTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

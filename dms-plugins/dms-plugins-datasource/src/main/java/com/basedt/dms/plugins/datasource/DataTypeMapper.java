@@ -67,6 +67,14 @@ public interface DataTypeMapper {
     Type toType(String typeName, Integer length, Integer precision, Integer scale);
 
     /**
+     * Convert from a format type name string to a target type.
+     *
+     * @param formatTypeName
+     * @return
+     */
+    Type toType(String formatTypeName);
+
+    /**
      * Convert from a target type to a source type.
      *
      * @param type type

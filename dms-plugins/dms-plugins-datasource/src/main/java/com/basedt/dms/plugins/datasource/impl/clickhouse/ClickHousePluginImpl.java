@@ -78,7 +78,7 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         ClickHouseTableHandler handler = new ClickHouseTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -92,7 +92,7 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         ClickHouseFgnTableHandler handler = new ClickHouseFgnTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

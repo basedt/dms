@@ -19,13 +19,13 @@
 package com.basedt.dms.plugins.datasource.impl.postgre;
 
 import cn.hutool.core.util.StrUtil;
-import com.basedt.dms.plugins.datasource.DataTypeMapper;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.types.*;
 
 /**
  * pg_catalog.pg_type
  */
-public class PostgreDataTypeMapper implements DataTypeMapper {
+public class PostgreDataTypeMapper extends JdbcDataTypeMapper {
 
     static final String BP_CHAR = "bpchar";
     static final String NAME = "name";
@@ -69,6 +69,11 @@ public class PostgreDataTypeMapper implements DataTypeMapper {
             case BYTEA -> BinaryType.get();
             default -> new ExtensionType(typeName.toLowerCase());
         };
+    }
+
+    @Override
+    public Type toType(String formatTypeName) {
+        return super.toType(formatTypeName);
     }
 
     @Override

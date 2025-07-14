@@ -58,7 +58,9 @@ public class MetaDataServiceImpl implements MetaDataService {
     /**
      * list catalog and schemas
      *
+     * @param dataSourcePlugin
      * @return
+     * @throws DmsException
      */
     @Override
     public List<CatalogDTO> listSchemas(DataSourcePlugin dataSourcePlugin) throws DmsException {
@@ -466,13 +468,38 @@ public class MetaDataServiceImpl implements MetaDataService {
 
     @Override
     public String getTableDDL(DataSourceDTO dataSource, String catalog, String schemaName, String tableName) throws DmsException {
-        //todo 判断是否修改表，判断是普通表还是外部表
         DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
         if (Objects.isNull(dataSourcePlugin)) {
             return "";
         }
         try {
             return dataSourcePlugin.getTableHandler().getTableDDL(catalog, schemaName, tableName);
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
+    @Override
+    public String getTableDDL(DataSourceDTO dataSource, TableDTO table) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        if (Objects.isNull(dataSourcePlugin)) {
+            return "";
+        }
+        try {
+            return dataSourcePlugin.getTableHandler().getTableDDL(table);
+        } catch (SQLException e) {
+            throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
+        }
+    }
+
+    @Override
+    public String getTableDDL(DataSourceDTO dataSource, TableDTO originTable, TableDTO table) throws DmsException {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        if (Objects.isNull(dataSourcePlugin)) {
+            return "";
+        }
+        try {
+            return dataSourcePlugin.getTableHandler().getTableDDL(originTable, table);
         } catch (SQLException e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
@@ -613,7 +640,7 @@ public class MetaDataServiceImpl implements MetaDataService {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
             if (INDEX.equals(type)) {
                 String dropIdxDDL = "-- " + dataSourcePlugin.getIndexHandler().getDropDDL(schemaName, tableName, objectName);
-                String createIdxDDL = dataSourcePlugin.getIndexHandler().getIndexDdl(catalog, schemaName, tableName, objectName);
+                String createIdxDDL = dataSourcePlugin.getIndexHandler().getIndexDDL(catalog, schemaName, tableName, objectName);
                 result = dropIdxDDL + ";\n\n" + createIdxDDL;
             }
         } catch (Exception e) {

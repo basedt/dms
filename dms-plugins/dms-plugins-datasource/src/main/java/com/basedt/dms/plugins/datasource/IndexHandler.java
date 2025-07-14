@@ -44,7 +44,9 @@ public interface IndexHandler {
 
     void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException;
 
-    String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException;
+    String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException;
+
+    String getIndexDDL(IndexDTO index,List<ObjectDTO> pks,List<ObjectDTO> fks);
 
     String getDropDDL(String schema, String tableName, String indexName) throws SQLException;
 

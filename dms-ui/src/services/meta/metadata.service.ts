@@ -39,11 +39,10 @@ export const MetaDataService = {
       params: tableParam,
     });
   },
-  getTableDDL(tableParam: DMS.TableInfoParam) {
-    //todo: 修改入参结构
+  getTableDDL(param: DMS.TableEditParam) {
     return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/table/ddl`, {
       method: 'PUT',
-      data: tableParam,
+      data: param,
     });
   },
   renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {

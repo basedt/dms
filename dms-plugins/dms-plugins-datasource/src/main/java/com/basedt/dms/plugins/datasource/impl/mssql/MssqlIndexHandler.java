@@ -61,7 +61,7 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
      * https://learn.microsoft.com/en-us/sql/t-sql/statements/create-index-transact-sql?view=sql-server-ver17#syntax
      */
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         if (StrUtil.isEmpty(indexName)) {
             return "";
         } else {

@@ -94,28 +94,37 @@ public class JdbcIndexHandler implements IndexHandler {
     }
 
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         if (StrUtil.isEmpty(indexName)) {
             return "";
         } else {
             IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
             if (Objects.nonNull(index)) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("CREATE ")
-                        .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
-                        .append(index.getIndexName())
-                        .append(" ON ")
-                        .append(index.getSchemaName())
-                        .append(Constants.SEPARATOR_DOT)
-                        .append(index.getTableName())
-                        .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
-                        .append(" (")
-                        .append(index.getColumns())
-                        .append(");");
-                return builder.toString();
+                return getIndexDDL(index, null, null);
             } else {
                 throw new SQLException(StrUtil.format("index {} does not exist in {}", indexName, schema));
             }
+        }
+    }
+
+    @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.nonNull(index)) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CREATE ")
+                    .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
+                    .append(index.getIndexName())
+                    .append(" ON ")
+                    .append(index.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(index.getTableName())
+                    .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
+                    .append(" (")
+                    .append(index.getColumns())
+                    .append(");");
+            return builder.toString();
+        } else {
+            return "";
         }
     }
 

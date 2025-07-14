@@ -108,6 +108,48 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     }
   }, []);
 
+  const refreshDDL = () => {
+    setLoading(true);
+    form.validateFields().then((values) => {
+      const nodeParams: string[] = node.identifier.split('.');
+      const tableInfo: DMS.Table = {
+        catalog: nodeParams[0],
+        schemaName: values.schemaName,
+        tableName: values.tableName,
+        comment: values.tableComment,
+        columns: values.columnsTable,
+        indexes: values.indexTable,
+        // partitions:values.partitioinTable
+      };
+      if (action === 'create') {
+        MetaDataService.getTableDDL({
+          dataSourceId: datasource.id as string,
+          originTable: null,
+          newTable: tableInfo,
+        }).then((resp) => {
+          if (resp.success) {
+            setScript(resp.data || '');
+          }
+        });
+      } else if (action === 'edit') {
+        MetaDataService.getTableDDL({
+          dataSourceId: datasource.id as string,
+          originTable: {
+            catalog: nodeParams[0],
+            schemaName: nodeParams[1],
+            tableName: nodeParams[2],
+          },
+          newTable: tableInfo,
+        }).then((resp) => {
+          if (resp.success) {
+            setScript(resp.data || '');
+          }
+        });
+      }
+    });
+    setLoading(false);
+  };
+
   const generalInfo = () => {
     return (
       <div style={{ maxWidth: '40%' }}>
@@ -701,17 +743,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     });
                     setColumnEnum(colMap);
                   } else if (activeKey === 'ddl') {
-                    const nodeParams: string[] = node.identifier.split('.');
-                    MetaDataService.getTableDDL({
-                      dataSourceId: datasource.id as string,
-                      catalog: nodeParams[0],
-                      schemaName: nodeParams[1],
-                      tableName: nodeParams[2],
-                    }).then((resp) => {
-                      if (resp.success) {
-                        setScript(resp.data || '');
-                      }
-                    });
+                    refreshDDL();
                   }
                 }}
               ></Tabs>

@@ -82,7 +82,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         MssqlTableHandler handler = new MssqlTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -96,7 +96,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

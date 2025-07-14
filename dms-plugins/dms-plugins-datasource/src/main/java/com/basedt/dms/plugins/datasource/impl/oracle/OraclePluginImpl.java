@@ -74,7 +74,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         OracleTableHandler handler = new OracleTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -91,7 +91,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

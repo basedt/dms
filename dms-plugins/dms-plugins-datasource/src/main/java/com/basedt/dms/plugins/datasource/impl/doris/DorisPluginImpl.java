@@ -89,7 +89,7 @@ public class DorisPluginImpl extends MysqlPluginImpl {
     @Override
     public TableHandler getTableHandler() {
         DorisTableHandler handler = new DorisTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

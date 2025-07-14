@@ -23,6 +23,7 @@ import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 public class PostgreFgnTableHandler extends JdbcForeignTableHandler {
@@ -30,7 +31,9 @@ public class PostgreFgnTableHandler extends JdbcForeignTableHandler {
     @Override
     public List<TableDTO> listForeignTables(String catalog, String schemaPattern, String tablePattern) throws SQLException {
         PostgreTableHandler tableHandler = new PostgreTableHandler();
-        tableHandler.initialize(this.dataSource, this.config, new PostgreDataTypeMapper());
+        PostgreIndexHandler indexHandler = new PostgreIndexHandler();
+        indexHandler.initialize(this.dataSource, new HashMap<>());
+        tableHandler.initialize(this.dataSource, this.config, new PostgreDataTypeMapper(), indexHandler);
         return tableHandler.listTableDetails(catalog, schemaPattern, tablePattern, DbObjectType.FOREIGN_TABLE);
     }
 

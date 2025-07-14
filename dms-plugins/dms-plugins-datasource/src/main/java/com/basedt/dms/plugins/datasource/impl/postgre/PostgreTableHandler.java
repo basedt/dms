@@ -20,7 +20,6 @@ package com.basedt.dms.plugins.datasource.impl.postgre;
 
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.constant.Constants;
-import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
@@ -30,7 +29,6 @@ import com.basedt.dms.plugins.datasource.types.Type;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,7 +102,6 @@ public class PostgreTableHandler extends JdbcTableHandler {
 
     /**
      * create table : https://www.postgresql.org/docs/17/sql-createtable.html
-     * alter table : https://www.postgresql.org/docs/17/sql-altertable.html
      */
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
@@ -128,15 +125,13 @@ public class PostgreTableHandler extends JdbcTableHandler {
             }
             builder.append("\n);");
             //constraints and indexes
-            IndexHandler indexHandler = new PostgreIndexHandler();
-            indexHandler.initialize(dataSource, new HashMap<>());
-            List<IndexDTO> indexes = indexHandler.listIndexDetails(table.getCatalogName(), table.getSchemaName(), table.getTableName(), null);
+            List<IndexDTO> indexes = table.getIndexes();
             if (!CollectionUtils.isEmpty(indexes)) {
                 builder.append("\n")
                         .append("-- constraint and index");
                 for (IndexDTO index : indexes) {
                     builder.append("\n")
-                            .append(indexHandler.getIndexDdl(index.getCatalogName(), index.getSchemaName(), index.getTableName(), index.getIndexName()));
+                            .append(indexHandler.getIndexDDL(index, table.getPks(), table.getFks()));
                 }
             }
             //comment on table
@@ -160,6 +155,37 @@ public class PostgreTableHandler extends JdbcTableHandler {
         }
     }
 
+    /**
+     * alter table : https://www.postgresql.org/docs/17/sql-altertable.html
+     *
+     * @param originTable
+     * @param table
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
+
+        //TODO  待实现
+        //            如果对比后发现没有修改任何内容，则返回原始表的DDL语句
+//             需要注意顺序，例如先处理表名修改，再处理列的增删，然后是索引和分区
+//             1. 改表名  不支持同步改表名
+//             2. 改表注释
+//             3. 新增列
+//             4. 删除列
+//             5. 调整列顺序 -- 不支持
+//             6. 修改字段名称
+//             7. 调整字段类型
+//             8. 调整字段空值属性
+//             9. 调整字段默认值
+//             10. 调整字段注释
+//             11. 新建索引
+//             12. 删除索引
+//             13. 修改索引名称
+//             14. 修改索引列或者类型  =》 删除重建
+//             15. 分区操作 暂不支持后续再说
+        return super.getTableDDL(originTable, table);
+    }
 
     private void generateColumnDDL(ColumnDTO column, StringBuilder builder) {
         if (Objects.nonNull(column)) {

@@ -22,8 +22,10 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.DataTypeMapper;
+import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.TableHandler;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -43,11 +45,14 @@ public class JdbcTableHandler implements TableHandler {
 
     protected DataTypeMapper typeMapper;
 
+    protected IndexHandler indexHandler;
+
     @Override
-    public void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper) {
+    public void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper, IndexHandler indexHandler) {
         this.dataSource = dataSource;
         this.config = config;
         this.typeMapper = typeMapper;
+        this.indexHandler = indexHandler;
     }
 
     @Override
@@ -162,6 +167,12 @@ public class JdbcTableHandler implements TableHandler {
         }
         List<ColumnDTO> columns = listColumnsByTable(catalog, schema, tableName);
         table.setColumns(columns.stream().sorted(Comparator.comparing(ColumnDTO::getColumnOrdinal)).toList());
+        List<IndexDTO> indexes = indexHandler.listIndexDetails(table.getCatalogName(), table.getSchemaName(), table.getTableName(), null);
+        table.setIndexes(indexes);
+        List<ObjectDTO> pks = indexHandler.listPkByTable(catalog, schema, tableName);
+        List<ObjectDTO> fks = indexHandler.listFkByTable(catalog, schema, tableName);
+        table.setPks(pks);
+        table.setFks(fks);
         return getTableDDL(table);
     }
 
@@ -174,6 +185,11 @@ public class JdbcTableHandler implements TableHandler {
      */
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
+        return "not supported yet.";
+    }
+
+    @Override
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
         return "not supported yet.";
     }
 
@@ -237,6 +253,7 @@ public class JdbcTableHandler implements TableHandler {
             column.setColumnOrdinal(rs.getInt("column_ordinal"));
             column.setRemark(rs.getString("remark"));
             column.setIsNullable(rs.getBoolean("is_nullable"));
+            column.setType(typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale()));
             result.add(column);
         }
         JdbcUtil.close(conn, pstm, rs);

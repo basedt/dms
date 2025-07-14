@@ -487,11 +487,15 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         onClick: () => {
           if (node.type === 'TABLE') {
             const objInfo: string[] = node.identifier.split('.') as string[];
-            MetaDataService.getTableDDL({
-              dataSourceId: datasource?.id as string,
+            let tableInfo: DMS.Table = {
               catalog: objInfo[0],
               schemaName: objInfo[1],
               tableName: objInfo[2],
+            };
+            MetaDataService.getTableDDL({
+              dataSourceId: datasource?.id as string,
+              originTable: tableInfo,
+              newTable: null,
             }).then((resp) => {
               if (resp.success) {
                 setSqlPreview({ open: true, data: { script: resp.data as string } });

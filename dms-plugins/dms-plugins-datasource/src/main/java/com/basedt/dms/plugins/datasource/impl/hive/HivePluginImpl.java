@@ -85,7 +85,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         HiveTableHandler handler = new HiveTableHandler();
         Map<String, String> config = new HashMap<>();
         config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
-        handler.initialize(getDataSource(), config,new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), config, new JdbcDataTypeMapper(), getIndexHandler());
         return handler;
     }
 
@@ -101,7 +101,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper());
+        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

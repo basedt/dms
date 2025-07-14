@@ -20,6 +20,7 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.DataTypeMapper;
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.types.*;
 
 import java.sql.JDBCType;
@@ -90,6 +91,12 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
     }
 
     @Override
+    public Type toType(String formatTypeName) {
+        ColumnDTO col = toColumnDTO(formatTypeName);
+        return toType(col.getDataType(), col.getDataLength(), col.getDataPrecision(), col.getDataScale());
+    }
+
+    @Override
     public String fromType(Type type) {
         if (type instanceof NullType) {
             return JDBCType.NULL.getName();
@@ -142,4 +149,24 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
         }
     }
 
+    protected ColumnDTO toColumnDTO(String formatedTypeName) {
+        if (StrUtil.isEmpty(formatedTypeName)) {
+            return null;
+        } else if (formatedTypeName.contains(",")) {
+            ColumnDTO column = new ColumnDTO();
+            column.setColumnName(StrUtil.subBefore(formatedTypeName, "(", false));
+            column.setDataPrecision(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(","))));
+            column.setDataScale(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf(",") + 1, formatedTypeName.indexOf(")"))));
+            return column;
+        } else if (formatedTypeName.contains("(")) {
+            ColumnDTO column = new ColumnDTO();
+            column.setColumnName(StrUtil.subBefore(formatedTypeName, "(", false));
+            column.setDataLength(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(")"))));
+            return column;
+        } else {
+            ColumnDTO column = new ColumnDTO();
+            column.setColumnName(formatedTypeName);
+            return column;
+        }
+    }
 }

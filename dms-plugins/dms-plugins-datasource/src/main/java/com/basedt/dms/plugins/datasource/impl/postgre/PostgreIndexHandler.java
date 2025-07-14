@@ -19,6 +19,7 @@
 package com.basedt.dms.plugins.datasource.impl.postgre;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
@@ -32,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
 
@@ -93,10 +95,10 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         List<ObjectDTO> pks = listPkByTable(catalog, schema, tableName);
-        if (!CollectionUtils.isEmpty(pks)) {
-            IndexDTO indexInfo = getIndexDetail(catalog, schema, tableName, indexName);
+        IndexDTO indexInfo = getIndexDetail(catalog, schema, tableName, indexName);
+        if (!CollectionUtils.isEmpty(pks) && Objects.nonNull(indexInfo)) {
             for (ObjectDTO pk : pks) {
                 if (pk.getObjectName().equalsIgnoreCase(indexName)) {
                     return StrUtil.format("ALTER TABLE {}.{} ADD CONSTRAINT {} PRIMARY KEY ({});", schema, tableName, indexInfo.getIndexName(), indexInfo.getColumns());
@@ -114,8 +116,35 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
             ddl = rs.getString("ddl");
 
         }
-        JdbcUtil.close(conn,ps,rs);
+        JdbcUtil.close(conn, ps, rs);
         return ddl + ";";
+    }
+
+    @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.isNull(index)) {
+            return "";
+        }
+        if (!CollectionUtils.isEmpty(pks)) {
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
+                    return StrUtil.format("ALTER TABLE {}.{} ADD CONSTRAINT {} PRIMARY KEY ({});", index.getSchemaName(), index.getTableName(), index.getIndexName(), index.getColumns());
+                }
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("CREATE ")
+                .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
+                .append(index.getIndexName())
+                .append(" ON ")
+                .append(index.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(index.getTableName())
+                .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
+                .append(" (")
+                .append(index.getColumns())
+                .append(");");
+        return builder.toString();
     }
 
     @Override

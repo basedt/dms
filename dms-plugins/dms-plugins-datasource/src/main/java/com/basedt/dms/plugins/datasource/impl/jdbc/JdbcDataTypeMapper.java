@@ -90,11 +90,6 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
         }
     }
 
-    @Override
-    public Type toType(String formatTypeName) {
-        ColumnDTO col = toColumnDTO(formatTypeName);
-        return toType(col.getDataType(), col.getDataLength(), col.getDataPrecision(), col.getDataScale());
-    }
 
     @Override
     public String fromType(Type type) {
@@ -168,5 +163,10 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
             column.setColumnName(formatedTypeName);
             return column;
         }
+    }
+
+    protected Type toType(String formatTypeName) {
+        ColumnDTO col = toColumnDTO(formatTypeName);
+        return toType(col.getDataType(), col.getDataLength(), col.getDataPrecision(), col.getDataScale());
     }
 }

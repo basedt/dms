@@ -72,7 +72,7 @@ public interface DataTypeMapper {
      * @param formatTypeName
      * @return
      */
-    Type toType(String formatTypeName);
+//    Type toType(String formatTypeName);
 
     /**
      * Convert from a target type to a source type.

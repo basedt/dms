@@ -718,17 +718,20 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     key: 'general',
                     label: intl.formatMessage({ id: 'dms.console.workspace.table.general' }),
                     children: generalInfo(),
+                    forceRender: true,
                   },
                   {
                     key: 'columns',
                     label: intl.formatMessage({ id: 'dms.console.workspace.table.columns' }),
                     children: columnsTable(),
+                    forceRender: true,
                   },
                   {
                     key: 'indexes',
                     label: intl.formatMessage({ id: 'dms.console.workspace.table.indexes' }),
                     children: indexesTable(),
                     disabled: datasource.datasourceType?.value === 'apachehive',
+                    forceRender: true,
                   },
                   // {
                   //   key: 'partitions',

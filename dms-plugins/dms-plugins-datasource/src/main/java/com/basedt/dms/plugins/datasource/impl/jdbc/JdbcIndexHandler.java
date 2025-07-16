@@ -26,6 +26,7 @@ import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -94,25 +95,13 @@ public class JdbcIndexHandler implements IndexHandler {
     }
 
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         if (StrUtil.isEmpty(indexName)) {
             return "";
         } else {
             IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
             if (Objects.nonNull(index)) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("CREATE ")
-                        .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
-                        .append(index.getIndexName())
-                        .append(" ON ")
-                        .append(index.getSchemaName())
-                        .append(Constants.SEPARATOR_DOT)
-                        .append(index.getTableName())
-                        .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
-                        .append(" (")
-                        .append(index.getColumns())
-                        .append(");");
-                return builder.toString();
+                return getIndexDDL(index, null, null);
             } else {
                 throw new SQLException(StrUtil.format("index {} does not exist in {}", indexName, schema));
             }
@@ -120,8 +109,44 @@ public class JdbcIndexHandler implements IndexHandler {
     }
 
     @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.nonNull(index)) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CREATE ")
+                    .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
+                    .append(index.getIndexName())
+                    .append(" ON ")
+                    .append(index.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(index.getTableName())
+                    .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
+                    .append(" (")
+                    .append(index.getColumns())
+                    .append(");");
+            return builder.toString();
+        } else {
+            return "";
+        }
+    }
+
+    @Override
     public String getDropDDL(String schema, String tableName, String indexName) throws SQLException {
         return generateDropSQL(schema, tableName, indexName);
+    }
+
+    @Override
+    public String getDropDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.isNull(index)) {
+            return "";
+        }
+        if (!CollectionUtils.isEmpty(pks)) {
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
+                    return generateDropConstraintSQL(index.getSchemaName(), index.getTableName(), index.getIndexName());
+                }
+            }
+        }
+        return generateDropSQL(index.getSchemaName(), index.getTableName(), index.getIndexName());
     }
 
     @Override
@@ -164,4 +189,7 @@ public class JdbcIndexHandler implements IndexHandler {
         return StrUtil.format("ALTER INDEX {}.{} RENAME TO {}", schema, indexName, newName);
     }
 
+    protected String generateDropConstraintSQL(String schema, String tableName, String constraintName) {
+        return StrUtil.format("ALTER TABLE {}.{} DROP CONSTRAINT {}", schema, tableName, constraintName);
+    }
 }

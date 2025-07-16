@@ -25,10 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcFunctionHandler;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcSequenceHandler;
+import com.basedt.dms.plugins.datasource.impl.jdbc.*;
 import com.google.auto.service.AutoService;
 
 import java.math.BigDecimal;
@@ -88,7 +85,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         HiveTableHandler handler = new HiveTableHandler();
         Map<String, String> config = new HashMap<>();
         config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
-        handler.initialize(getDataSource(), config);
+        handler.initialize(getDataSource(), config, new JdbcDataTypeMapper(), getIndexHandler());
         return handler;
     }
 
@@ -104,7 +101,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

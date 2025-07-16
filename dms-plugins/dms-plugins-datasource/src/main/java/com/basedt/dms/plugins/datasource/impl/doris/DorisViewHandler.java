@@ -56,7 +56,7 @@ public class DorisViewHandler extends MysqlViewHandler {
     }
 
     @Override
-    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
         try (Connection conn = dataSource.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(StrUtil.format("show create view {}.{}", schema, viewName));

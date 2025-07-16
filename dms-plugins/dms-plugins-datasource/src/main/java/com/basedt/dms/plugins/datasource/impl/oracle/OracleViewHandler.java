@@ -67,8 +67,8 @@ public class OracleViewHandler extends JdbcViewHandler {
     }
 
     @Override
-    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
-        String ddl = super.getViewDdl(catalog, schema, viewName);
+    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
+        String ddl = super.getViewDDL(catalog, schema, viewName);
         return SQLUtils.format(ddl, DbType.oracle);
     }
 }

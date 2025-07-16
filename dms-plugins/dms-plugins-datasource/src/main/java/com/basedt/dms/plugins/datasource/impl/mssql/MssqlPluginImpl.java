@@ -26,6 +26,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcMaterializedViewHandler;
 import com.google.auto.service.AutoService;
@@ -81,7 +82,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         MssqlTableHandler handler = new MssqlTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -95,7 +96,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

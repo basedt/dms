@@ -33,16 +33,16 @@ export const MetaDataService = {
       },
     );
   },
-  newTable(table: DMS.Table) {
-    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/table`, {
-      method: 'PUT',
-      data: table,
-    });
-  },
   getTable(tableParam: DMS.TableInfoParam) {
-    return request<DMS.ResponseBody<any>>(`${MetaDataService.url}/table`, {
+    return request<DMS.ResponseBody<DMS.Table>>(`${MetaDataService.url}/table`, {
       method: 'GET',
       params: tableParam,
+    });
+  },
+  getTableDDL(param: DMS.TableEditParam) {
+    return request<DMS.ResponseBody<string>>(`${MetaDataService.url}/table/ddl`, {
+      method: 'PUT',
+      data: param,
     });
   },
   renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {

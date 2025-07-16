@@ -72,7 +72,7 @@ public class OracleIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         String ddl = "";
         String sql = "SELECT DBMS_METADATA.GET_DDL('INDEX', ?, ?) AS ddl FROM DUAL";
         Connection conn = dataSource.getConnection();

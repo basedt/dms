@@ -21,6 +21,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.api.annotation.AuditLogging;
+import com.basedt.dms.api.vo.meta.TableEditVO;
 import com.basedt.dms.api.vo.meta.TableInfoConvert;
 import com.basedt.dms.api.vo.meta.TableInfoVO;
 import com.basedt.dms.common.constant.Constants;
@@ -100,14 +101,6 @@ public class MetaDataController {
         return new ResponseEntity<>(ResponseVO.success(types), HttpStatus.OK);
     }
 
-    @AuditLogging
-    @PutMapping(path = "/table")
-    @Operation(summary = "create new table", description = "create new table")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> newTable(@Validate @RequestBody final TableInfoVO tableInfo) throws DmsException {
-        //TODO implement
-        return new ResponseEntity<>(ResponseVO.success(true), HttpStatus.OK);
-    }
 
     @AuditLogging
     @GetMapping(path = "/table")
@@ -121,13 +114,42 @@ public class MetaDataController {
     }
 
     @AuditLogging
-    @GetMapping(path = "/obj/rename")
-    @Operation(summary = "rename database object", description = "rename database object")
+    @GetMapping(path = "/table/dml")
+    @Operation(summary = "generate dml script", description = "generate dml script")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> renameDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType, String newName) throws DmsException {
+    public ResponseEntity<ResponseVO<String>> generateDml(Long dataSourceId, String catalog, String schemaName, String objectName, String dmlType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        metaDataService.renameDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectType, objectName, newName);
-        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
+        String sql = metaDataService.generateDml(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, DmlType.valueOf(dmlType));
+        return new ResponseEntity<>(ResponseVO.success(sql), HttpStatus.OK);
+    }
+
+    /**
+     * todo 判断是普通表还是外部表
+     *
+     * @param param
+     * @return
+     * @throws DmsException
+     */
+    @AuditLogging
+    @PutMapping(path = "table/ddl")
+    @Operation(summary = "get table info", description = "get table info")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<String>> getTableDDL(@Validate @RequestBody final TableEditVO param) throws DmsException {
+        String sqlScript = "";
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(param.getDataSourceId());
+        if (Objects.isNull(param.getOriginTable()) && Objects.nonNull(param.getNewTable())) {
+            sqlScript = metaDataService.getTableDDL(DataSourceConvert.toDataSource(dto), TableInfoConvert.toTableDTO(param.getNewTable()));
+        } else if (Objects.nonNull(param.getOriginTable()) && (Objects.isNull(param.getNewTable()))) {
+            //get origin table ddl
+            TableDTO originTable = TableInfoConvert.toTableDTO(param.getOriginTable());
+            sqlScript = metaDataService.getTableDDL(DataSourceConvert.toDataSource(dto), originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
+        } else if (Objects.nonNull(param.getOriginTable())) {
+            //edit table
+            TableDTO originTable = TableInfoConvert.toTableDTO(param.getOriginTable());
+            TableDTO newTable = TableInfoConvert.toTableDTO(param.getNewTable());
+            sqlScript = metaDataService.getTableDDL(DataSourceConvert.toDataSource(dto), originTable, newTable);
+        }
+        return new ResponseEntity<>(ResponseVO.success(sqlScript), HttpStatus.OK);
     }
 
     @AuditLogging
@@ -137,16 +159,6 @@ public class MetaDataController {
     public ResponseEntity<ResponseVO<Object>> renameTableObject(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType, String newName) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
         metaDataService.renameTableObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectType, objectName, newName);
-        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
-    }
-
-    @AuditLogging
-    @GetMapping(path = "/obj/drop")
-    @Operation(summary = "drop database object", description = "drop database object")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<Object>> dropDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
-        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        metaDataService.dropDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, objectType);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
@@ -161,13 +173,33 @@ public class MetaDataController {
     }
 
     @AuditLogging
-    @GetMapping(path = "/table/dml")
-    @Operation(summary = "generate dml script", description = "generate dml script")
+    @GetMapping(path = "/obj/table/ddl")
+    @Operation(summary = "get table object ddl", description = "get table object ddl")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<String>> generateDml(Long dataSourceId, String catalog, String schemaName, String objectName, String dmlType) throws DmsException {
+    public ResponseEntity<ResponseVO<String>> viewTableObjectDdl(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        String sql = metaDataService.generateDml(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, DmlType.valueOf(dmlType));
-        return new ResponseEntity<>(ResponseVO.success(sql), HttpStatus.OK);
+        String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectName, DbObjectType.valueOf(objectType));
+        return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @GetMapping(path = "/obj/rename")
+    @Operation(summary = "rename database object", description = "rename database object")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Object>> renameDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType, String newName) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        metaDataService.renameDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectType, objectName, newName);
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
+    }
+
+    @AuditLogging
+    @GetMapping(path = "/obj/drop")
+    @Operation(summary = "drop database object", description = "drop database object")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Object>> dropDbObject(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
+        metaDataService.dropDbObject(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, objectType);
+        return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
     @AuditLogging
@@ -177,16 +209,6 @@ public class MetaDataController {
     public ResponseEntity<ResponseVO<String>> viewObjectDdl(Long dataSourceId, String catalog, String schemaName, String objectName, String objectType) throws DmsException {
         DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
         String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, objectName, DbObjectType.valueOf(objectType));
-        return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
-    }
-
-    @AuditLogging
-    @GetMapping(path = "/obj/table/ddl")
-    @Operation(summary = "get table object ddl", description = "get table object ddl")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<String>> viewTableObjectDdl(Long dataSourceId, String catalog, String schemaName, String tableName, String objectName, String objectType) throws DmsException {
-        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(dataSourceId);
-        String ddl = metaDataService.generateDDL(DataSourceConvert.toDataSource(dto), catalog, schemaName, tableName, objectName, DbObjectType.valueOf(objectType));
         return new ResponseEntity<>(ResponseVO.success(ddl), HttpStatus.OK);
     }
 
@@ -210,41 +232,6 @@ public class MetaDataController {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());
         }
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
-    }
-
-    @AuditLogging
-    @PutMapping(path = "script/ddl")
-    @Operation(summary = "get table info", description = "get table info")
-    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
-    public ResponseEntity<ResponseVO<String>> getTableDdlScript(@Validate @RequestBody final TableInfoParam param) throws DmsException {
-        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(param.getDataSourceId());
-        TableDTO originTable = metaDataService.getTableInfo(DataSourceConvert.toDataSource(dto), param.getCatalog(), param.getSchemaName(), param.getTableName());
-        if (Objects.isNull(param.getTableInfo())) {
-            // TODO  没有变更信息，返回原始的表结构ddl
-        } else if (Objects.isNull(originTable)) {
-            // TODO 当前数据库中没有相关表，判定为新建表，生成建表语句
-        } else {
-            // TODO 判定为修改表，如果对比后发现没有修改任何内容，则返回原始表的DDL语句
-//             需要注意顺序，例如先处理表名修改，再处理列的增删，然后是索引和分区
-//             1. 改表名
-//             2. 改表注释
-//             3. 新增列
-//             4. 删除列
-//             5. 调整列顺序 -- 不支持
-//             6. 修改字段名称
-//             7. 调整字段类型
-//             8. 调整字段空值属性
-//             9. 调整字段默认值
-//             10. 调整字段注释
-//             11. 新建索引
-//             12. 删除索引
-//             13. 修改索引名称
-//             14. 修改索引列或者类型  =》 删除重建
-//             15. 分区操作 暂不支持后续再说
-
-        }
-        String sqlScript = "";
-        return new ResponseEntity<>(ResponseVO.success(sqlScript), HttpStatus.OK);
     }
 
 }

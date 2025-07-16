@@ -73,7 +73,7 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
      * https://dev.mysql.com/doc/refman/8.4/en/create-index.html
      */
     @Override
-    public String getIndexDdl(String catalog, String schema, String tableName, String indexName) throws SQLException {
+    public String getIndexDDL(String catalog, String schema, String tableName, String indexName) throws SQLException {
         IndexDTO index = getIndexDetail(catalog, schema, tableName, indexName);
         if (Objects.isNull(index)) {
             return "";

@@ -96,7 +96,7 @@ public class JdbcViewHandler implements ViewHandler {
     }
 
     @Override
-    public String getViewDdl(String catalog, String schema, String viewName) throws SQLException {
+    public String getViewDDL(String catalog, String schema, String viewName) throws SQLException {
         if (StrUtil.isEmpty(viewName)) {
             return "";
         }

@@ -97,12 +97,17 @@ declare namespace DMS {
     catalog: string;
     schemaName: string;
     tableName: string;
-    tableInfo?: DMS.Table;
   };
 
   type sqlScriptParam = {
     workspaceId: string | number;
     dataSourceId: string | number;
     script: string;
+  };
+
+  type TableEditParam = {
+    dataSourceId: string | number;
+    originTable: DMS.Table | null;
+    newTable: DMS.Table | null;
   };
 }

@@ -22,10 +22,13 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.vo.TreeNodeVO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
+import com.basedt.dms.plugins.datasource.types.Type;
 import lombok.Data;
 
 @Data
 public class ColumnDTO {
+
+    private String id;
 
     private String catalogName;
 
@@ -38,6 +41,8 @@ public class ColumnDTO {
     private String dataType;
 
     private Integer sqlType;
+
+    private Type type;
 
     private Integer dataLength;
 

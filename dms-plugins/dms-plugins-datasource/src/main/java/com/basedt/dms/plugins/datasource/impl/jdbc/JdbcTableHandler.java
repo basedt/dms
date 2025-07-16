@@ -21,18 +21,20 @@ package com.basedt.dms.plugins.datasource.impl.jdbc;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.utils.DateTimeUtil;
+import com.basedt.dms.plugins.datasource.DataTypeMapper;
+import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.TableHandler;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
+import com.basedt.dms.plugins.datasource.types.Type;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
 
@@ -42,10 +44,16 @@ public class JdbcTableHandler implements TableHandler {
 
     protected Map<String, String> config;
 
+    protected DataTypeMapper typeMapper;
+
+    protected IndexHandler indexHandler;
+
     @Override
-    public void initialize(DataSource dataSource, Map<String, String> config) {
+    public void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper, IndexHandler indexHandler) {
         this.dataSource = dataSource;
         this.config = config;
+        this.typeMapper = typeMapper;
+        this.indexHandler = indexHandler;
     }
 
     @Override
@@ -152,6 +160,40 @@ public class JdbcTableHandler implements TableHandler {
         return generateRenameSQL(schema, tableName, newName);
     }
 
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        TableDTO table = getTableDetail(catalog, schema, tableName, TABLE);
+        if (Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table {}", tableName));
+        }
+        List<ColumnDTO> columns = listColumnsByTable(catalog, schema, tableName);
+        table.setColumns(columns.stream().sorted(Comparator.comparing(ColumnDTO::getColumnOrdinal)).toList());
+        List<IndexDTO> indexes = indexHandler.listIndexDetails(table.getCatalogName(), table.getSchemaName(), table.getTableName(), null);
+        table.setIndexes(indexes);
+        List<ObjectDTO> pks = indexHandler.listPkByTable(catalog, schema, tableName);
+        List<ObjectDTO> fks = indexHandler.listFkByTable(catalog, schema, tableName);
+        table.setPks(pks);
+        table.setFks(fks);
+        return getTableDDL(table);
+    }
+
+    /**
+     * Get the DDL of a table. Default implementation returns "not supported yet."
+     *
+     * @param table TableDTO object containing table information
+     * @return DDL of the table as a String
+     * @throws SQLException if an error occurs while retrieving the DDL
+     */
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        return "not supported yet.";
+    }
+
+    @Override
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
+        return "not supported yet.";
+    }
+
     protected String generateDropSQL(String schema, String tableName) {
         return StrUtil.format("DROP TABLE {}.{}", schema, tableName);
     }
@@ -212,6 +254,7 @@ public class JdbcTableHandler implements TableHandler {
             column.setColumnOrdinal(rs.getInt("column_ordinal"));
             column.setRemark(rs.getString("remark"));
             column.setIsNullable(rs.getBoolean("is_nullable"));
+            column.setType(typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale()));
             result.add(column);
         }
         JdbcUtil.close(conn, pstm, rs);
@@ -226,5 +269,19 @@ public class JdbcTableHandler implements TableHandler {
         } else {
             return null;
         }
+    }
+
+    protected String formatColumnDefaultValue(Type type, String defaultValue) {
+        if (Objects.isNull(defaultValue)) {
+            return "";
+        }
+        if (StrUtil.isNotEmpty(defaultValue) && type instanceof Type.STRING && !defaultValue.startsWith("'")) {
+            if (defaultValue.endsWith(")")) {
+                return defaultValue;
+            } else {
+                return "'" + defaultValue + "'";
+            }
+        }
+        return defaultValue;
     }
 }

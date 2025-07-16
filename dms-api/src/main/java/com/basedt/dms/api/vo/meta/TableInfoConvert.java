@@ -21,6 +21,7 @@ package com.basedt.dms.api.vo.meta;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.dto.*;
+import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -50,9 +51,100 @@ public class TableInfoConvert {
             return null;
         }
         TableDTO dto = new TableDTO();
-        //todo implement
-
+        dto.setCatalogName(vo.getCatalog());
+        dto.setSchemaName(vo.getSchemaName());
+        dto.setObjectName(vo.getTableName());
+        dto.setObjectType(DbObjectType.TABLE.name());
+        dto.setRemark(StrUtil.nullToEmpty(vo.getComment()));
+        dto.setColumns(getColumnList(vo));
+        dto.setIndexes(getIndexList(vo));
+        dto.setPks(getPkList(vo));
+        dto.setFks(getFkList(vo));
+//        dto.setPartitions();
         return dto;
+    }
+
+    public static List<ColumnDTO> getColumnList(TableInfoVO vo) {
+        if (Objects.isNull(vo) || Objects.isNull(vo.getColumns())) {
+            return null;
+        }
+        List<ColumnDTO> list = new ArrayList<>();
+        for (ColumnInfoVO col : vo.getColumns()) {
+            ColumnDTO column = new ColumnDTO();
+            column.setId(col.getId());
+            column.setCatalogName(vo.getCatalog());
+            column.setSchemaName(vo.getSchemaName());
+            column.setTableName(vo.getTableName());
+            column.setColumnName(col.getColumnName());
+            column.setDataType(col.getDataType());
+            column.setDefaultValue(StrUtil.nullToEmpty(col.getDefaultValue()));
+            column.setRemark(StrUtil.nullToEmpty(col.getComment()));
+            column.setIsNullable(Objects.nonNull(col.getNullable()) && col.getNullable());
+            column.setColumnOrdinal(col.getOrdinal());
+            list.add(column);
+        }
+        return list;
+    }
+
+    public static List<IndexDTO> getIndexList(TableInfoVO vo) {
+        if (Objects.isNull(vo) || Objects.isNull(vo.getIndexes())) {
+            return null;
+        }
+        List<IndexDTO> list = new ArrayList<>();
+        for (IndexInfoVO idx : vo.getIndexes()) {
+            IndexDTO idxDTO = new IndexDTO();
+            idxDTO.setId(idx.getId());
+            idxDTO.setCatalogName(vo.getCatalog());
+            idxDTO.setSchemaName(vo.getSchemaName());
+            idxDTO.setTableName(vo.getTableName());
+            idxDTO.setObjectName(StrUtil.nullToEmpty(idx.getIndexName()));
+            idxDTO.setObjectType(DbObjectType.INDEX.name());
+            idxDTO.setIndexType(StrUtil.nullToEmpty(idx.getIndexType()));
+            idxDTO.setIsUniqueness(Objects.nonNull(idx.getUniqueness()) && idx.getUniqueness());
+            if (CollectionUtils.isEmpty(idx.getColumns())) {
+                idxDTO.setColumns("");
+            } else {
+                idxDTO.setColumns(String.join(",", idx.getColumns()));
+            }
+            list.add(idxDTO);
+        }
+        return list;
+    }
+
+    public static List<ObjectDTO> getPkList(TableInfoVO vo) {
+        if (Objects.isNull(vo) || Objects.isNull(vo.getIndexes())) {
+            return null;
+        }
+        List<ObjectDTO> list = new ArrayList<>();
+        for (IndexInfoVO idx : vo.getIndexes()) {
+            if (Objects.nonNull(idx.getPk()) && idx.getPk()) {
+                ObjectDTO objDTO = new ObjectDTO();
+                objDTO.setCatalogName(vo.getCatalog());
+                objDTO.setSchemaName(vo.getSchemaName());
+                objDTO.setObjectName(idx.getIndexName());
+                objDTO.setObjectType(DbObjectType.PK.name());
+                list.add(objDTO);
+            }
+        }
+        return list;
+    }
+
+    public static List<ObjectDTO> getFkList(TableInfoVO vo) {
+        if (Objects.isNull(vo) || Objects.isNull(vo.getIndexes())) {
+            return null;
+        }
+        List<ObjectDTO> list = new ArrayList<>();
+        for (IndexInfoVO idx : vo.getIndexes()) {
+            if (Objects.nonNull(idx.getFk()) && idx.getFk()) {
+                ObjectDTO objDTO = new ObjectDTO();
+                objDTO.setCatalogName(vo.getCatalog());
+                objDTO.setSchemaName(vo.getSchemaName());
+                objDTO.setObjectName(idx.getIndexName());
+                objDTO.setObjectType(DbObjectType.FK.name());
+                list.add(objDTO);
+            }
+        }
+        return list;
     }
 
     public static List<ColumnInfoVO> getColumnInfo(TableDTO dto) {
@@ -66,7 +158,7 @@ public class TableInfoConvert {
                 colVO.setId(UUID.fastUUID().toString());
                 colVO.setOrdinal(colDTO.getColumnOrdinal());
                 colVO.setColumnName(colDTO.getColumnName());
-                colVO.setDataType(formatColumnType(colDTO));
+                colVO.setDataType(colDTO.getType().formatString());
                 colVO.setDefaultValue(colDTO.getDefaultValue());
                 colVO.setComment(colDTO.getRemark());
                 colVO.setNullable(colDTO.getIsNullable());
@@ -74,30 +166,6 @@ public class TableInfoConvert {
             }
         }
         return columns;
-    }
-
-    /**
-     * format data type
-     *
-     * @param dto
-     * @return
-     */
-    private static String formatColumnType(ColumnDTO dto) {
-        if (Objects.isNull(dto) || StrUtil.isEmpty(dto.getDataType())) {
-            return null;
-        } else if (("decimal".equalsIgnoreCase(dto.getDataType()) ||
-                "numeric".equalsIgnoreCase(dto.getDataType()) ||
-                "number".equalsIgnoreCase(dto.getDataType())) &&
-                Objects.nonNull(dto.getDataScale()) &&
-                dto.getDataScale() > 0) {
-            return dto.getDataType() + "(" + dto.getDataPrecision() + "," + dto.getDataScale() + ")";
-        } else if (Objects.isNull(dto.getDataLength()) || dto.getDataLength() <= 0) {
-            return dto.getDataType();
-        } else {
-            return dto.getDataType() + "(" + dto.getDataLength() + ")";
-        }
-
-
     }
 
     public static List<IndexInfoVO> getIndexInfo(TableDTO dto) {

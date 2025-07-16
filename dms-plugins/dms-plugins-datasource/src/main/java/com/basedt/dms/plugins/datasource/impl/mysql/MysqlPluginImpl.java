@@ -27,6 +27,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.google.auto.service.AutoService;
 import lombok.SneakyThrows;
 
@@ -80,7 +81,7 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         MysqlTableHandler handler = new MysqlTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

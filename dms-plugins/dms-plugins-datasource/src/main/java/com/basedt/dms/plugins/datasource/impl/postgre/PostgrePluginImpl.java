@@ -76,7 +76,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         PostgreTableHandler handler = new PostgreTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -90,7 +90,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         PostgreFgnTableHandler handler = new PostgreFgnTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

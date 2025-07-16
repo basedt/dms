@@ -75,6 +75,12 @@ public class JdbcUtil {
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(jdbcUrl);
+        dataSource.setMinIdle(0);
+        dataSource.setMaxActive(5);
+        dataSource.setRemoveAbandoned(true);
+        dataSource.setRemoveAbandonedTimeout(5);
+        dataSource.setTimeBetweenEvictionRunsMillis(60000);
+        dataSource.setMinEvictableIdleTimeMillis(30000);
         if (attrs != null) {
             try {
                 DruidDataSourceFactory.config(dataSource, attrs);

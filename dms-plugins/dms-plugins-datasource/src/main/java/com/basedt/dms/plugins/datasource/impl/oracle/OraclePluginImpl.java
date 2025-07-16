@@ -25,6 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
+import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcForeignTableHandler;
 import com.google.auto.service.AutoService;
 
@@ -73,7 +74,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         OracleTableHandler handler = new OracleTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 
@@ -90,7 +91,7 @@ public class OraclePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>());
+        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class TextType implements Type {
+public class TextType extends Type.STRING {
 
     private static final TextType INSTANCE = new TextType();
 

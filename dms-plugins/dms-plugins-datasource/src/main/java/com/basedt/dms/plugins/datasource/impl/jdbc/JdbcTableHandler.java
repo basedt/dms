@@ -29,6 +29,7 @@ import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
+import com.basedt.dms.plugins.datasource.types.Type;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
 import javax.sql.DataSource;
@@ -268,5 +269,19 @@ public class JdbcTableHandler implements TableHandler {
         } else {
             return null;
         }
+    }
+
+    protected String formatColumnDefaultValue(Type type, String defaultValue) {
+        if (Objects.isNull(defaultValue)) {
+            return "";
+        }
+        if (StrUtil.isNotEmpty(defaultValue) && type instanceof Type.STRING && !defaultValue.startsWith("'")) {
+            if (defaultValue.endsWith(")")) {
+                return defaultValue;
+            } else {
+                return "'" + defaultValue + "'";
+            }
+        }
+        return defaultValue;
     }
 }

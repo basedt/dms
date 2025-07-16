@@ -28,6 +28,8 @@ import lombok.Data;
 @Data
 public class ColumnDTO {
 
+    private String id;
+
     private String catalogName;
 
     private String schemaName;

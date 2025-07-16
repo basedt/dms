@@ -34,6 +34,8 @@ public class IndexDTO extends ObjectDTO {
 
     private static final long serialVersionUID = 1L;
 
+    private String id;
+
     private String tableName;
 
     private String indexType;

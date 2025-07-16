@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class FloatType implements Type {
+public class FloatType extends Type.NUMBER {
 
     private Integer length;
 

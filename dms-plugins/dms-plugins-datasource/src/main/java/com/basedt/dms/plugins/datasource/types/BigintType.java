@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class BigintType implements Type {
+public class BigintType extends Type.NUMBER {
 
     private static final BigintType INSTANCE = new BigintType();
 

@@ -90,7 +90,8 @@ public class PostgreTableHandler extends JdbcTableHandler {
                 " and c.relname = t.table_name" +
                 " and attr.attname = t.column_name" +
                 " where c.relkind in ('r','v','m','f')" +
-                " and attr.attnum > 0";
+                " and attr.attnum > 0 " +
+                " and attr.attisdropped = false";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and coalesce(t.table_schema,n.nspname) = '" + schemaPattern + "'";
         }
@@ -117,7 +118,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
                     .append(" (\n");
             if (!CollectionUtils.isEmpty(table.getColumns())) {
                 for (int i = 0; i < table.getColumns().size(); i++) {
-                    generateColumnDDL(table.getColumns().get(i), builder);
+                    generateTableColumnDDL(table.getColumns().get(i), builder);
                     if (i < table.getColumns().size() - 1) {
                         builder.append(",\n");
                     }
@@ -144,11 +145,13 @@ public class PostgreTableHandler extends JdbcTableHandler {
                         .append("\n");
             }
             //comment on columns
-            for (ColumnDTO column : table.getColumns()) {
-                if (StrUtil.isNotEmpty(column.getRemark())) {
-                    builder.append("\n")
-                            .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
-                                    column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
+            if (!CollectionUtils.isEmpty(table.getColumns())) {
+                for (ColumnDTO column : table.getColumns()) {
+                    if (StrUtil.isNotEmpty(column.getRemark())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
+                                        column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
+                    }
                 }
             }
             return builder.toString();
@@ -165,31 +168,222 @@ public class PostgreTableHandler extends JdbcTableHandler {
      */
     @Override
     public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
-
-        //TODO  待实现
-        //            如果对比后发现没有修改任何内容，则返回原始表的DDL语句
-//             需要注意顺序，例如先处理表名修改，再处理列的增删，然后是索引和分区
-//             1. 改表名  不支持同步改表名
-//             2. 改表注释
-//             3. 新增列
-//             4. 删除列
-//             5. 调整列顺序 -- 不支持
-//             6. 修改字段名称
-//             7. 调整字段类型
-//             8. 调整字段空值属性
-//             9. 调整字段默认值
-//             10. 调整字段注释
-//             11. 新建索引
-//             12. 删除索引
-//             13. 修改索引名称
-//             14. 修改索引列或者类型  =》 删除重建
-//             15. 分区操作 暂不支持后续再说
-        return super.getTableDDL(originTable, table);
+        if (Objects.isNull(originTable) && Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table"));
+        } else if (Objects.isNull(originTable)) {
+            return getTableDDL(table);
+        } else if (Objects.isNull(table)) {
+            return getTableDDL(originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
+        } else if (!originTable.getTableName().equalsIgnoreCase(table.getTableName())) {
+            return getTableDDL(table);
+        } else if (Objects.isNull(originTable.getColumns())) {
+            return getTableDDL(table);
+        } else {
+            //generate alter table script
+            StringBuilder builder = new StringBuilder();
+            boolean tableChange = false;
+            //alter table comment
+            if (!originTable.getRemark().equals(table.getRemark())) {
+                tableChange = true;
+                builder.append("\n")
+                        .append(StrUtil.format("COMMENT ON TABLE {}.{} IS '{}';",
+                                table.getSchemaName(), table.getTableName(), StrUtil.nullToEmpty(table.getRemark())));
+            }
+            //alter table columns
+            String alterColumnDDL = generateAlterColumnDDL(originTable.getColumns(), table.getColumns());
+            if (StrUtil.isNotBlank(alterColumnDDL)) {
+                tableChange = true;
+                builder.append("\n")
+                        .append(alterColumnDDL);
+            }
+            //alter table indexes
+            String alterIndexDDL = generateAlterIndexDDL(originTable, table);
+            if (StrUtil.isNotBlank(alterIndexDDL)) {
+                tableChange = true;
+                builder.append("\n")
+                        .append(alterIndexDDL);
+            }
+            if (!tableChange) {
+                return getTableDDL(table);
+            }
+            return builder.toString();
+        }
     }
 
-    private void generateColumnDDL(ColumnDTO column, StringBuilder builder) {
+    protected String generateAddColumnDDL(ColumnDTO column) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n")
+                .append("ALTER TABLE ")
+                .append(column.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(column.getTableName())
+                .append(" ADD ")
+                .append(column.getColumnName())
+                .append(" ")
+                .append(typeMapper.toType(column.getDataType()).formatString())
+                .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()) : "")
+                .append(";")
+        ;
+        if (Objects.nonNull(column.getRemark())) {
+            builder.append("\n")
+                    .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
+                            column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
+        }
+        return builder.toString();
+    }
+
+    protected String generateDropColumnDDL(ColumnDTO column) {
+        return StrUtil.format("\nALTER TABLE {}.{} DROP COLUMN {};",
+                column.getSchemaName(), column.getTableName(), column.getColumnName());
+    }
+
+    private String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
+        StringBuilder builder = new StringBuilder();
+        if (CollectionUtils.isEmpty(newColumns)) {
+            newColumns = List.of();
+        }
+        if (CollectionUtils.isEmpty(originColumns)) {
+            originColumns = List.of();
+        }
+        //add new columns
+        List<ColumnDTO> finalOriginColumns = originColumns;
+        List<ColumnDTO> newList = newColumns.stream().filter(col -> {
+            for (ColumnDTO originCol : finalOriginColumns) {
+                if (col.getId().equals(originCol.getId())) {
+                    return false;
+                }
+            }
+            return true;
+        }).toList();
+        for (ColumnDTO newCol : newList) {
+            builder.append(generateAddColumnDDL(newCol));
+        }
+        //drop columns
+        List<ColumnDTO> finalNewColumns = newColumns;
+        List<ColumnDTO> dropList = originColumns.stream().filter(col -> {
+            for (ColumnDTO newCol : finalNewColumns) {
+                if (col.getId().equals(newCol.getId())) {
+                    return false;
+                }
+            }
+            return true;
+        }).toList();
+        for (ColumnDTO column : dropList) {
+            builder.append(generateDropColumnDDL(column));
+        }
+        //modify columns
+        for (ColumnDTO column : newColumns) {
+            for (ColumnDTO originCol : originColumns) {
+                if (column.getId().equals(originCol.getId())) {
+                    boolean isColumnRename = false;
+                    if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("ALTER TABLE {}.{} RENAME COLUMN {} TO {};",
+                                        originCol.getSchemaName(), originCol.getTableName(), originCol.getColumnName(), column.getColumnName()));
+                        isColumnRename = true;
+                    }
+                    Type originType = typeMapper.toType(originCol.getDataType(), originCol.getDataLength(), originCol.getDataPrecision(), originCol.getDataScale());
+                    Type newType = typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale());
+                    if (!originType.formatString().equals(newType.formatString())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} TYPE {};",
+                                        originCol.getSchemaName(), originCol.getTableName(),
+                                        isColumnRename ? column.getColumnName() : originCol.getColumnName(), newType.formatString()));
+                    }
+                    if (!originCol.getDefaultValue().equals(column.getDefaultValue())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} SET DEFAULT {};",
+                                        originCol.getSchemaName(), originCol.getTableName(),
+                                        isColumnRename ? column.getColumnName() : originCol.getColumnName(), formatColumnDefaultValue(column.getType(), column.getDefaultValue())));
+                    }
+                    if (!originCol.getIsNullable().equals(column.getIsNullable())) {
+                        builder.append("\n")
+                                .append("ALTER TABLE ")
+                                .append(originCol.getSchemaName())
+                                .append(Constants.SEPARATOR_DOT)
+                                .append(originCol.getTableName())
+                                .append(" ALTER COLUMN ")
+                                .append(isColumnRename ? column.getColumnName() : originCol.getColumnName())
+                                .append(column.getIsNullable() ? " SET NOT NULL" : " DROP NOT NULL")
+                                .append(";");
+                    }
+                    if (!originCol.getRemark().equals(column.getRemark())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
+                                        originCol.getSchemaName(), originCol.getTableName(), isColumnRename ? column.getColumnName() : originCol.getColumnName(), column.getRemark()));
+                    }
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    private String generateAlterIndexDDL(TableDTO originTable, TableDTO table) {
+        StringBuilder builder = new StringBuilder();
+        if (CollectionUtils.isEmpty(table.getIndexes()) && CollectionUtils.isEmpty(originTable.getIndexes())) {
+            return builder.toString();
+        } else if (CollectionUtils.isEmpty(table.getIndexes())) {
+            //drop index
+            for (IndexDTO index : originTable.getIndexes()) {
+                builder.append("\n")
+                        .append(indexHandler.getDropDDL(index, table.getPks(), table.getFks()));
+            }
+        } else if (CollectionUtils.isEmpty(originTable.getIndexes())) {
+            // new index
+            for (IndexDTO index : table.getIndexes()) {
+                builder.append("\n")
+                        .append(indexHandler.getIndexDDL(index, originTable.getPks(), originTable.getFks()));
+            }
+        } else {
+            //new index
+            List<IndexDTO> newList = table.getIndexes().stream().filter(idx -> {
+                for (IndexDTO originIdx : originTable.getIndexes()) {
+                    if (idx.getId().equals(originIdx.getId())) {
+                        return false;
+                    }
+                }
+                return true;
+            }).toList();
+            for (IndexDTO index : newList) {
+                builder.append("\n")
+                        .append(indexHandler.getIndexDDL(index, originTable.getPks(), originTable.getFks()));
+            }
+            //drop index
+            List<IndexDTO> dropList = originTable.getIndexes().stream().filter(idx -> {
+                for (IndexDTO newIdx : table.getIndexes()) {
+                    if (idx.getId().equals(newIdx.getId())) {
+                        return false;
+                    }
+                }
+                return true;
+            }).toList();
+            for (IndexDTO index : dropList) {
+                builder.append("\n")
+                        .append(indexHandler.getDropDDL(index, table.getPks(), table.getFks()));
+            }
+            //modify index
+            for (IndexDTO originIdx : originTable.getIndexes()) {
+                for (IndexDTO newIdx : table.getIndexes()) {
+                    if (originIdx.getId().equals(newIdx.getId()) &&
+                            (!originIdx.getIndexName().equals(newIdx.getIndexName()) ||
+                                    !originIdx.getIsUniqueness().equals(newIdx.getIsUniqueness()) ||
+                                    !originIdx.getColumns().equals(newIdx.getColumns()) ||
+                                    !originIdx.getIndexType().equals(newIdx.getIndexType()))) {
+                        builder.append("\n")
+                                .append(indexHandler.getDropDDL(newIdx, originTable.getPks(), originTable.getFks()));
+                        builder.append("\n")
+                                .append(indexHandler.getIndexDDL(newIdx, table.getPks(), table.getFks()));
+                    }
+                }
+            }
+        }
+        return builder.toString();
+    }
+
+    private void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
         if (Objects.nonNull(column)) {
-            Type type = typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale());
+            Type type = typeMapper.toType(column.getDataType());
             builder.append("\t")
                     .append(column.getColumnName())
                     .append(" ");
@@ -199,7 +393,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
             } else {
                 builder.append(typeMapper.fromType(type))
                         .append(column.getIsNullable() ? " NULL" : " NOT NULL")
-                        .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " + column.getDefaultValue())
+                        .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " + formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()))
                 ;
             }
         }

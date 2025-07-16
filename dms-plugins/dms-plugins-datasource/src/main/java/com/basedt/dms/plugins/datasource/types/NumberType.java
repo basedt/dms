@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class NumberType implements Type {
+public class NumberType extends Type.NUMBER {
 
     private Integer precision;
 

@@ -19,6 +19,7 @@
 package com.basedt.dms.api.vo.meta;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.dto.*;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import org.springframework.util.CollectionUtils;
@@ -54,7 +55,7 @@ public class TableInfoConvert {
         dto.setSchemaName(vo.getSchemaName());
         dto.setObjectName(vo.getTableName());
         dto.setObjectType(DbObjectType.TABLE.name());
-        dto.setRemark(vo.getComment());
+        dto.setRemark(StrUtil.nullToEmpty(vo.getComment()));
         dto.setColumns(getColumnList(vo));
         dto.setIndexes(getIndexList(vo));
         dto.setPks(getPkList(vo));
@@ -70,11 +71,15 @@ public class TableInfoConvert {
         List<ColumnDTO> list = new ArrayList<>();
         for (ColumnInfoVO col : vo.getColumns()) {
             ColumnDTO column = new ColumnDTO();
+            column.setId(col.getId());
+            column.setCatalogName(vo.getCatalog());
+            column.setSchemaName(vo.getSchemaName());
+            column.setTableName(vo.getTableName());
             column.setColumnName(col.getColumnName());
             column.setDataType(col.getDataType());
-            column.setDefaultValue(col.getDefaultValue());
-            column.setRemark(col.getComment());
-            column.setIsNullable(col.getNullable());
+            column.setDefaultValue(StrUtil.nullToEmpty(col.getDefaultValue()));
+            column.setRemark(StrUtil.nullToEmpty(col.getComment()));
+            column.setIsNullable(Objects.nonNull(col.getNullable()) && col.getNullable());
             column.setColumnOrdinal(col.getOrdinal());
             list.add(column);
         }
@@ -88,14 +93,20 @@ public class TableInfoConvert {
         List<IndexDTO> list = new ArrayList<>();
         for (IndexInfoVO idx : vo.getIndexes()) {
             IndexDTO idxDTO = new IndexDTO();
+            idxDTO.setId(idx.getId());
             idxDTO.setCatalogName(vo.getCatalog());
             idxDTO.setSchemaName(vo.getSchemaName());
             idxDTO.setTableName(vo.getTableName());
-            idxDTO.setObjectName(idx.getIndexName());
+            idxDTO.setObjectName(StrUtil.nullToEmpty(idx.getIndexName()));
             idxDTO.setObjectType(DbObjectType.INDEX.name());
-            idxDTO.setIndexType(idx.getIndexType());
-            idxDTO.setIsUniqueness(idx.getUniqueness());
-            idxDTO.setColumns(String.join(",", idx.getColumns()));
+            idxDTO.setIndexType(StrUtil.nullToEmpty(idx.getIndexType()));
+            idxDTO.setIsUniqueness(Objects.nonNull(idx.getUniqueness()) && idx.getUniqueness());
+            if (CollectionUtils.isEmpty(idx.getColumns())) {
+                idxDTO.setColumns("");
+            } else {
+                idxDTO.setColumns(String.join(",", idx.getColumns()));
+            }
+            list.add(idxDTO);
         }
         return list;
     }
@@ -106,7 +117,7 @@ public class TableInfoConvert {
         }
         List<ObjectDTO> list = new ArrayList<>();
         for (IndexInfoVO idx : vo.getIndexes()) {
-            if (idx.getPk()) {
+            if (Objects.nonNull(idx.getPk()) && idx.getPk()) {
                 ObjectDTO objDTO = new ObjectDTO();
                 objDTO.setCatalogName(vo.getCatalog());
                 objDTO.setSchemaName(vo.getSchemaName());
@@ -124,7 +135,7 @@ public class TableInfoConvert {
         }
         List<ObjectDTO> list = new ArrayList<>();
         for (IndexInfoVO idx : vo.getIndexes()) {
-            if (idx.getFk()) {
+            if (Objects.nonNull(idx.getFk()) && idx.getFk()) {
                 ObjectDTO objDTO = new ObjectDTO();
                 objDTO.setCatalogName(vo.getCatalog());
                 objDTO.setSchemaName(vo.getSchemaName());

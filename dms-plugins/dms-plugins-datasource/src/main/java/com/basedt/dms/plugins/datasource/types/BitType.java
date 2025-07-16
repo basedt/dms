@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class BitType implements Type {
+public class BitType extends Type.ComplexType {
 
     private Integer length;
 

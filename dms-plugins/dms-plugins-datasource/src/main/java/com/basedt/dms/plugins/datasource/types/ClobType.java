@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class ClobType implements Type {
+public class ClobType extends Type.STRING {
 
     private static final ClobType INSTANCE = new ClobType();
 

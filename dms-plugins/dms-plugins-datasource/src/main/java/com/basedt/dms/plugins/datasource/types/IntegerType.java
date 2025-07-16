@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IntegerType implements Type {
+public class IntegerType extends Type.NUMBER {
 
     private static final IntegerType INSTANCE = new IntegerType();
 

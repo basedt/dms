@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class DecimalType implements Type {
+public class DecimalType extends Type.NUMBER {
 
     private Integer precision;
 

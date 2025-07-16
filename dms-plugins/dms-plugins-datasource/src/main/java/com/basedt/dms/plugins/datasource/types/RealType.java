@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class RealType implements Type {
+public class RealType extends Type.NUMBER {
 
     private static final RealType INSTANCE = new RealType();
 

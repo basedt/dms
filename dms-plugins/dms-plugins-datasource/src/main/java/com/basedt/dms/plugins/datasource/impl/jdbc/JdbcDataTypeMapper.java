@@ -149,23 +149,23 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
             return null;
         } else if (formatedTypeName.contains(",")) {
             ColumnDTO column = new ColumnDTO();
-            column.setColumnName(StrUtil.subBefore(formatedTypeName, "(", false));
+            column.setDataType(StrUtil.subBefore(formatedTypeName, "(", false));
             column.setDataPrecision(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(","))));
             column.setDataScale(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf(",") + 1, formatedTypeName.indexOf(")"))));
             return column;
         } else if (formatedTypeName.contains("(")) {
             ColumnDTO column = new ColumnDTO();
-            column.setColumnName(StrUtil.subBefore(formatedTypeName, "(", false));
+            column.setDataType(StrUtil.subBefore(formatedTypeName, "(", false));
             column.setDataLength(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(")"))));
             return column;
         } else {
             ColumnDTO column = new ColumnDTO();
-            column.setColumnName(formatedTypeName);
+            column.setDataType(formatedTypeName);
             return column;
         }
     }
 
-    protected Type toType(String formatTypeName) {
+    public Type toType(String formatTypeName) {
         ColumnDTO col = toColumnDTO(formatTypeName);
         return toType(col.getDataType(), col.getDataLength(), col.getDataPrecision(), col.getDataScale());
     }

@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SmallIntType implements Type {
+public class SmallIntType extends Type.NUMBER {
 
     private static final SmallIntType INSTANCE = new SmallIntType();
 

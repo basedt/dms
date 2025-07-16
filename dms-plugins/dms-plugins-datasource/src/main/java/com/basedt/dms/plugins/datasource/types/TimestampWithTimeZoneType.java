@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class TimestampWithTimeZoneType implements Type {
+public class TimestampWithTimeZoneType extends Type.DATE {
 
     private static final TimestampWithTimeZoneType INSTANCE = new TimestampWithTimeZoneType();
 

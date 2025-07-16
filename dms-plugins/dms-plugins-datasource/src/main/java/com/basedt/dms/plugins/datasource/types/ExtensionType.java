@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ExtensionType implements Type {
+public class ExtensionType extends Type.ComplexType {
 
     private String name;
 

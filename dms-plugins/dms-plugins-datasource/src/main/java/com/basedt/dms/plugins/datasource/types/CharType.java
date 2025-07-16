@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class CharType implements Type {
+public class CharType extends Type.STRING {
 
     private Integer length;
 

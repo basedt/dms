@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class DoubleType implements Type {
+public class DoubleType extends Type.NUMBER {
 
     private static final DoubleType INSTANCE = new DoubleType();
 

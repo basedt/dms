@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class NClobType implements Type {
+public class NClobType extends Type.STRING {
 
     private static final NClobType INSTANCE = new NClobType();
 

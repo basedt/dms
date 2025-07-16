@@ -54,7 +54,7 @@ public class PostgreDataTypeMapper extends JdbcDataTypeMapper {
             case NAME, VARCHAR, CHARACTER_VARYING -> VarcharType.get(length);
             case TEXT -> TextType.get();
             case INT2, SMALLINT -> SmallIntType.get();
-            case INT4, INTEGER -> IntegerType.get();
+            case INT4, INTEGER, INT -> IntegerType.get();
             case INT8, BIGINT -> BigintType.get();
             case FLOAT4 -> RealType.get();
             case FLOAT8, DOUBLE_PRECISION -> DoubleType.get();
@@ -104,6 +104,8 @@ public class PostgreDataTypeMapper extends JdbcDataTypeMapper {
             return type.formatString();
         } else if (type instanceof BinaryType) {
             return BYTEA;
+        } else if (type instanceof ExtensionType) {
+            return type.formatString();
         } else {
             throw new IllegalArgumentException(StrUtil.format("not supported type {}", type.name()));
         }

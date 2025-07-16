@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class BlobType implements Type {
+public class BlobType extends Type.ComplexType {
 
     private static final BlobType INSTANCE = new BlobType();
 

@@ -28,4 +28,16 @@ public interface Type {
 
     String formatString();
 
+    abstract class NUMBER implements Type {
+    }
+
+
+    abstract class STRING implements Type {
+    }
+
+    abstract class DATE implements Type {
+    }
+
+    abstract class ComplexType implements Type {
+    }
 }

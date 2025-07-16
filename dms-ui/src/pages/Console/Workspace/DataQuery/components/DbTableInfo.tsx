@@ -47,6 +47,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
   const indexActionRef = useRef<ActionType>();
   const partitionActionRef = useRef<ActionType>();
   const { workspaceId, datasource, maxHeight, node, action } = props;
+  const [originTable, setOriginTable] = useState<DMS.Table>();
   const [columnsTableKeys, setColumnsTableKeys] = useState<React.Key[]>([]);
   const [columnData, setColumnData] = useState<readonly DMS.Column[]>([]);
   const [indexTableKeys, setIndexTableKeys] = useState<React.Key[]>([]);
@@ -74,33 +75,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     });
     const nodeParams: string[] = node.identifier.split('.');
     if (node.type === 'TABLE' && nodeParams.length >= 3 && action !== 'create') {
-      MetaDataService.getTable({
-        dataSourceId: datasource.id as string,
-        catalog: nodeParams[0],
-        schemaName: nodeParams[1],
-        tableName: nodeParams[2],
-      })
-        .then((resp) => {
-          if (resp.success) {
-            const table: DMS.Table = resp.data as DMS.Table;
-            form.setFieldsValue({
-              schemaName: table.schemaName,
-              tableName: table.tableName,
-              tableComment: table.comment,
-              columnsTable: table.columns,
-              indexTable: table.indexes,
-              partitionTable: table.partitions,
-            });
-            setColumnData(table.columns as readonly DMS.Column[]);
-            setIndexData(table.indexes as readonly DMS.Index[]);
-            setPartitionData(table.partitions as readonly DMS.Partition[]);
-          }
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.log(e);
-          setLoading(false);
-        });
+      refreshTableInfo(nodeParams);
     }
     if (action === 'create') {
       form.setFieldsValue({ schemaName: nodeParams[1], tableName: 'newTable' });
@@ -108,11 +83,43 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     }
   }, []);
 
+  const refreshTableInfo = (nodeParams: string[]) => {
+    MetaDataService.getTable({
+      dataSourceId: datasource.id as string,
+      catalog: nodeParams[0],
+      schemaName: nodeParams[1],
+      tableName: nodeParams[2],
+    })
+      .then((resp) => {
+        if (resp.success) {
+          const table: DMS.Table = resp.data as DMS.Table;
+          setOriginTable(table);
+          form.setFieldsValue({
+            schemaName: table.schemaName,
+            tableName: table.tableName,
+            tableComment: table.comment,
+            columnsTable: table.columns,
+            indexTable: table.indexes,
+            partitionTable: table.partitions,
+          });
+          setColumnData(table.columns as readonly DMS.Column[]);
+          setIndexData(table.indexes as readonly DMS.Index[]);
+          setPartitionData(table.partitions as readonly DMS.Partition[]);
+        }
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+        setLoading(false);
+      });
+  };
+
   const refreshDDL = () => {
     setLoading(true);
     form.validateFields().then((values) => {
+      console.log('111111111', values);
       const nodeParams: string[] = node.identifier.split('.');
-      const tableInfo: DMS.Table = {
+      let tableInfo: DMS.Table = {
         catalog: nodeParams[0],
         schemaName: values.schemaName,
         tableName: values.tableName,
@@ -132,14 +139,13 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           }
         });
       } else if (action === 'edit') {
+        if (!tableInfo.columns) {
+          tableInfo = {} as DMS.Table;
+        }
         MetaDataService.getTableDDL({
           dataSourceId: datasource.id as string,
-          originTable: {
-            catalog: nodeParams[0],
-            schemaName: nodeParams[1],
-            tableName: nodeParams[2],
-          },
-          newTable: tableInfo,
+          originTable: originTable as DMS.Table,
+          newTable: { ...originTable, ...tableInfo },
         }).then((resp) => {
           if (resp.success) {
             setScript(resp.data || '');
@@ -232,7 +238,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
       width: 60,
       align: 'center',
       render(_, row) {
-        return <Checkbox checked={!row.nullable} disabled></Checkbox>;
+        return <Checkbox checked={row.nullable} disabled></Checkbox>;
       },
       renderFormItem: () => {
         return <EditFormCheckbox></EditFormCheckbox>;
@@ -680,7 +686,8 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
               size="small"
               style={{ height: 22, fontSize: 12, marginLeft: 6 }}
               onClick={() => {
-                // TODO reload table info
+                const nodeParams: string[] = node.identifier.split('.');
+                refreshTableInfo(nodeParams);
                 message.success(
                   intl.formatMessage({
                     id: 'dms.common.message.operate.success',

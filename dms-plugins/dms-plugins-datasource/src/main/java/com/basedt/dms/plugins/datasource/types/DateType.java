@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class DateType implements Type {
+public class DateType extends Type.DATE {
 
     private static final DateType INSTANCE = new DateType();
 

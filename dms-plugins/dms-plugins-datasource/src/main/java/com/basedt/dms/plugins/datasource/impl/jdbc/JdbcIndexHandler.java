@@ -26,6 +26,7 @@ import com.basedt.dms.plugins.datasource.IndexHandler;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -134,6 +135,21 @@ public class JdbcIndexHandler implements IndexHandler {
     }
 
     @Override
+    public String getDropDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.isNull(index)) {
+            return "";
+        }
+        if (!CollectionUtils.isEmpty(pks)) {
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
+                    return generateDropConstraintSQL(index.getSchemaName(), index.getTableName(), index.getIndexName());
+                }
+            }
+        }
+        return generateDropSQL(index.getSchemaName(), index.getTableName(), index.getIndexName());
+    }
+
+    @Override
     public String getRenameDDL(String schema, String tableName, String indexName, String newName) throws SQLException {
         return generateRenameSQL(schema, tableName, indexName, newName);
     }
@@ -173,4 +189,7 @@ public class JdbcIndexHandler implements IndexHandler {
         return StrUtil.format("ALTER INDEX {}.{} RENAME TO {}", schema, indexName, newName);
     }
 
+    protected String generateDropConstraintSQL(String schema, String tableName, String constraintName) {
+        return StrUtil.format("ALTER TABLE {}.{} DROP CONSTRAINT {}", schema, tableName, constraintName);
+    }
 }

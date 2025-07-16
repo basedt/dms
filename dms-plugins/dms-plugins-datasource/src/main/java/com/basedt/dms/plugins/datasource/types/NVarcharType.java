@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class NVarcharType implements Type {
+public class NVarcharType extends Type.STRING {
 
     private Integer length;
 

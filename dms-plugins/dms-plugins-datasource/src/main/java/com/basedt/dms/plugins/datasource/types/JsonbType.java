@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JsonbType implements Type {
+public class JsonbType extends Type.ComplexType {
 
     private static final JsonbType INSTANCE = new JsonbType();
 

@@ -50,6 +50,8 @@ public interface IndexHandler {
 
     String getDropDDL(String schema, String tableName, String indexName) throws SQLException;
 
+    String getDropDDL(IndexDTO index,List<ObjectDTO> pks,List<ObjectDTO> fks);
+
     String getRenameDDL(String schema, String tableName, String indexName, String newName) throws SQLException;
 
 }

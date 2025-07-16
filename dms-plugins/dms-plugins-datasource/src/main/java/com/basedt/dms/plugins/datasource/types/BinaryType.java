@@ -20,7 +20,7 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-public class BinaryType implements Type {
+public class BinaryType extends Type.ComplexType {
 
     private static final BinaryType INSTANCE = new BinaryType();
 

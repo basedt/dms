@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JsonType implements Type {
+public class JsonType extends Type.STRING {
 
     private static final JsonType INSTANCE = new JsonType();
 

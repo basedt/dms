@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class VarcharType implements Type {
+public class VarcharType extends Type.STRING {
 
     private Integer length;
 
@@ -50,7 +50,7 @@ public class VarcharType implements Type {
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length)) {
+        if (Objects.isNull(length) || length <= 0) {
             return name();
         } else {
             return name() + "(" + length + ")";

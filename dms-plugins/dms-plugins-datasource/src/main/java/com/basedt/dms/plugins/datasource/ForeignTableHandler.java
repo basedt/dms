@@ -35,4 +35,5 @@ public interface ForeignTableHandler {
 
     String getForeignTableRenameDDL(String schema, String tableName, String newName) throws SQLException;
 
+    public String getForeignTableDDL(String catalog, String schema, String tableName) throws SQLException;
 }

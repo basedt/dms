@@ -623,6 +623,11 @@ public class MetaDataServiceImpl implements MetaDataService {
                 case FUNCTION:
                     result = dataSourcePlugin.getFunctionHandler().getFunctionDDL(catalog, schemaName, objectName);
                     break;
+                case FOREIGN_TABLE:
+                    String dropFgnTableDDL = "-- " + dataSourcePlugin.getForeignTableHandler().getForeignTableDropDDL(schemaName, objectName);
+                    String createFgnTableDDL = dataSourcePlugin.getForeignTableHandler().getForeignTableDDL(catalog, schemaName, objectName);
+                    result = dropFgnTableDDL + ";\n\n" + createFgnTableDDL;
+                    break;
             }
         } catch (Exception e) {
             throw new DmsException(ResponseCode.ERROR_CUSTOM.getValue(), e.getMessage());

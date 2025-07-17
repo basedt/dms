@@ -41,11 +41,18 @@ const DbObjectInfoView: React.FC<DbObjectInfoProps> = (props) => {
       const createSeqScript = `CREATE INDEX idx_${objInfo[2]} on ${objInfo[2]} (col1,col2);`;
       setScript(createSeqScript);
     } else if (
+      action === 'create' &&
+      (node.type === 'G_FOREIGN_TABLE' || node.type === 'FOREIGN_TABLE')
+    ) {
+      const createFgnTableScript = `CREATE FOREIGN TABLE ${objInfo[1]}.newTable (\n\n\n\n);`;
+      setScript(createFgnTableScript);
+    } else if (
       action === 'edit' &&
       (node.type === 'VIEW' ||
         node.type === 'MATERIALIZED_VIEW' ||
         node.type === 'SEQUENCE' ||
-        node.type === 'INDEX')
+        node.type === 'INDEX' ||
+        node.type === 'FOREIGN_TABLE')
     ) {
       MetaDataService.generateDDL(datasource.id as string, node.identifier, node.type).then(
         (resp) => {

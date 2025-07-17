@@ -95,4 +95,9 @@ public class JdbcForeignTableHandler extends JdbcTableHandler implements Foreign
     public String getForeignTableRenameDDL(String schema, String tableName, String newName) throws SQLException {
         return generateRenameSQL(schema, tableName, newName);
     }
+
+    @Override
+    public String getForeignTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        return getTableDDL(catalog, schema, tableName);
+    }
 }

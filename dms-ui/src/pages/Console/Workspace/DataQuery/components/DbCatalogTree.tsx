@@ -236,7 +236,7 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         typeArray,
       );
       // console.log('targetList', targetList, node);
-      onLoadData(targetList);
+      onLoadData(targetList as DMS.CatalogTreeNode<string>);
       setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
       setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));
     }
@@ -275,6 +275,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       gSeqMenuItems(node, menuItems);
     } else if (node.type === 'G_INDEX') {
       gIdxMenuItems(node, menuItems);
+    } else if (node.type === 'G_FOREIGN_TABLE') {
+      gFgnTableMenuItems(node, menuItems);
     }
     if (
       node.type.startsWith('G_') &&
@@ -282,7 +284,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       node.type !== 'G_VIEW' &&
       node.type !== 'G_MATERIALIZED_VIEW' &&
       node.type !== 'G_SEQUENCE' &&
-      node.type !== 'G_INDEX'
+      node.type !== 'G_INDEX' &&
+      node.type !== 'G_FOREIGN_TABLE'
     ) {
       refreshMenuItem(node, menuItems);
     }
@@ -325,7 +328,9 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           node.type === 'SEQUENCE' ||
           node.type === 'G_SEQUENCE' ||
           node.type === 'INDEX' ||
-          node.type === 'G_INDEX'
+          node.type === 'G_INDEX' ||
+          node.type === 'G_FOREIGN_TABLE' ||
+          node.type === 'FOREIGN_TABLE'
         ) {
           onCallback(
             intl.formatMessage(
@@ -380,7 +385,8 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
           node.type === 'VIEW' ||
           node.type === 'MATERIALIZED_VIEW' ||
           node.type === 'SEQUENCE' ||
-          node.type === 'INDEX'
+          node.type === 'INDEX' ||
+          node.type === 'FOREIGN_TABLE'
         ) {
           onCallback(node.title, node, 'objInfo', 'edit');
         }
@@ -698,6 +704,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
     dropMenuItem(node, menuItems);
     dividerMenuItem(menuItems);
     scriptMenuItem(node, menuItems, true, false, false, false, false);
+  };
+
+  const gFgnTableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {
+    newMenuItem(node, menuItems);
+    refreshMenuItem(node, menuItems);
   };
 
   const fgnTableMenuItems = (node: DMS.CatalogTreeNode<string>, menuItems: MenuProps['items']) => {

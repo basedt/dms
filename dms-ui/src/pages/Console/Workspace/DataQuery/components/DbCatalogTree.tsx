@@ -786,7 +786,11 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
       case 'CATALOG':
         return (
           <img
-            src={'/images/databases/' + datasource?.datasourceType?.value?.toLowerCase() + '.svg'}
+            src={
+              '/images/databases/' +
+              (datasource?.datasourceType?.value as string).toLowerCase() +
+              '.svg'
+            }
             style={{ width: 16, height: 16 }}
             alt=""
           />

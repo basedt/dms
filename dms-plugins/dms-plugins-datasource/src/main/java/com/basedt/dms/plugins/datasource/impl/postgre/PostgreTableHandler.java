@@ -381,7 +381,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
         return builder.toString();
     }
 
-    private void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
+    protected void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
         if (Objects.nonNull(column)) {
             Type type = typeMapper.toType(column.getDataType());
             builder.append("\t")

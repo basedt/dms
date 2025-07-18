@@ -22,7 +22,6 @@ import org.apache.arrow.vector.ipc.ArrowStreamReader;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +32,10 @@ public interface DataSourcePlugin extends Plugin {
     String JDBC = "jdbc";
 
     List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar", "text", "nchar", "bigint", "int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
+
+    String getDataSourceName();
+
+    void setDataSourceName(String dataSourceName);
 
     String getHostName();
 

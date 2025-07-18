@@ -46,8 +46,8 @@ public class HologresPluginImpl extends PostgrePluginImpl {
         init();
     }
 
-    public HologresPluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(hostName, port, databaseName, userName, password, attributes);
+    public HologresPluginImpl(String dataSourceName,String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName,hostName, port, databaseName, userName, password, attributes);
         init();
     }
 

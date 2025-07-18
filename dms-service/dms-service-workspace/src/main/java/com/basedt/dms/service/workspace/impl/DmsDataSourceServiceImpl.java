@@ -22,12 +22,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.basedt.dms.dao.entity.master.workspace.DmsDataSource;
 import com.basedt.dms.dao.mapper.master.workspace.DmsDataSourceMapper;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import com.basedt.dms.service.base.dto.PageDTO;
 import com.basedt.dms.service.workspace.DmsDataSourceService;
 import com.basedt.dms.service.workspace.convert.DmsDataSourceConvert;
 import com.basedt.dms.service.workspace.dto.DmsDataSourceDTO;
 import com.basedt.dms.service.workspace.param.DmsDataSourceParam;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -51,17 +53,26 @@ public class DmsDataSourceServiceImpl implements DmsDataSourceService {
     @Override
     public void update(DmsDataSourceDTO dataSourceDTO) {
         DmsDataSource dataSource = DmsDataSourceConvert.INSTANCE.toDo(dataSourceDTO);
-        this.dmsDataSourceMapper.updateById(dataSource);
+        if (Objects.nonNull(dataSource.getId())) {
+            this.dmsDataSourceMapper.updateById(dataSource);
+            JdbcUtil.DATA_SOURCE_MAP.remove(String.valueOf(dataSource.getId()));
+        }
     }
 
     @Override
     public void deleteById(Long id) {
-        this.dmsDataSourceMapper.deleteById(id);
+        if (Objects.nonNull(id)) {
+            this.dmsDataSourceMapper.deleteById(id);
+            JdbcUtil.DATA_SOURCE_MAP.remove(String.valueOf(id));
+        }
     }
 
     @Override
     public void deleteBatch(List<Long> idList) {
         this.dmsDataSourceMapper.deleteByIds(idList);
+        if (!CollectionUtils.isEmpty(idList)) {
+            idList.forEach(id -> JdbcUtil.DATA_SOURCE_MAP.remove(String.valueOf(id)));
+        }
     }
 
     @Override

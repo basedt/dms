@@ -51,6 +51,8 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
 
     protected PluginInfo pluginInfo;
 
+    protected String dataSourceName;
+
     protected String hostName;
 
     protected Integer port;
@@ -68,7 +70,8 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     public AbstractDataSourcePlugin() {
     }
 
-    public AbstractDataSourcePlugin(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public AbstractDataSourcePlugin(String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        setDataSourceName(dataSourceName);
         setHostName(hostName);
         setPort(port);
         setDatabaseName(databaseName);
@@ -78,6 +81,7 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
     }
 
     public AbstractDataSourcePlugin(Properties props) {
+        setDataSourceName((String) props.get("dataSourceName"));
         setHostName((String) props.get("hostName"));
         setPort((Integer) props.get("port"));
         setDatabaseName((String) props.get("databaseName"));
@@ -87,6 +91,16 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
                 new TypeReference<Map<String, String>>() {
                 }.getType(), true);
         setAttributes(attrs);
+    }
+
+    @Override
+    public String getDataSourceName() {
+        return this.dataSourceName;
+    }
+
+    @Override
+    public void setDataSourceName(String dataSourceName) {
+        this.dataSourceName = dataSourceName;
     }
 
     @Override
@@ -187,7 +201,7 @@ public abstract class AbstractDataSourcePlugin implements DataSourcePlugin {
 
     @Override
     public DataSource getDataSource() {
-        return JdbcUtil.getDataSource(getJdbcUrl(), getDriverClassName(), getUserName(), getPassword(), getJdbcProps());
+        return JdbcUtil.getDataSource(getDataSourceName(), getJdbcUrl(), getDriverClassName(), getUserName(), getPassword(), getJdbcProps());
     }
 
     protected abstract String getJdbcUrl();

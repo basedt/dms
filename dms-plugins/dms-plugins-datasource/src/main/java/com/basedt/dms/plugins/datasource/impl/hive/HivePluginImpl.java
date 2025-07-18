@@ -51,8 +51,8 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         init();
     }
 
-    public HivePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(hostName, port, databaseName, userName, password, attributes);
+    public HivePluginImpl(String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName, hostName, port, databaseName, userName, password, attributes);
         init();
     }
 
@@ -101,7 +101,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

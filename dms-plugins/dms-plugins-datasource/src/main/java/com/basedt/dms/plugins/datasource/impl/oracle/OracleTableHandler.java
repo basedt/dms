@@ -23,7 +23,11 @@ import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -146,5 +150,36 @@ public class OracleTableHandler extends JdbcTableHandler {
                 " where t.owner = '" + schemaPattern.toUpperCase() + "'" +
                 " and t.table_name = '" + tableName.toUpperCase() + "'";
         return super.listColumnFromTable(sql);
+    }
+
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        String ddl = "";
+        String sql = "SELECT DBMS_METADATA.GET_DDL('TABLE', ?, ?) AS ddl FROM DUAL";
+        Connection conn = dataSource.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, StrUtil.isEmpty(tableName) ? "" : tableName.toUpperCase());
+        ps.setString(2, StrUtil.isEmpty(schema) ? "" : schema.toUpperCase());
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ddl = rs.getString("ddl");
+        }
+        JdbcUtil.close(conn, ps, rs);
+        //create index
+
+        //comments on table
+
+        //comments on columns
+        return ddl;
+    }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        return super.getTableDDL(table);
+    }
+
+    @Override
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
+        return super.getTableDDL(originTable, table);
     }
 }

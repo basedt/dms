@@ -190,6 +190,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
                  ArrowStreamReader reader = new ArrowStreamReader(inputStream, allocator)) {
                 DataSourcePlugin dataSourcePlugin = DataSourcePluginManager.newInstance(
                         StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, dataSourceDTO.getDatasourceType().getValue()).toUpperCase(),
+                        String.valueOf(dataSourceDTO.getId()),
                         dataSourceDTO.getHostName(),
                         dataSourceDTO.getPort(),
                         dataSourceDTO.getDatabaseName(),

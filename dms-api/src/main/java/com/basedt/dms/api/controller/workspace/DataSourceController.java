@@ -157,6 +157,7 @@ public class DataSourceController {
             }
             DataSourcePlugin dataSource = DataSourcePluginManager.newInstance(
                     StrUtil.concat(true, PluginType.DATASOURCE.name(), Constants.SEPARATOR_UNDERLINE, datasourceType).toUpperCase(),
+                    String.valueOf(dataSourceDTO.getId()),
                     dataSourceDTO.getHostName(),
                     dataSourceDTO.getPort(),
                     dataSourceDTO.getDatabaseName(),

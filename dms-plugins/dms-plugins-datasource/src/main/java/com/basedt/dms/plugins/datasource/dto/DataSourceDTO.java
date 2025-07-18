@@ -19,8 +19,6 @@ package com.basedt.dms.plugins.datasource.dto;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
-import com.basedt.dms.common.constant.Constants;
-import com.basedt.dms.common.utils.PropertiesUtil;
 import com.basedt.dms.common.vo.DictVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -28,8 +26,6 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import static com.basedt.dms.plugins.datasource.DataSourcePlugin.JDBC;
 
 @Data
 public class DataSourceDTO {
@@ -63,15 +59,16 @@ public class DataSourceDTO {
 
     public Properties toProperties() {
         Properties props = new Properties();
+        props.put("dataSourceName", String.valueOf(this.id));
         props.put("hostName", this.hostName);
         props.put("port", this.port);
         props.put("databaseName", this.databaseName);
         props.put("userName", this.userName);
         props.put("password", this.password);
         Map<String, String> attrMap = new HashMap<>();
-        if (CollectionUtil.isNotEmpty(attrs)){
+        if (CollectionUtil.isNotEmpty(attrs)) {
             for (Map.Entry<String, Object> entry : this.attrs.entrySet()) {
-                attrMap.put(entry.getKey(),entry.getValue().toString());
+                attrMap.put(entry.getKey(), entry.getValue().toString());
             }
         }
         props.put("attrs", JSONUtil.toJsonStr(attrMap));

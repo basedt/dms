@@ -37,8 +37,6 @@ public class PostgreDataTypeMapper extends JdbcDataTypeMapper {
     static final String FLOAT8 = "float8";
     static final String TIME_TZ = "timetz";
     static final String TIMESTAMP_TZ = "timestamptz";
-    static final String TIMESTAMP_WITH_TIME_ZONE = "timestamp with time zone";
-    static final String TIMESTAMP_WITHOUT_TIME_ZONE = "timestamp without time zone";
     static final String BYTEA = "bytea";
     static final String CHARACTER_VARYING = "character varying";
 

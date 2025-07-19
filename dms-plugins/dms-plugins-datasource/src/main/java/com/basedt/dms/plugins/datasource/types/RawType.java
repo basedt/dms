@@ -15,56 +15,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.basedt.dms.plugins.datasource.enums;
 
-public enum DbDataType {
+package com.basedt.dms.plugins.datasource.types;
 
-    NULL,
-    BOOLEAN,
-    BIT,
-    TINYINT,
-    SMALLINT,
-    INTEGER,
-    BIGINT,
-    REAL,
-    FLOAT,
-    DOUBLE,
-    DECIMAL,
-    NUMERIC,
-    NUMBER,
-    CHAR,
-    VARCHAR,
-    VARCHAR2,
-    NCHAR,
-    NVARCHAR,
-    NVARCHAR2,
-    STRING,
-    TEXT,
-    DATE,
-    TIME,
-    DATETIME,
-    /**
-     * TIMESTAMP WITHOUT TIME ZONE
-     */
-    TIMESTAMP,
-    /**
-     * TIMESTAMP WITH TIME ZONE
-     */
-    TIMESTAMP_TZ,
-    TIME_TZ,
-    JSON,
-    JSONB,
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-    BLOB,
-    CLOB,
-    NCLOB,
-    BINARY,
-    RAW,
-    EXTENSION
-    // STRUCT,
-    // ARRAY,
-    // MAP,
-    // LIST,
-    // UNION
+import java.util.Objects;
+
+@Getter
+@Setter
+public class RawType extends Type.ComplexType {
+
+    private Integer length;
+
+    public RawType(Integer length) {
+        this.length = length;
+    }
+
+    public static RawType get(Integer length) {
+        return new RawType(length);
+    }
+
+    @Override
+    public DbDataType type() {
+        return DbDataType.RAW;
+    }
+
+    @Override
+    public String name() {
+        return "raw";
+    }
+
+    @Override
+    public String formatString() {
+        if (Objects.isNull(length)) {
+            return name();
+        } else {
+            return name() + "(" + length + ")";
+        }
+    }
 
 }

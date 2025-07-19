@@ -31,7 +31,7 @@ public interface DataSourcePlugin extends Plugin {
 
     String JDBC = "jdbc";
 
-    List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar", "text", "nchar", "bigint", "int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
+//    List<String> STD_SQL_TYPES_AND_ALIAS = Arrays.asList("char", "varchar", "text", "nchar", "bigint", "int", "integer", "smallint", "decimal", "numeric", "float", "real", "double precision", "date", "time", "timestamp", "bit", "boolean");
 
     String getDataSourceName();
 

@@ -20,16 +20,20 @@ package com.basedt.dms.plugins.datasource.impl.oracle;
 
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.IndexDTO;
+import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 public class OracleTableHandler extends JdbcTableHandler {
 
@@ -143,10 +147,10 @@ public class OracleTableHandler extends JdbcTableHandler {
                 "    t.column_id as column_ordinal," +
                 "    c.comments as remark" +
                 " from all_tab_columns t" +
-                " left join all_tab_comments c" +
+                " left join all_col_comments c" +
                 " on t.owner = c.owner" +
                 " and t.table_name = c.table_name" +
-                " and t.column_name = c.table_name" +
+                " and t.column_name = c.column_name" +
                 " where t.owner = '" + schemaPattern.toUpperCase() + "'" +
                 " and t.table_name = '" + tableName.toUpperCase() + "'";
         return super.listColumnFromTable(sql);
@@ -154,7 +158,7 @@ public class OracleTableHandler extends JdbcTableHandler {
 
     @Override
     public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
-        String ddl = "";
+        StringBuilder builder = new StringBuilder();
         String sql = "SELECT DBMS_METADATA.GET_DDL('TABLE', ?, ?) AS ddl FROM DUAL";
         Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -162,24 +166,92 @@ public class OracleTableHandler extends JdbcTableHandler {
         ps.setString(2, StrUtil.isEmpty(schema) ? "" : schema.toUpperCase());
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
-            ddl = rs.getString("ddl");
+            builder.append(rs.getString("ddl"))
+                    .append(";");
         }
         JdbcUtil.close(conn, ps, rs);
+        TableDTO tableInfo = getTableDetail(catalog, schema, tableName, DbObjectType.TABLE);
+        tableInfo.setColumns(listColumnsByTable(catalog, schema, tableName));
         //create index
-
+        List<IndexDTO> indexes = indexHandler.listIndexes(catalog, schema, tableName);
+        if (!CollectionUtils.isEmpty(indexes)) {
+            List<ObjectDTO> pks = indexHandler.listPkByTable(catalog, schema, tableName);
+            List<ObjectDTO> fks = indexHandler.listFkByTable(catalog, schema, tableName);
+            //filter pk and fk
+            indexes = indexes.stream().filter(idx -> {
+                for (ObjectDTO pk : pks) {
+                    if (idx.getIndexName().equals(pk.getObjectName())) {
+                        return false;
+                    }
+                }
+                return true;
+            }).filter(idx -> {
+                for (ObjectDTO fk : fks) {
+                    if (idx.getIndexName().equals(fk.getObjectName())) {
+                        return false;
+                    }
+                }
+                return true;
+            }).toList();
+            builder.append("\n-- indexes ");
+            for (IndexDTO idx : indexes) {
+                String idxDDL = indexHandler.getIndexDDL(catalog, schema, tableName, idx.getIndexName());
+                if (StrUtil.isNotEmpty(idxDDL)) {
+                    builder.append("\n")
+                            .append(idxDDL)
+                            .append(";");
+                }
+            }
+        }
+        builder.append("\n-- comments");
         //comments on table
-
+        builder.append(generateTableCommentSQL(tableInfo));
         //comments on columns
-        return ddl;
+        builder.append(generateColumnCommentSQL(tableInfo));
+        return builder.toString();
     }
 
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
-        return super.getTableDDL(table);
+        StringBuilder builder = new StringBuilder();
+        if (Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table"));
+        } else {
+            return builder.toString();
+        }
     }
 
     @Override
     public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
         return super.getTableDDL(originTable, table);
     }
+
+    private String generateTableCommentSQL(TableDTO table) {
+        if (Objects.isNull(table)) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        if (StrUtil.isNotEmpty(table.getRemark())) {
+            builder.append("\n")
+                    .append(StrUtil.format("COMMENT ON TABLE {}.{} IS '{}';",
+                            table.getSchemaName(), table.getTableName(), table.getRemark()));
+        }
+        return builder.toString();
+    }
+
+    private String generateColumnCommentSQL(TableDTO table) {
+        if (Objects.isNull(table) || CollectionUtils.isEmpty(table.getColumns())) {
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        for (ColumnDTO column : table.getColumns()) {
+            if (StrUtil.isNotEmpty(column.getRemark())) {
+                builder.append("\n")
+                        .append(StrUtil.format("COMMENT ON COLUMN {}.{}.{} IS '{}';",
+                                column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
+            }
+        }
+        return builder.toString();
+    }
+
 }

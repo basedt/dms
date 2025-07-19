@@ -54,6 +54,9 @@ public interface DataTypeMapper {
     String BINARY = "binary";
     String VARBINARY = "varbinary";
     String NULL = "null";
+    String TIMESTAMP_WITH_TIME_ZONE = "timestamp with time zone";
+    String TIMESTAMP_WITH_LOCAL_TIME_ZONE = "timestamp with local time zone";
+    String TIMESTAMP_WITHOUT_TIME_ZONE = "timestamp without time zone";
 
 
     /**

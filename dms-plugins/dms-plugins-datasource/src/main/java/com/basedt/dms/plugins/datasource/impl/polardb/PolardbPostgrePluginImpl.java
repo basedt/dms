@@ -24,8 +24,8 @@ public class PolardbPostgrePluginImpl extends PostgrePluginImpl {
         init();
     }
 
-    public PolardbPostgrePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(hostName, port, databaseName, userName, password, attributes);
+    public PolardbPostgrePluginImpl(String dataSourceName,String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName,hostName, port, databaseName, userName, password, attributes);
         init();
     }
 

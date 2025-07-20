@@ -26,39 +26,35 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class DecimalType extends Type.NUMBER {
+public class RawType extends Type.ComplexType {
 
-    private Integer precision;
+    private Integer length;
 
-    private Integer scale;
-
-    public DecimalType(Integer precision, Integer scale) {
-        this.precision = precision;
-        this.scale = scale;
+    public RawType(Integer length) {
+        this.length = length;
     }
 
-    public static DecimalType get(Integer precision, Integer scale) {
-        return new DecimalType(precision, scale);
+    public static RawType get(Integer length) {
+        return new RawType(length);
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.DECIMAL;
+        return DbDataType.RAW;
     }
 
     @Override
     public String name() {
-        return "decimal";
+        return "raw";
     }
 
     @Override
     public String formatString() {
-        if (Objects.nonNull(this.precision) && Objects.nonNull(this.scale) && this.precision > 0) {
-            return name() + "(" + precision + "," + scale + ")";
-        } else if (Objects.nonNull(this.precision) && this.precision > 0) {
-            return name() + "(" + precision + ",0" + ")";
-        } else {
+        if (Objects.isNull(length)) {
             return name();
+        } else {
+            return name() + "(" + length + ")";
         }
     }
+
 }

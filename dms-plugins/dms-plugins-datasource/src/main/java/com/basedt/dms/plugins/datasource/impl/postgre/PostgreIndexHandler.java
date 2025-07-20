@@ -128,7 +128,7 @@ public class PostgreIndexHandler extends JdbcIndexHandler {
         if (!CollectionUtils.isEmpty(pks)) {
             for (ObjectDTO pk : pks) {
                 if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
-                    return StrUtil.format("ALTER TABLE {}.{} ADD CONSTRAINT {} PRIMARY KEY ({});", index.getSchemaName(), index.getTableName(), index.getIndexName(), index.getColumns());
+                    return super.getIndexDDL(index, pks, fks);
                 }
             }
         }

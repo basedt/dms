@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.basedt.dms.plugins.datasource.DataSourcePlugin.STD_SQL_TYPES_AND_ALIAS;
 
 public class JdbcCatalogHandler implements CatalogHandler {
 
@@ -119,10 +118,6 @@ public class JdbcCatalogHandler implements CatalogHandler {
     @Override
     public Map<String, TypeInfoDTO> listDataType() throws SQLException {
         Map<String, TypeInfoDTO> map = new HashMap<>();
-        // sql standard data type
-        STD_SQL_TYPES_AND_ALIAS.forEach(item -> {
-            map.put(item.toLowerCase(), new TypeInfoDTO(item.toLowerCase()));
-        });
         Connection conn = dataSource.getConnection();
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet rs = metaData.getTypeInfo();

@@ -53,9 +53,9 @@ public class NumberType extends Type.NUMBER {
 
     @Override
     public String formatString() {
-        if (Objects.nonNull(this.precision) && Objects.nonNull(this.scale)) {
+        if (Objects.nonNull(this.precision) && Objects.nonNull(this.scale) && this.precision > 0) {
             return name() + "(" + precision + "," + scale + ")";
-        } else if (Objects.nonNull(this.precision)) {
+        } else if (Objects.nonNull(this.precision) && this.precision > 0) {
             return name() + "(" + precision + ",0" + ")";
         } else {
             return name();

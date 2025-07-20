@@ -37,6 +37,7 @@ public enum DbDataType {
     VARCHAR2,
     NCHAR,
     NVARCHAR,
+    NVARCHAR2,
     STRING,
     TEXT,
     DATE,
@@ -58,6 +59,7 @@ public enum DbDataType {
     CLOB,
     NCLOB,
     BINARY,
+    RAW,
     EXTENSION
     // STRUCT,
     // ARRAY,

@@ -25,11 +25,15 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JdbcUtil {
 
     private final static Logger log = LoggerFactory.getLogger(JdbcUtil.class);
+
+    public final static ConcurrentHashMap<String, DataSource> DATA_SOURCE_MAP = new ConcurrentHashMap<>();
 
     public static Connection getConnection(String jdbcUrl, String driverClassName, String userName, String password, Properties attrs) throws ClassNotFoundException, SQLException {
         Class.forName(driverClassName);
@@ -63,20 +67,23 @@ public class JdbcUtil {
         return getConnectionSilently(jdbcUrl, driverClassName, userName, password, props);
     }
 
-    public static DataSource getDataSource(String jdbcUrl, String driverClassName, String userName, String password, Map<String, String> attrs) {
+    public static DataSource getDataSource(String datasourceName, String jdbcUrl, String driverClassName, String userName, String password, Map<String, String> attrs) {
         Properties props = new Properties();
         props.putAll(attrs);
-        return getDataSource(jdbcUrl, driverClassName, userName, password, props);
+        return getDataSource(datasourceName, jdbcUrl, driverClassName, userName, password, props);
     }
 
-    public static DataSource getDataSource(String jdbcUrl, String driverClassName, String userName, String password, Properties attrs) {
+    public static DataSource getDataSource(String datasourceName, String jdbcUrl, String driverClassName, String userName, String password, Properties attrs) {
+        if (Objects.nonNull(datasourceName) && JdbcUtil.DATA_SOURCE_MAP.containsKey(datasourceName)) {
+            return JdbcUtil.DATA_SOURCE_MAP.get(datasourceName);
+        }
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUsername(userName);
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(jdbcUrl);
-        dataSource.setMinIdle(0);
-        dataSource.setMaxActive(5);
+        dataSource.setMinIdle(5);
+        dataSource.setMaxActive(20);
         dataSource.setRemoveAbandoned(true);
         dataSource.setRemoveAbandonedTimeout(5);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
@@ -88,6 +95,7 @@ public class JdbcUtil {
                 log.error("get dataSource error : {}", e.getMessage());
             }
         }
+        JdbcUtil.DATA_SOURCE_MAP.putIfAbsent(datasourceName, dataSource);
         return dataSource;
     }
 

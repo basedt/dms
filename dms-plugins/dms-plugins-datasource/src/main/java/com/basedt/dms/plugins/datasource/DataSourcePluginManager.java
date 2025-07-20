@@ -35,12 +35,13 @@ public class DataSourcePluginManager {
         return loader.newInstance(pluginName, props);
     }
 
-    public static DataSourcePlugin newInstance(PluginInfo pluginInfo, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        return newInstance(pluginInfo.getPluginName(), hostName, port, databaseName, userName, password, attributes);
+    public static DataSourcePlugin newInstance(PluginInfo pluginInfo, String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        return newInstance(pluginInfo.getPluginName(), dataSourceName, hostName, port, databaseName, userName, password, attributes);
     }
 
-    public static DataSourcePlugin newInstance(String pluginName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+    public static DataSourcePlugin newInstance(String pluginName, String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
         Properties props = new Properties();
+        props.put("dataSourceName", dataSourceName);
         props.put("hostName", hostName);
         props.put("port", port);
         props.put("databaseName", databaseName);

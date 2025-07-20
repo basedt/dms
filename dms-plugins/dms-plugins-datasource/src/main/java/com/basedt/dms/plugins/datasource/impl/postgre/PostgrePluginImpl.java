@@ -50,8 +50,8 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
         init();
     }
 
-    public PostgrePluginImpl(String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(hostName, port, databaseName, userName, password, attributes);
+    public PostgrePluginImpl(String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName, hostName, port, databaseName, userName, password, attributes);
         init();
     }
 
@@ -76,7 +76,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         PostgreTableHandler handler = new PostgreTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(), getIndexHandler());
         return handler;
     }
 
@@ -90,7 +90,7 @@ public class PostgrePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         PostgreFgnTableHandler handler = new PostgreFgnTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

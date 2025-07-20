@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TinyintType extends Type.NUMBER{
+public class TinyintType extends Type.NUMBER {
 
     private static final TinyintType INSTANCE = new TinyintType();
 

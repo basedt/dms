@@ -19,11 +19,13 @@
 package com.basedt.dms.plugins.datasource.impl.oracle;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.FK;
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.PK;
@@ -85,6 +88,39 @@ public class OracleIndexHandler extends JdbcIndexHandler {
         }
         JdbcUtil.close(conn, ps, rs);
         return ddl;
+    }
+
+    @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        if (Objects.isNull(index)) {
+            return "";
+        }
+        if (!CollectionUtils.isEmpty(pks)) {
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
+                    return super.getIndexDDL(index, pks, fks);
+                }
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("CREATE")
+                .append(index.getIsUniqueness() ? " UNIQUE" : " ")
+                .append("BITMAP".equals(index.getIndexType()) ? " BITMAP" : " ")
+                .append("INDEX ")
+                .append(index.getIndexName())
+                .append(" ON ")
+                .append(index.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(index.getTableName())
+                .append("(")
+                .append(index.getColumns())
+                .append(");");
+        return builder.toString();
+    }
+
+    @Override
+    public String getDropDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+        return StrUtil.format("DROP INDEX {}.{};", index.getSchemaName(), index.getIndexName());
     }
 
     @Override

@@ -37,6 +37,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/CREATE-INDEX.html
+ */
 @AutoService(DataSourcePlugin.class)
 public class OraclePluginImpl extends AbstractDataSourcePlugin {
 

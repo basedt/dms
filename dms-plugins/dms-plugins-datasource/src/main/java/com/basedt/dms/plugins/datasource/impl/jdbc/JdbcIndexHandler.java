@@ -110,23 +110,28 @@ public class JdbcIndexHandler implements IndexHandler {
 
     @Override
     public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
-        if (Objects.nonNull(index)) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("CREATE ")
-                    .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
-                    .append(index.getIndexName())
-                    .append(" ON ")
-                    .append(index.getSchemaName())
-                    .append(Constants.SEPARATOR_DOT)
-                    .append(index.getTableName())
-                    .append(StrUtil.isNotEmpty(index.getIndexType()) ? " USING " + index.getIndexType() : "")
-                    .append(" (")
-                    .append(index.getColumns())
-                    .append(");");
-            return builder.toString();
-        } else {
+        if (Objects.isNull(index)) {
             return "";
         }
+        if (!CollectionUtils.isEmpty(pks)) {
+            for (ObjectDTO pk : pks) {
+                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
+                    return StrUtil.format("ALTER TABLE {}.{} ADD CONSTRAINT {} PRIMARY KEY ({});", index.getSchemaName(), index.getTableName(), index.getIndexName(), index.getColumns());
+                }
+            }
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("CREATE ")
+                .append(index.getIsUniqueness() ? "UNIQUE INDEX " : "INDEX ")
+                .append(index.getIndexName())
+                .append(" ON ")
+                .append(index.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(index.getTableName())
+                .append(" (")
+                .append(index.getColumns())
+                .append(");");
+        return builder.toString();
     }
 
     @Override

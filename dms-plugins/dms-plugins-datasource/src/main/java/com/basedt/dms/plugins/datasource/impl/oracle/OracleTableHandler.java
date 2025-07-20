@@ -19,12 +19,14 @@
 package com.basedt.dms.plugins.datasource.impl.oracle;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.ObjectDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.types.Type;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import org.springframework.util.CollectionUtils;
 
@@ -213,35 +215,86 @@ public class OracleTableHandler extends JdbcTableHandler {
 
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
-        StringBuilder builder = new StringBuilder();
         if (Objects.isNull(table)) {
             throw new SQLException(StrUtil.format("no such table"));
         } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CREATE TABLE ")
+                    .append(table.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(table.getTableName())
+                    .append(" (\n");
+            if (!CollectionUtils.isEmpty(table.getColumns())) {
+                for (int i = 0; i < table.getColumns().size(); i++) {
+                    generateTableColumnDDL(table.getColumns().get(i), builder);
+                    if (i < table.getColumns().size() - 1) {
+                        builder.append(",\n");
+                    }
+                }
+            }
+            builder.append("\n);");
+            //constraints and indexes
+            List<IndexDTO> indexes = table.getIndexes();
+            if (!CollectionUtils.isEmpty(indexes)) {
+                builder.append("\n-- indexes ");
+                for (IndexDTO index : indexes) {
+                    builder.append("\n")
+                            .append(indexHandler.getIndexDDL(index, table.getPks(), table.getFks()));
+                }
+            }
+            builder.append("\n-- comments");
+            //comments on table
+            builder.append(generateTableCommentSQL(table));
+            //comments on columns
+            builder.append(generateColumnCommentSQL(table));
             return builder.toString();
         }
     }
 
     @Override
-    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
-        return super.getTableDDL(originTable, table);
+    protected String generateAddColumnDDL(ColumnDTO column) {
+        return super.generateAddColumnDDL(column);
     }
 
-    private String generateTableCommentSQL(TableDTO table) {
-        if (Objects.isNull(table)) {
-            return null;
+    @Override
+    protected String generateDropColumnDDL(ColumnDTO column) {
+        return super.generateDropColumnDDL(column);
+    }
+
+    @Override
+    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
+        return super.generateRenameColumnDDL(schema, tableName, columnName, newColumnName);
+    }
+
+    @Override
+    protected String generateAlertColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
+        return StrUtil.format("ALTER TABLE {}.{} MODIFY {} {};", schema, tableName, columnName, newType);
+    }
+
+    @Override
+    protected String generateAlterColumnDefaultValueDDL(String schema, String tableName, String columnName, String columnType, String defaultValue) {
+        return StrUtil.format("ALTER TABLE {}.{} MODIFY {} {} DEFAULT {};",
+                schema, tableName, columnName, columnType, defaultValue);
+    }
+
+    @Override
+    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, boolean nullable) {
+        //  ALTER TABLE PDBADMIN.TEST_02 MODIFY NAME  NULL;
+        if (nullable) {
+            return StrUtil.format("ALTER TABLE {}.{} MODIFY {} NULL;", schema, tableName, columnName);
+        } else {
+            return StrUtil.format("ALTER TABLE {}.{} MODIFY {} NOT NULL;", schema, tableName, columnName);
         }
-        StringBuilder builder = new StringBuilder();
-        if (StrUtil.isNotEmpty(table.getRemark())) {
-            builder.append("\n")
-                    .append(StrUtil.format("COMMENT ON TABLE {}.{} IS '{}';",
-                            table.getSchemaName(), table.getTableName(), table.getRemark()));
-        }
-        return builder.toString();
+    }
+
+    @Override
+    protected String generateColumnCommentDDL(String schema, String tableName, String columnName, String comment) {
+        return super.generateColumnCommentDDL(schema, tableName, columnName, comment);
     }
 
     private String generateColumnCommentSQL(TableDTO table) {
         if (Objects.isNull(table) || CollectionUtils.isEmpty(table.getColumns())) {
-            return null;
+            return "";
         }
         StringBuilder builder = new StringBuilder();
         for (ColumnDTO column : table.getColumns()) {
@@ -252,6 +305,25 @@ public class OracleTableHandler extends JdbcTableHandler {
             }
         }
         return builder.toString();
+    }
+
+    private void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
+        if (Objects.nonNull(column)) {
+            Type type = typeMapper.toType(column.getDataType());
+            builder.append("\t")
+                    .append(column.getColumnName())
+                    .append(" ");
+            if (StrUtil.isNotEmpty(column.getDefaultValue()) && column.getDefaultValue().toLowerCase().contains(".nextval")) {
+                //auto increment
+                builder.append("GENERATED BY DEFAULT AS IDENTITY");
+            } else {
+                builder.append(typeMapper.fromType(type))
+                        .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " +
+                                formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()))
+                        .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                ;
+            }
+        }
     }
 
 }

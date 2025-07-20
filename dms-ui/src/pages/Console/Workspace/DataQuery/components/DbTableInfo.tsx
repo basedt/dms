@@ -774,8 +774,10 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           data={ddlPriview.data}
           handleOk={(isOpen: boolean) => {
             setDdlPriview({ open: isOpen });
-            const nodeParams: string[] = node.identifier.split('.');
-            refreshTableInfo(nodeParams, refreshDDL);
+            if (action === 'edit') {
+              const nodeParams: string[] = node.identifier.split('.');
+              refreshTableInfo(nodeParams, refreshDDL);
+            }
           }}
           handleCancel={() => {
             setDdlPriview({ open: false });

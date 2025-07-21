@@ -20,37 +20,27 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-import java.util.Objects;
+public class BigintUnsignedType extends Type.NUMBER {
 
-public class BinaryType extends Type.ComplexType {
+    private static final BigintUnsignedType INSTANCE = new BigintUnsignedType();
 
-    private Integer length;
-
-    public BinaryType(Integer length) {
-        this.length = length;
-    }
-
-    public static BinaryType get(Integer length) {
-        return new BinaryType(length);
+    public static BigintUnsignedType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.BINARY;
+        return DbDataType.BIGINT_UNSIGNED;
     }
 
     @Override
     public String name() {
-        return "binary";
+        return "bigint unsigned";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length) || length <= 0) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
 
 }

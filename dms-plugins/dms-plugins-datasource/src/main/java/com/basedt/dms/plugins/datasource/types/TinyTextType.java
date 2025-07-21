@@ -20,37 +20,27 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-import java.util.Objects;
+public class TinyTextType extends Type.STRING {
 
-public class BinaryType extends Type.ComplexType {
+    private static final TinyTextType INSTANCE = new TinyTextType();
 
-    private Integer length;
-
-    public BinaryType(Integer length) {
-        this.length = length;
-    }
-
-    public static BinaryType get(Integer length) {
-        return new BinaryType(length);
+    public static TinyTextType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.BINARY;
+        return DbDataType.TINYTEXT;
     }
 
     @Override
     public String name() {
-        return "binary";
+        return "tinytext";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length) || length <= 0) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
 
 }

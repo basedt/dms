@@ -96,4 +96,58 @@ public class MysqlTableHandler extends JdbcTableHandler {
     protected String generateRenameSQL(String schema, String tableName, String newName) {
         return StrUtil.format("rename table {}.{} to {}", schema, tableName, newName);
     }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+       //TODO
+        return super.getTableDDL(table);
+    }
+
+    @Override
+    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
+        //TODO
+        return super.generateRenameColumnDDL(schema, tableName, columnName, newColumnName);
+    }
+
+    @Override
+    protected String generateAlertColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
+        //TODO
+        return super.generateAlertColumnTypeDDL(schema, tableName, columnName, newType);
+    }
+
+    @Override
+    protected String generateAlterColumnDefaultValueDDL(String schema, String tableName, String columnName, String columnType, String defaultValue) {
+        //TODO
+        return super.generateAlterColumnDefaultValueDDL(schema, tableName, columnName, columnType, defaultValue);
+    }
+
+    @Override
+    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, boolean nullable) {
+        //TODO
+        return super.generateAlterColumnNullableDDL(schema, tableName, columnName, nullable);
+    }
+
+    @Override
+    protected String generateTableCommentSQL(TableDTO table) {
+        //TODO
+        return super.generateTableCommentSQL(table);
+    }
+
+    @Override
+    protected String generateAddColumnDDL(ColumnDTO column) {
+        //TODO
+        return super.generateAddColumnDDL(column);
+    }
+
+    @Override
+    protected String generateColumnCommentDDL(String schema, String tableName, String columnName, String comment) {
+        //TODO
+        return super.generateColumnCommentDDL(schema, tableName, columnName, comment);
+    }
+
+    @Override
+    protected String generateDropColumnDDL(ColumnDTO column) {
+        //TODO
+        return super.generateDropColumnDDL(column);
+    }
 }

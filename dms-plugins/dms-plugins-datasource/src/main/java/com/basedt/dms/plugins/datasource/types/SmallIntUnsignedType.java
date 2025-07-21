@@ -19,38 +19,31 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Objects;
+@Getter
+@Setter
+public class SmallIntUnsignedType extends Type.NUMBER {
 
-public class BinaryType extends Type.ComplexType {
+    private static final SmallIntUnsignedType INSTANCE = new SmallIntUnsignedType();
 
-    private Integer length;
-
-    public BinaryType(Integer length) {
-        this.length = length;
-    }
-
-    public static BinaryType get(Integer length) {
-        return new BinaryType(length);
+    public static SmallIntUnsignedType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.BINARY;
+        return DbDataType.SMALLINT_UNSIGNED;
     }
 
     @Override
     public String name() {
-        return "binary";
+        return "smallint unsigned";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length) || length <= 0) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
-
 }

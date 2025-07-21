@@ -64,7 +64,7 @@ public class PostgreDataTypeMapper extends JdbcDataTypeMapper {
             case TIMESTAMP_TZ, TIMESTAMP_WITH_TIME_ZONE -> TimestampWithTimeZoneType.get();
             case JSON -> JsonType.get();
             case JSONB -> JsonbType.get();
-            case BYTEA -> BinaryType.get();
+            case BYTEA -> BinaryType.get(length);
             default -> new ExtensionType(typeName.toLowerCase());
         };
     }

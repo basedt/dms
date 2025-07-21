@@ -81,7 +81,7 @@ public class MysqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         MysqlTableHandler handler = new MysqlTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(),new MysqlDataTypeMapper(),getIndexHandler());
         return handler;
     }
 

@@ -20,37 +20,27 @@ package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-import java.util.Objects;
+public class LongTextType extends Type.STRING {
 
-public class BinaryType extends Type.ComplexType {
+    private static final LongTextType INSTANCE = new LongTextType();
 
-    private Integer length;
-
-    public BinaryType(Integer length) {
-        this.length = length;
-    }
-
-    public static BinaryType get(Integer length) {
-        return new BinaryType(length);
+    public static LongTextType get() {
+        return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.BINARY;
+        return DbDataType.LONGTEXT;
     }
 
     @Override
     public String name() {
-        return "binary";
+        return "longtext";
     }
 
     @Override
     public String formatString() {
-        if (Objects.isNull(length) || length <= 0) {
-            return name();
-        } else {
-            return name() + "(" + length + ")";
-        }
+        return name();
     }
 
 }

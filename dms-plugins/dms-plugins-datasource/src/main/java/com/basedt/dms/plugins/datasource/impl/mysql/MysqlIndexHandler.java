@@ -111,6 +111,18 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+     //TODO
+    return super.getIndexDDL(index, pks, fks);
+    }
+
+    @Override
+    public String getDropDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+//    TODO
+     return super.getDropDDL(index, pks, fks);
+    }
+
+    @Override
     public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         return getConstraint(catalog, schemaPattern, tableName, PK);
     }

@@ -35,7 +35,7 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
         if (JDBCType.BIT.getName().equalsIgnoreCase(typeName)) {
             return BitType.get(length);
         } else if (JDBCType.TINYINT.getName().equalsIgnoreCase(typeName)) {
-            return TinyintType.get();
+            return TinyIntType.get();
         } else if (JDBCType.SMALLINT.getName().equalsIgnoreCase(typeName)) {
             return SmallIntType.get();
         } else if (JDBCType.INTEGER.getName().equalsIgnoreCase(typeName)) {
@@ -63,7 +63,7 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
         } else if (JDBCType.TIMESTAMP.getName().equalsIgnoreCase(typeName)) {
             return TimestampType.get();
         } else if (JDBCType.BINARY.getName().equalsIgnoreCase(typeName)) {
-            return BinaryType.get();
+            return BinaryType.get(length);
         } else if (JDBCType.BLOB.getName().equalsIgnoreCase(typeName) ||
                 JDBCType.VARBINARY.getName().equalsIgnoreCase(typeName) ||
                 JDBCType.LONGVARBINARY.getName().equalsIgnoreCase(typeName)) {
@@ -99,7 +99,7 @@ public class JdbcDataTypeMapper implements DataTypeMapper {
             return JDBCType.BOOLEAN.getName();
         } else if (type instanceof BitType) {
             return JDBCType.BIT.getName();
-        } else if (type instanceof TinyintType) {
+        } else if (type instanceof TinyIntType) {
             return JDBCType.TINYINT.getName();
         } else if (type instanceof SmallIntType) {
             return JDBCType.SMALLINT.getName();

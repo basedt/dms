@@ -79,7 +79,8 @@ public class PostgreTableHandler extends JdbcTableHandler {
                 " t.column_default as default_value," +
                 " coalesce(t.ordinal_position,attr.attnum) as column_ordinal," +
                 " col_description(attr.attrelid, attr.attnum) as remark," +
-                " t.is_nullable as is_nullable" +
+                " t.is_nullable as is_nullable," +
+                " case when lower(t.column_default) like 'nextval(%' then 1 else 0 end as auto_increment" +
                 " from pg_catalog.pg_class c" +
                 " join pg_catalog.pg_namespace n" +
                 " on n.oid = c.relnamespace" +

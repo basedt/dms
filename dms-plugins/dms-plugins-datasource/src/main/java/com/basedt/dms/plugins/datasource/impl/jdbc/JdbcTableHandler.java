@@ -146,6 +146,7 @@ public class JdbcTableHandler implements TableHandler {
             column.setDefaultValue(rs.getString("COLUMN_DEF"));
             column.setColumnOrdinal(rs.getInt("ORDINAL_POSITION"));
             column.setIsNullable(formatString2Bool(rs.getString("IS_NULLABLE")));
+            column.setAutoIncrement(formatString2Bool(rs.getString("IS_AUTOINCREMENT")));
             result.add(column);
         }
         JdbcUtil.close(conn, rs);
@@ -298,6 +299,7 @@ public class JdbcTableHandler implements TableHandler {
             column.setColumnOrdinal(rs.getInt("column_ordinal"));
             column.setRemark(rs.getString("remark"));
             column.setIsNullable(rs.getBoolean("is_nullable"));
+            column.setAutoIncrement(rs.getBoolean("auto_increment"));
             column.setType(typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale()));
             result.add(column);
         }

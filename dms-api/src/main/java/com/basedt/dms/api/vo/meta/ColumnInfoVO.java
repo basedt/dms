@@ -41,5 +41,7 @@ public class ColumnInfoVO implements Serializable {
 
     private Boolean nullable;
 
+    private Boolean autoIncrement;
+
     private Integer ordinal;
 }

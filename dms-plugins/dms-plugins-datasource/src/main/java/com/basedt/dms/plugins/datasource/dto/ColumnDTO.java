@@ -58,6 +58,8 @@ public class ColumnDTO {
 
     private Boolean isNullable;
 
+    private Boolean autoIncrement;
+
     public TreeNodeVO toTreeNodeVO(TreeNodeVO parent) {
         TreeNodeVO nodeVO = new TreeNodeVO();
         String keyStr = getColumnName().toLowerCase();

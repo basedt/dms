@@ -150,6 +150,7 @@ export default {
   'dms.console.workspace.table.columns.default': 'Default Value',
   'dms.console.workspace.table.columns.comment': 'Comment',
   'dms.console.workspace.table.columns.nullable': 'Nullable',
+  'dms.console.workspace.table.columns.autoIncrement': 'Auto Increment',
   'dms.console.workspace.table.indexes': 'Indexes',
   'dms.console.workspace.table.index.name': 'Index Name',
   'dms.console.workspace.table.index.type': 'Type',

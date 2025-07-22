@@ -286,8 +286,13 @@ public class JdbcTableHandler implements TableHandler {
             column.setTableName(rs.getString("table_name"));
             column.setColumnName(rs.getString("column_name"));
             column.setDataType(rs.getString("data_type"));
-            column.setDataLength(rs.getInt("data_length"));
-            column.setDataPrecision(rs.getInt("data_precision"));
+            if (rs.getLong("data_length") >= Integer.MAX_VALUE) {
+                column.setDataLength(null);
+                column.setDataPrecision(null);
+            } else {
+                column.setDataLength(rs.getInt("data_length"));
+                column.setDataPrecision(rs.getInt("data_precision"));
+            }
             column.setDataScale(rs.getInt("data_scale"));
             column.setDefaultValue(rs.getString("default_value"));
             column.setColumnOrdinal(rs.getInt("column_ordinal"));

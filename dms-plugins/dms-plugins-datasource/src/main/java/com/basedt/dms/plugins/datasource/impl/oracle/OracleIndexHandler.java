@@ -119,8 +119,8 @@ public class OracleIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
-    public String getDropDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
-        return StrUtil.format("DROP INDEX {}.{};", index.getSchemaName(), index.getIndexName());
+    protected String generateDropSQL(String schema, String tableName, String indexName) {
+        return StrUtil.format("DROP INDEX {}.{};", schema, indexName);
     }
 
     @Override

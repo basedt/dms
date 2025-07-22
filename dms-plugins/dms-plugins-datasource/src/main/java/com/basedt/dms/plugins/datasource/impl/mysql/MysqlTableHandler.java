@@ -23,8 +23,12 @@ import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
@@ -77,7 +81,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                 " t.character_maximum_length as data_length," +
                 " t.numeric_precision as data_precision," +
                 " t.numeric_scale as data_scale," +
-                " t.column_default as default_value," +
+                " case when t.EXTRA = 'auto_increment' then 'auto_increment' else t.column_default end as default_value," +
                 " t.ordinal_position as column_ordinal," +
                 " t.column_comment as remark," +
                 " case when t.is_nullable = 'YES' then 1 else 0 end as is_nullable" +
@@ -98,8 +102,22 @@ public class MysqlTableHandler extends JdbcTableHandler {
     }
 
     @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        String sql = StrUtil.format("show create table {}.{}", schema, tableName);
+        String ddl = "";
+        Connection conn = dataSource.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        while (rs.next()) {
+            ddl = rs.getString(2);
+        }
+        JdbcUtil.close(conn, st, rs);
+        return ddl + ";";
+    }
+
+    @Override
     public String getTableDDL(TableDTO table) throws SQLException {
-       //TODO
+        //TODO
         return super.getTableDDL(table);
     }
 

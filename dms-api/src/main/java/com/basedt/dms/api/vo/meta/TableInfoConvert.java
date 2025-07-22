@@ -81,7 +81,7 @@ public class TableInfoConvert {
             column.setRemark(StrUtil.nullToEmpty(col.getComment()));
             column.setIsNullable(Objects.nonNull(col.getNullable()) && col.getNullable());
             column.setColumnOrdinal(col.getOrdinal());
-            column.setAutoIncrement(col.getAutoIncrement());
+            column.setAutoIncrement(Objects.nonNull(col.getAutoIncrement()) && col.getAutoIncrement());
             list.add(column);
         }
         return list;

@@ -165,7 +165,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
             builder.append("\t")
                     .append(column.getColumnName())
                     .append(" ");
-            if (StrUtil.isNotEmpty(column.getDefaultValue()) && column.getDefaultValue().toLowerCase().startsWith("nextval")) {
+            if (column.getAutoIncrement()) {
                 //auto increment
                 builder.append("serial NOT NULL");
             } else {

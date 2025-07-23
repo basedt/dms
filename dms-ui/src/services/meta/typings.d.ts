@@ -70,6 +70,7 @@ declare namespace DMS {
     defaultValue: string;
     comment: string;
     nullable: boolean;
+    autoIncrement: boolean;
   };
 
   type Index = {

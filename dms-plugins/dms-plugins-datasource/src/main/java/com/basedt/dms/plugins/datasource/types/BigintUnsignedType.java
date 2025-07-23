@@ -16,32 +16,31 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.api.vo.meta;
+package com.basedt.dms.plugins.datasource.types;
 
-import lombok.Data;
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
 
-import java.io.Serial;
-import java.io.Serializable;
+public class BigintUnsignedType extends Type.NUMBER {
 
-@Data
-public class ColumnInfoVO implements Serializable {
+    private static final BigintUnsignedType INSTANCE = new BigintUnsignedType();
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    public static BigintUnsignedType get() {
+        return INSTANCE;
+    }
 
-    private String id;
+    @Override
+    public DbDataType type() {
+        return DbDataType.BIGINT_UNSIGNED;
+    }
 
-    private String columnName;
+    @Override
+    public String name() {
+        return "bigint unsigned";
+    }
 
-    private String dataType;
+    @Override
+    public String formatString() {
+        return name();
+    }
 
-    private String defaultValue;
-
-    private String comment;
-
-    private Boolean nullable;
-
-    private Boolean autoIncrement;
-
-    private Integer ordinal;
 }

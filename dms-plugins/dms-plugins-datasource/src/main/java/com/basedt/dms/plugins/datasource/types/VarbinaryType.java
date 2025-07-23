@@ -19,29 +19,33 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
-public class BinaryType extends Type.ComplexType {
+@Getter
+@Setter
+public class VarbinaryType extends Type.STRING {
 
     private Integer length;
 
-    public BinaryType(Integer length) {
+    public VarbinaryType(Integer length) {
         this.length = length;
     }
 
-    public static BinaryType get(Integer length) {
-        return new BinaryType(length);
+    public static VarbinaryType get(Integer length) {
+        return new VarbinaryType(length);
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.BINARY;
+        return DbDataType.VARBINARY;
     }
 
     @Override
     public String name() {
-        return "binary";
+        return "varbinary";
     }
 
     @Override
@@ -52,5 +56,4 @@ public class BinaryType extends Type.ComplexType {
             return name() + "(" + length + ")";
         }
     }
-
 }

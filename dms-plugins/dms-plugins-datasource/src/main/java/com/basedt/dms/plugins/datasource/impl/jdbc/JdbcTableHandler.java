@@ -146,6 +146,7 @@ public class JdbcTableHandler implements TableHandler {
             column.setDefaultValue(rs.getString("COLUMN_DEF"));
             column.setColumnOrdinal(rs.getInt("ORDINAL_POSITION"));
             column.setIsNullable(formatString2Bool(rs.getString("IS_NULLABLE")));
+            column.setAutoIncrement(formatString2Bool(rs.getString("IS_AUTOINCREMENT")));
             result.add(column);
         }
         JdbcUtil.close(conn, rs);
@@ -286,13 +287,19 @@ public class JdbcTableHandler implements TableHandler {
             column.setTableName(rs.getString("table_name"));
             column.setColumnName(rs.getString("column_name"));
             column.setDataType(rs.getString("data_type"));
-            column.setDataLength(rs.getInt("data_length"));
-            column.setDataPrecision(rs.getInt("data_precision"));
+            if (rs.getLong("data_length") >= Integer.MAX_VALUE) {
+                column.setDataLength(null);
+                column.setDataPrecision(null);
+            } else {
+                column.setDataLength(rs.getInt("data_length"));
+                column.setDataPrecision(rs.getInt("data_precision"));
+            }
             column.setDataScale(rs.getInt("data_scale"));
             column.setDefaultValue(rs.getString("default_value"));
             column.setColumnOrdinal(rs.getInt("column_ordinal"));
             column.setRemark(rs.getString("remark"));
             column.setIsNullable(rs.getBoolean("is_nullable"));
+            column.setAutoIncrement(rs.getBoolean("auto_increment"));
             column.setType(typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale()));
             result.add(column);
         }
@@ -324,7 +331,7 @@ public class JdbcTableHandler implements TableHandler {
         return defaultValue;
     }
 
-    private String generateAlterIndexDDL(TableDTO originTable, TableDTO table) {
+    protected String generateAlterIndexDDL(TableDTO originTable, TableDTO table) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(table.getIndexes()) && CollectionUtils.isEmpty(originTable.getIndexes())) {
             return builder.toString();
@@ -386,7 +393,7 @@ public class JdbcTableHandler implements TableHandler {
         return builder.toString();
     }
 
-    private String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
+    protected String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(newColumns)) {
             newColumns = List.of();

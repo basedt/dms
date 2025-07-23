@@ -71,7 +71,8 @@ public class MssqlTableHandler extends JdbcTableHandler {
                 "    stuff(stuff(dc.definition, 1, 1, ''), len(dc.definition) - 1, 1, '') as default_value," +
                 "    c.column_id as column_ordinal," +
                 "    ep.value as remark," +
-                "    c.is_nullable as is_nullable" +
+                "    c.is_nullable as is_nullable," +
+                "    case when ic.object_id is not null then 1 else 0 end as auto_increment" +
                 " from sys.all_objects o" +
                 " join sys.schemas s" +
                 " on o.schema_id = s.schema_id" +
@@ -84,7 +85,10 @@ public class MssqlTableHandler extends JdbcTableHandler {
                 " left join sys.types t1" +
                 " on c.user_type_id = t1.user_type_id" +
                 " left join sys.default_constraints dc" +
-                " on c.default_object_id = dc.object_id " +
+                " on c.default_object_id = dc.object_id" +
+                " left join sys.identity_columns ic" +
+                " on c.object_id = ic.object_id " +
+                " and c.column_id = ic.column_id" +
                 " where o.type in ('U','S','IT','V')";
         if (StrUtil.isNotEmpty(schemaPattern)) {
             sql += " and s.name = '" + schemaPattern + "'";

@@ -16,32 +16,34 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.api.vo.meta;
+package com.basedt.dms.plugins.datasource.types;
 
-import lombok.Data;
+import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.io.Serial;
-import java.io.Serializable;
+@Getter
+@Setter
+public class TinyIntType extends Type.NUMBER {
 
-@Data
-public class ColumnInfoVO implements Serializable {
+    private static final TinyIntType INSTANCE = new TinyIntType();
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+    public static TinyIntType get() {
+        return INSTANCE;
+    }
 
-    private String id;
+    @Override
+    public DbDataType type() {
+        return DbDataType.TINYINT;
+    }
 
-    private String columnName;
+    @Override
+    public String name() {
+        return "tinyint";
+    }
 
-    private String dataType;
-
-    private String defaultValue;
-
-    private String comment;
-
-    private Boolean nullable;
-
-    private Boolean autoIncrement;
-
-    private Integer ordinal;
+    @Override
+    public String formatString() {
+        return name();
+    }
 }

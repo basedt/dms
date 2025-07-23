@@ -26,6 +26,7 @@ import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcIndexHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import lombok.SneakyThrows;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -166,5 +167,14 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
     @Override
     public void renameIndex(String schema, String tableName, String indexName, String newName) throws SQLException {
         throw new UnsupportedOperationException("rename index not supported");
+    }
+
+    @Override
+    protected String generateDropConstraintSQL(String schema, String tableName, String constraintName) {
+        if (StrUtil.isEmpty(constraintName) || "PRIMARY".equalsIgnoreCase(constraintName)) {
+            return "";
+        } else {
+            return StrUtil.format("ALTER TABLE {}.{} DROP constraint {};", schema, tableName, constraintName);
+        }
     }
 }

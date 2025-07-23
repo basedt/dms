@@ -148,6 +148,7 @@ export default {
   'dms.console.workspace.table.columns.default': '默认值',
   'dms.console.workspace.table.columns.comment': '注释',
   'dms.console.workspace.table.columns.nullable': '允许空值',
+  'dms.console.workspace.table.columns.autoIncrement': '自增',
   'dms.console.workspace.table.indexes': '索引',
   'dms.console.workspace.table.index.name': '索引名',
   'dms.console.workspace.table.index.type': '类型',

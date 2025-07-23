@@ -19,31 +19,28 @@
 package com.basedt.dms.plugins.datasource.types;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public class TinyintType extends Type.NUMBER {
+public class LongBlobType extends Type.ComplexType {
 
-    private static final TinyintType INSTANCE = new TinyintType();
+    private static final LongBlobType INSTANCE = new LongBlobType();
 
-    public static TinyintType get() {
+    public static LongBlobType get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.TINYINT;
+        return DbDataType.LONGBLOB;
     }
 
     @Override
     public String name() {
-        return "tinyint";
+        return "longblob";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

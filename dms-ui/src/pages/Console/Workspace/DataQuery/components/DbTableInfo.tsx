@@ -246,6 +246,18 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
       },
     },
     {
+      title: intl.formatMessage({ id: 'dms.console.workspace.table.columns.autoIncrement' }),
+      dataIndex: 'autoIncrement',
+      width: 60,
+      align: 'center',
+      render(_, row) {
+        return <Checkbox checked={row.autoIncrement} disabled></Checkbox>;
+      },
+      renderFormItem: () => {
+        return <EditFormCheckbox></EditFormCheckbox>;
+      },
+    },
+    {
       title: intl.formatMessage({ id: 'dms.console.workspace.table.columns.default' }),
       dataIndex: 'defaultValue',
       width: 120,

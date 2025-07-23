@@ -112,27 +112,6 @@ public class MysqlIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
-    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
-        if (Objects.isNull(index)) {
-            return "";
-        }
-        if (!CollectionUtils.isEmpty(pks)) {
-            for (ObjectDTO pk : pks) {
-                if (pk.getObjectName().equalsIgnoreCase(index.getIndexName())) {
-                    if ("PRIMARY".equalsIgnoreCase(index.getIndexName())) {
-                        index.setObjectName("`" + index.getIndexName() + "`");
-                    }
-                    return super.getIndexDDL(index, pks, fks);
-                }
-            }
-        }
-
-        //TODO  需要判断索引列是否自增，
-        // 自增列单独处理，索引列自增列不能删除
-        return super.getIndexDDL(index, pks, fks);
-    }
-
-    @Override
     public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         return getConstraint(catalog, schemaPattern, tableName, PK);
     }

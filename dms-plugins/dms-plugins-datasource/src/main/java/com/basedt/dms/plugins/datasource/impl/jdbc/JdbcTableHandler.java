@@ -331,7 +331,7 @@ public class JdbcTableHandler implements TableHandler {
         return defaultValue;
     }
 
-    private String generateAlterIndexDDL(TableDTO originTable, TableDTO table) {
+    protected String generateAlterIndexDDL(TableDTO originTable, TableDTO table) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(table.getIndexes()) && CollectionUtils.isEmpty(originTable.getIndexes())) {
             return builder.toString();
@@ -393,7 +393,7 @@ public class JdbcTableHandler implements TableHandler {
         return builder.toString();
     }
 
-    private String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
+    protected String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(newColumns)) {
             newColumns = List.of();

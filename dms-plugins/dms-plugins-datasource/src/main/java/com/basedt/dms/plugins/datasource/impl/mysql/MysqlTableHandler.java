@@ -169,11 +169,11 @@ public class MysqlTableHandler extends JdbcTableHandler {
                     }
                 }
             }
-            if (StrUtil.isNotEmpty(table.getRemark())){
+            if (StrUtil.isNotEmpty(table.getRemark())) {
                 builder.append("\n)COMMENT = '")
                         .append(table.getRemark())
                         .append("';");
-            }else {
+            } else {
                 builder.append("\n);");
             }
             return builder.toString();
@@ -181,50 +181,169 @@ public class MysqlTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
-        //TODO
-        return super.generateRenameColumnDDL(schema, tableName, columnName, newColumnName);
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
+        if (Objects.isNull(originTable) && Objects.isNull(table)) {
+            throw new SQLException(StrUtil.format("no such table"));
+        } else if (Objects.isNull(originTable)) {
+            return getTableDDL(table);
+        } else if (Objects.isNull(table)) {
+            return getTableDDL(originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
+        } else if (!originTable.getTableName().equalsIgnoreCase(table.getTableName())) {
+            return getTableDDL(table);
+        } else if (Objects.isNull(originTable.getColumns())) {
+            return getTableDDL(table);
+        } else {
+            //generate alter table script
+            StringBuilder builder = new StringBuilder();
+            boolean tableChange = false;
+            //alter table comment
+            if (!originTable.getRemark().equals(table.getRemark())) {
+                tableChange = true;
+                builder.append(generateTableCommentSQL(table));
+            }
+            //alter table columns
+            String alterColumnDDL = generateAlterColumnDDL(originTable.getColumns(), table.getColumns());
+            if (StrUtil.isNotBlank(alterColumnDDL)) {
+                tableChange = true;
+                builder.append("\n")
+                        .append(alterColumnDDL);
+            }
+            //alter table indexes
+            String alterIndexDDL = generateAlterIndexDDL(originTable, table);
+            if (StrUtil.isNotBlank(alterIndexDDL)) {
+                tableChange = true;
+                builder.append("\n")
+                        .append(alterIndexDDL);
+            }
+            if (!tableChange) {
+                return getTableDDL(table);
+            }
+            return builder.toString();
+        }
     }
 
-    @Override
-    protected String generateAlertColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
-        //TODO
-        return super.generateAlertColumnTypeDDL(schema, tableName, columnName, newType);
-    }
-
-    @Override
-    protected String generateAlterColumnDefaultValueDDL(String schema, String tableName, String columnName, String columnType, String defaultValue) {
-        //TODO
-        return super.generateAlterColumnDefaultValueDDL(schema, tableName, columnName, columnType, defaultValue);
-    }
-
-    @Override
-    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, boolean nullable) {
-        //TODO
-        return super.generateAlterColumnNullableDDL(schema, tableName, columnName, nullable);
+    protected String generateAlterColumnDDL(List<ColumnDTO> originColumns, List<ColumnDTO> newColumns) {
+        StringBuilder builder = new StringBuilder();
+        if (CollectionUtils.isEmpty(newColumns)) {
+            newColumns = List.of();
+        }
+        if (CollectionUtils.isEmpty(originColumns)) {
+            originColumns = List.of();
+        }
+        //add new columns
+        List<ColumnDTO> finalOriginColumns = originColumns;
+        List<ColumnDTO> newList = newColumns.stream().filter(col -> {
+            for (ColumnDTO originCol : finalOriginColumns) {
+                if (col.getId().equals(originCol.getId())) {
+                    return false;
+                }
+            }
+            return true;
+        }).toList();
+        for (ColumnDTO newCol : newList) {
+            builder.append(generateAddColumnDDL(newCol));
+        }
+        //drop columns
+        List<ColumnDTO> finalNewColumns = newColumns;
+        List<ColumnDTO> dropList = originColumns.stream().filter(col -> {
+            for (ColumnDTO newCol : finalNewColumns) {
+                if (col.getId().equals(newCol.getId())) {
+                    return false;
+                }
+            }
+            return true;
+        }).toList();
+        for (ColumnDTO column : dropList) {
+            builder.append("\n")
+                    .append(generateDropColumnDDL(column));
+        }
+        //modify columns
+        for (ColumnDTO column : newColumns) {
+            for (ColumnDTO originCol : originColumns) {
+                if (column.getId().equals(originCol.getId())) {
+                    Type originType = typeMapper.toType(originCol.getDataType());
+                    Type newType = typeMapper.toType(column.getDataType());
+                    boolean isColumnRename = false;
+                    if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
+                        isColumnRename = true;
+                        //ALTER TABLE sample.test_007 CHANGE salary sala decimal(10,2) NULL;
+                        builder.append("\n")
+                                .append("ALTER TABLE ")
+                                .append(originCol.getSchemaName())
+                                .append(Constants.SEPARATOR_DOT)
+                                .append(originCol.getTableName())
+                                .append(" CHANGE ")
+                                .append(originCol.getColumnName())
+                                .append(" ")
+                                .append(column.getColumnName())
+                                .append(" ")
+                                .append(originType.formatString())
+                                .append(Objects.nonNull(originCol.getIsNullable()) && originCol.getIsNullable() ? " NULL" : " NOT NULL")
+                                .append(StrUtil.isNotEmpty(originCol.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(originType, originCol.getDefaultValue()) : "")
+                                .append(StrUtil.isNotEmpty(originCol.getRemark()) ? " COMMENT '" + originCol.getRemark() + "'" : "")
+                                .append(";")
+                        ;
+                    }
+                    if (!originCol.getDefaultValue().equals(column.getDefaultValue()) ||
+                            !originType.formatString().equals(newType.formatString()) ||
+                            !originCol.getIsNullable().equals(column.getIsNullable()) ||
+                            !originCol.getRemark().equals(column.getRemark())
+                    ) {
+                        //ALTER TABLE sample.test_007 MODIFY COLUMN profile_img longblob DEFAULT 111 NOT NULL;
+                        String columnName = isColumnRename ? column.getColumnName() : originCol.getColumnName();
+                        builder.append("\n")
+                                .append("ALTER TABLE ")
+                                .append(originCol.getSchemaName())
+                                .append(Constants.SEPARATOR_DOT)
+                                .append(originCol.getTableName())
+                                .append(" MODIFY COLUMN ")
+                                .append(columnName)
+                                .append(" ")
+                                .append(newType.formatString())
+                                .append(Objects.nonNull(column.getIsNullable()) && column.getIsNullable() ? " NULL" : " NOT NULL")
+                                .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(newType, column.getDefaultValue()) : "")
+                                .append(StrUtil.isNotEmpty(column.getRemark()) ? " COMMENT '" + column.getRemark() + "'" : "")
+                        ;
+                    }
+                }
+            }
+        }
+        return builder.toString();
     }
 
     @Override
     protected String generateTableCommentSQL(TableDTO table) {
-        //TODO
-        return super.generateTableCommentSQL(table);
+        if (Objects.isNull(table)) {
+            return "";
+        }
+        if (StrUtil.isNotEmpty(table.getRemark())) {
+            return StrUtil.format("\nALTER TABLE {}.{} COMMENT = '{}';", table.getSchemaName(), table.getTableName(), table.getRemark());
+        } else {
+            return "";
+        }
     }
 
     @Override
     protected String generateAddColumnDDL(ColumnDTO column) {
-        //TODO
-        return super.generateAddColumnDDL(column);
-    }
-
-    @Override
-    protected String generateColumnCommentDDL(String schema, String tableName, String columnName, String comment) {
-        //TODO
-        return super.generateColumnCommentDDL(schema, tableName, columnName, comment);
+        StringBuilder builer = new StringBuilder();
+        builer.append("\n")
+                .append("ALTER TABLE ")
+                .append(column.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(column.getTableName())
+                .append(" ADD ")
+                .append(column.getColumnName())
+                .append(" ")
+                .append(typeMapper.toType(column.getDataType()).formatString())
+                .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()) : "")
+                .append(StrUtil.isNotEmpty(column.getRemark()) ? " COMMENT '" + column.getRemark() + "'" : "")
+                .append(";");
+        return builer.toString();
     }
 
     @Override
     protected String generateDropColumnDDL(ColumnDTO column) {
-        //TODO
         return super.generateDropColumnDDL(column);
     }
 

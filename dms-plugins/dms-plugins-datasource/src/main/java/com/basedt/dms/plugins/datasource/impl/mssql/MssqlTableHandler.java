@@ -103,4 +103,14 @@ public class MssqlTableHandler extends JdbcTableHandler {
     protected String generateRenameSQL(String schema, String tableName, String newName) {
         return StrUtil.format("exec sp_rename '{}.{}',{},'OBJECT'", schema, tableName, newName);
     }
+
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        return super.getTableDDL(catalog, schema, tableName);
+    }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        return super.getTableDDL(table);
+    }
 }

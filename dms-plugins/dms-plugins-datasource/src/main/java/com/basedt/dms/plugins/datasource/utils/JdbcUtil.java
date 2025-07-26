@@ -82,6 +82,7 @@ public class JdbcUtil {
         dataSource.setPassword(password);
         dataSource.setDriverClassName(driverClassName);
         dataSource.setUrl(jdbcUrl);
+        dataSource.setBreakAfterAcquireFailure(true);
         dataSource.setMinIdle(5);
         dataSource.setMaxActive(20);
         dataSource.setRemoveAbandoned(true);

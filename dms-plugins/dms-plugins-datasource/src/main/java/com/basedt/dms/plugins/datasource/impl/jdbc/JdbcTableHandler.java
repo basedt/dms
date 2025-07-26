@@ -449,6 +449,14 @@ public class JdbcTableHandler implements TableHandler {
                                         originType.formatString(),
                                         formatColumnDefaultValue(originType, column.getDefaultValue())));
                     }
+                    if (!originCol.getIsNullable().equals(column.getIsNullable())) {
+                        builder.append("\n")
+                                .append(generateAlterColumnNullableDDL(originCol.getSchemaName(),
+                                        originCol.getTableName(),
+                                        isColumnRename ? column.getColumnName() : originCol.getColumnName(),
+                                        originType.formatString(),
+                                        column.getIsNullable()));
+                    }
                     if (!originType.formatString().equals(newType.formatString())) {
                         builder.append("\n")
                                 .append(generateAlertColumnTypeDDL(originCol.getSchemaName(), originCol.getTableName(),
@@ -456,13 +464,7 @@ public class JdbcTableHandler implements TableHandler {
                                         newType.formatString()));
                     }
 
-                    if (!originCol.getIsNullable().equals(column.getIsNullable())) {
-                        builder.append("\n")
-                                .append(generateAlterColumnNullableDDL(originCol.getSchemaName(),
-                                        originCol.getTableName(),
-                                        isColumnRename ? column.getColumnName() : originCol.getColumnName(),
-                                        column.getIsNullable()));
-                    }
+
                     if (!originCol.getRemark().equals(column.getRemark())) {
                         builder.append("\n")
                                 .append(generateColumnCommentDDL(originCol.getSchemaName(), originCol.getTableName(),
@@ -489,7 +491,7 @@ public class JdbcTableHandler implements TableHandler {
         return StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} SET DEFAULT {};", schema, tableName, columnName, defaultValue);
     }
 
-    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, boolean nullable) {
+    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName,String columnType, boolean nullable) {
         if (nullable) {
             return StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} SET NOT NULL;", schema, tableName, columnName);
         } else {
@@ -525,7 +527,7 @@ public class JdbcTableHandler implements TableHandler {
                 .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()) : "")
                 .append(";")
         ;
-        if (Objects.nonNull(column.getRemark())) {
+        if (StrUtil.isNotEmpty(column.getRemark())) {
             builder.append("\n")
                     .append(generateColumnCommentDDL(column.getSchemaName(), column.getTableName(), column.getColumnName(), column.getRemark()));
         }

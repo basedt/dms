@@ -52,8 +52,8 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
         init();
     }
 
-    public MssqlPluginImpl(String dataSourceName,String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(dataSourceName,hostName, port, databaseName, userName, password, attributes);
+    public MssqlPluginImpl(String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName, hostName, port, databaseName, userName, password, attributes);
         init();
     }
 
@@ -66,7 +66,6 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     /**
      * https://learn.microsoft.com/zh-cn/sql/connect/jdbc/building-the-connection-url?view=sql-server-ver16&redirectedfrom=MSDN
      */
-
     @Override
     protected String getJdbcUrl() {
         return "jdbc:sqlserver://" + getHostName() + Constants.SEPARATOR_COLON + getPort() + ";databaseName=" + getDatabaseName() + formatJdbcProps();
@@ -82,7 +81,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         MssqlTableHandler handler = new MssqlTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new MssqlDataTypeMapper(), getIndexHandler());
         return handler;
     }
 
@@ -96,7 +95,7 @@ public class MssqlPluginImpl extends AbstractDataSourcePlugin {
     @Override
     public ForeignTableHandler getForeignTableHandler() {
         JdbcForeignTableHandler handler = new JdbcForeignTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

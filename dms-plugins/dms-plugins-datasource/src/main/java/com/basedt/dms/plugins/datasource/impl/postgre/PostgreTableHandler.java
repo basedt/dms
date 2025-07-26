@@ -108,7 +108,7 @@ public class PostgreTableHandler extends JdbcTableHandler {
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
         if (Objects.isNull(table)) {
-            throw new SQLException(StrUtil.format("no such table"));
+            throw new SQLException("no such table ");
         } else {
             StringBuilder builder = new StringBuilder();
             //create table

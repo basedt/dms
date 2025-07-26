@@ -1,11 +1,13 @@
 package com.basedt.dms.plugins.datasource.impl.mssql;
 
 import com.basedt.dms.plugins.datasource.dto.CatalogDTO;
+import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcCatalogHandler;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
@@ -31,4 +33,10 @@ public class MssqlCatalogHandler extends JdbcCatalogHandler {
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());
     }
 
+    @Override
+    public Map<String, TypeInfoDTO> listDataType() throws SQLException {
+        Map<String,TypeInfoDTO> map = super.listDataType();
+        map.entrySet().removeIf((entity)->entity.getKey().contains(" identity"));
+        return map;
+    }
 }

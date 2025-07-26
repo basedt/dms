@@ -92,6 +92,11 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
     }
 
     @Override
+    public String getIndexDDL(IndexDTO index, List<ObjectDTO> pks, List<ObjectDTO> fks) {
+      return super.getIndexDDL(index,pks,fks);
+    }
+
+    @Override
     public List<ObjectDTO> listPkByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
         return getConstraint(catalog, schemaPattern, tableName, PK);
     }
@@ -159,4 +164,5 @@ public class MssqlIndexHandler extends JdbcIndexHandler {
     protected String generateDropSQL(String schema, String tableName, String indexName) {
         return StrUtil.format("DROP INDEX {} ON {}.{}", indexName, schema, tableName);
     }
+
 }

@@ -1,13 +1,18 @@
 package com.basedt.dms.plugins.datasource.impl.mssql;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
+import com.basedt.dms.plugins.datasource.dto.IndexDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.types.Type;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
 
@@ -111,6 +116,74 @@ public class MssqlTableHandler extends JdbcTableHandler {
 
     @Override
     public String getTableDDL(TableDTO table) throws SQLException {
-        return super.getTableDDL(table);
+        if (Objects.isNull(table)) {
+            throw new SQLException("no such table");
+        } else {
+            StringBuilder builder = new StringBuilder();
+            //create table
+            builder.append("CREATE TABLE ")
+                    .append(table.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(table.getTableName())
+                    .append(" (\n");
+            if (!CollectionUtils.isEmpty(table.getColumns())){
+                for (int i=0;i<table.getColumns().size();i++){
+                    generateTableColumnDDL(table.getColumns().get(i), builder);
+                    if (i < table.getColumns().size() - 1) {
+                        builder.append(",\n");
+                    }
+                }
+            }
+            builder.append("\n);");
+            //constraints and indexes
+            if (!CollectionUtils.isEmpty(table.getIndexes())){
+                builder.append("\n")
+                        .append("-- constraint and index");
+                for (IndexDTO index:table.getIndexes()){
+                    builder.append("\n")
+                            .append(indexHandler.getIndexDDL(index, table.getPks(), table.getFks()));
+                }
+            }
+            //comment on table
+            builder.append("\n")
+                    .append("-- comments");
+            if (StrUtil.isNotEmpty(table.getRemark())){
+                builder.append("\n")
+                        .append(StrUtil.format("EXEC sys.sp_addextendedproperty 'MS_Description', N'{}', 'schema', N'{}', 'table', N'{}';",
+                                table.getRemark(),table.getSchemaName(),table.getTableName()));
+            }
+            //comment on columns
+            if (!CollectionUtils.isEmpty(table.getColumns())){
+                for (ColumnDTO column : table.getColumns()) {
+                    if (StrUtil.isNotEmpty(column.getRemark())) {
+                        builder.append("\n")
+                                .append(StrUtil.format("EXEC sys.sp_addextendedproperty 'MS_Description', N'{}', 'schema', N'{}', 'table', N'{}', 'column', N'{}';",
+                                        column.getRemark(), column.getSchemaName(), column.getTableName(), column.getColumnName()));
+                    }
+                }
+            }
+            return builder.toString();
+        }
     }
+
+    protected void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
+        if (Objects.nonNull(column)) {
+            Type type = typeMapper.toType(column.getDataType());
+            builder.append("\t")
+                    .append(column.getColumnName())
+                    .append(" ");
+            if (column.getAutoIncrement()) {
+                //auto increment
+                builder.append(typeMapper.fromType(type))
+                        .append(" IDENTITY NOT NULL");
+            } else {
+                builder.append(typeMapper.fromType(type))
+                        .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " +
+                                formatColumnDefaultValue(type, column.getDefaultValue()))
+                        .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                ;
+            }
+        }
+    }
+
 }

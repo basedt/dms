@@ -23,8 +23,12 @@ import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgreObjectTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgreTableHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class HologresTableHandler extends PostgreTableHandler {
@@ -58,5 +62,29 @@ public class HologresTableHandler extends PostgreTableHandler {
             sql += " and c.relname = '" + tablePattern + "'";
         }
         return super.listTableFromDB(sql);
+    }
+
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        String sql = StrUtil.format("select hg_dump_script('{}.{}')", schema, tableName);
+        String ddl = "";
+        Connection conn = dataSource.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        while (rs.next()) {
+            ddl = rs.getString(1);
+        }
+        JdbcUtil.close(conn, st, rs);
+        return ddl;
+    }
+
+    @Override
+    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
+        return "Not supported yet.";
+    }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        return "Not supported yet.";
     }
 }

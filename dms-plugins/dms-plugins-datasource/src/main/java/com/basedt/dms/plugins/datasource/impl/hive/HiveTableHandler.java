@@ -5,12 +5,16 @@ import com.basedt.dms.common.utils.DateTimeUtil;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.thrift.TException;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +60,26 @@ public class HiveTableHandler extends JdbcTableHandler {
         } catch (TException e) {
             throw new SQLException(e.getMessage());
         }
+    }
 
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        String sql = StrUtil.format("show create table {}.{}", schema, tableName);
+        StringBuilder ddl = new StringBuilder();
+        Connection conn = dataSource.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        while (rs.next()) {
+            ddl.append(rs.getString(1))
+                    .append("\n");
+        }
+        JdbcUtil.close(conn, st, rs);
+        return ddl.append(";").toString();
+    }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        //TODO
+        return super.getTableDDL(table);
     }
 }

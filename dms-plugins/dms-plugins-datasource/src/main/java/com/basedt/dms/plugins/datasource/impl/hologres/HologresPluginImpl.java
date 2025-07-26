@@ -25,7 +25,7 @@ import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.DataSourcePlugin;
 import com.basedt.dms.plugins.datasource.TableHandler;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
+import com.basedt.dms.plugins.datasource.impl.postgre.PostgreDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.postgre.PostgrePluginImpl;
 import com.google.auto.service.AutoService;
 
@@ -60,7 +60,7 @@ public class HologresPluginImpl extends PostgrePluginImpl {
     @Override
     public TableHandler getTableHandler() {
         HologresTableHandler handler = new HologresTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(), getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new PostgreDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

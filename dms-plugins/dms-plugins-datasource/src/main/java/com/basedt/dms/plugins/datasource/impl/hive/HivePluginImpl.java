@@ -68,12 +68,6 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
     }
 
     @Override
-    public Boolean isSupportRowEdit() {
-        return false;
-    }
-
-
-    @Override
     public CatalogHandler getCatalogHandler() {
         HiveCatalogHandler handler = new HiveCatalogHandler();
         handler.initialize(getDataSource(), new HashMap<>(), getDatabaseName());
@@ -85,7 +79,7 @@ public class HivePluginImpl extends AbstractDataSourcePlugin {
         HiveTableHandler handler = new HiveTableHandler();
         Map<String, String> config = new HashMap<>();
         config.put(METASTORE_URIS, this.attributes.get(METASTORE_URIS));
-        handler.initialize(getDataSource(), config, new JdbcDataTypeMapper(), getIndexHandler());
+        handler.initialize(getDataSource(), config, new HiveDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

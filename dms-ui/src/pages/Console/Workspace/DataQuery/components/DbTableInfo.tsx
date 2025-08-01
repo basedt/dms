@@ -728,7 +728,6 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
               layout="vertical"
               form={form}
               onBlur={() => {
-                console.log('form change');
                 refreshDDL();
               }}
             >

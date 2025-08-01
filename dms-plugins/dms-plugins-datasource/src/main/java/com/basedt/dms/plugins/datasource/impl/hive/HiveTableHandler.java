@@ -140,7 +140,7 @@ public class HiveTableHandler extends JdbcTableHandler {
                         .append(alterColumnDDL);
             }
             if (!tableChange) {
-                return getTableDDL(table);
+                return getTableDDL(originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
             }
             return builder.toString();
         }

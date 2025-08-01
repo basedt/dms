@@ -79,11 +79,6 @@ public class HologresTableHandler extends PostgreTableHandler {
     }
 
     @Override
-    public String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException {
-        return "Not supported yet.";
-    }
-
-    @Override
     public String getTableDDL(TableDTO table) throws SQLException {
         return "Not supported yet.";
     }

@@ -244,7 +244,7 @@ public class JdbcTableHandler implements TableHandler {
                         .append(alterIndexDDL);
             }
             if (!tableChange) {
-                return getTableDDL(table);
+                return getTableDDL(originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
             }
             return builder.toString();
         }
@@ -339,6 +339,8 @@ public class JdbcTableHandler implements TableHandler {
         }
         if (StrUtil.isNotEmpty(defaultValue) && type instanceof Type.STRING && !defaultValue.startsWith("'")) {
             if (defaultValue.endsWith(")")) {
+                return defaultValue;
+            } else if ("CURRENT_TIMESTAMP".equalsIgnoreCase(defaultValue)) {
                 return defaultValue;
             } else {
                 return "'" + defaultValue + "'";

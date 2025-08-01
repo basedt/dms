@@ -23,7 +23,6 @@ import com.basedt.dms.plugins.core.PluginInfo;
 import com.basedt.dms.plugins.core.PluginType;
 import com.basedt.dms.plugins.datasource.*;
 import com.basedt.dms.plugins.datasource.enums.DataSourceType;
-import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcDataTypeMapper;
 import com.basedt.dms.plugins.datasource.impl.mysql.MysqlPluginImpl;
 import com.google.auto.service.AutoService;
 
@@ -47,8 +46,8 @@ public class DorisPluginImpl extends MysqlPluginImpl {
         init();
     }
 
-    public DorisPluginImpl(String dataSourceName,String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
-        super(dataSourceName,hostName, port, databaseName, userName, password, attributes);
+    public DorisPluginImpl(String dataSourceName, String hostName, Integer port, String databaseName, String userName, String password, Map<String, String> attributes) {
+        super(dataSourceName, hostName, port, databaseName, userName, password, attributes);
         init();
     }
 
@@ -89,7 +88,7 @@ public class DorisPluginImpl extends MysqlPluginImpl {
     @Override
     public TableHandler getTableHandler() {
         DorisTableHandler handler = new DorisTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(),new JdbcDataTypeMapper(),getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new DorisDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

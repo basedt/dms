@@ -163,7 +163,6 @@ public class MysqlTableHandler extends JdbcTableHandler {
                             .append(" (")
                             .append(index.getColumns())
                             .append(")");
-                    //判断是主键还是普通索引
                     if (i < table.getIndexes().size() - 1) {
                         builder.append(",\n");
                     }
@@ -216,7 +215,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                         .append(alterIndexDDL);
             }
             if (!tableChange) {
-                return getTableDDL(table);
+                return getTableDDL(originTable.getCatalogName(), originTable.getSchemaName(), originTable.getTableName());
             }
             return builder.toString();
         }
@@ -266,22 +265,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                     boolean isColumnRename = false;
                     if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
                         isColumnRename = true;
-                        builder.append("\n")
-                                .append("ALTER TABLE ")
-                                .append(originCol.getSchemaName())
-                                .append(Constants.SEPARATOR_DOT)
-                                .append(originCol.getTableName())
-                                .append(" CHANGE ")
-                                .append(originCol.getColumnName())
-                                .append(" ")
-                                .append(column.getColumnName())
-                                .append(" ")
-                                .append(originType.formatString())
-                                .append(Objects.nonNull(originCol.getIsNullable()) && originCol.getIsNullable() ? " NULL" : " NOT NULL")
-                                .append(StrUtil.isNotEmpty(originCol.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(originType, originCol.getDefaultValue()) : "")
-                                .append(StrUtil.isNotEmpty(originCol.getRemark()) ? " COMMENT '" + originCol.getRemark() + "'" : "")
-                                .append(";")
-                        ;
+                        builder.append(generateRenameColumnDDL(originCol, column));
                     }
                     if (!originCol.getDefaultValue().equalsIgnoreCase(column.getDefaultValue()) ||
                             !originType.formatString().equalsIgnoreCase(newType.formatString()) ||
@@ -301,6 +285,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                                 .append(Objects.nonNull(column.getIsNullable()) && column.getIsNullable() ? " NULL" : " NOT NULL")
                                 .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(newType, column.getDefaultValue()) : "")
                                 .append(StrUtil.isNotEmpty(column.getRemark()) ? " COMMENT '" + column.getRemark() + "'" : "")
+                                .append(";")
                         ;
                     }
                 }
@@ -383,5 +368,26 @@ public class MysqlTableHandler extends JdbcTableHandler {
                         .append("'");
             }
         }
+    }
+
+    protected String generateRenameColumnDDL(ColumnDTO originCol, ColumnDTO column) {
+        StringBuilder builder = new StringBuilder();
+        Type originType = typeMapper.toType(originCol.getDataType());
+        builder.append("\n")
+                .append("ALTER TABLE ")
+                .append(originCol.getSchemaName())
+                .append(Constants.SEPARATOR_DOT)
+                .append(originCol.getTableName())
+                .append(" CHANGE ")
+                .append(originCol.getColumnName())
+                .append(" ")
+                .append(column.getColumnName())
+                .append(" ")
+                .append(originType.formatString())
+                .append(Objects.nonNull(originCol.getIsNullable()) && originCol.getIsNullable() ? " NULL" : " NOT NULL")
+                .append(StrUtil.isNotEmpty(originCol.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(originType, originCol.getDefaultValue()) : "")
+                .append(StrUtil.isNotEmpty(originCol.getRemark()) ? " COMMENT '" + originCol.getRemark() + "'" : "")
+                .append(";");
+        return builder.toString();
     }
 }

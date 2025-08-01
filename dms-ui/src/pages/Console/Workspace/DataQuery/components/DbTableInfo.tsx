@@ -724,7 +724,14 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
       <div style={{ maxHeight: maxHeight - 36, overflowY: 'auto' }}>
         <div style={{ padding: '0px 6px', textAlign: 'left' }}>
           <Spin spinning={loading}>
-            <Form layout="vertical" form={form}>
+            <Form
+              layout="vertical"
+              form={form}
+              onBlur={() => {
+                console.log('form change');
+                refreshDDL();
+              }}
+            >
               <Tabs
                 className="dbtabs"
                 items={[

@@ -27,9 +27,9 @@ const DdlConfirmModal: React.FC<
                 id: 'dms.common.message.operate.success',
               }),
             );
+            handleOk?.(false);
           }
         });
-        handleOk?.(false);
         setLoading(false);
       }}
       onCancel={handleCancel}

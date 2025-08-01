@@ -231,7 +231,7 @@ public class MssqlTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName, String columnType) {
+    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
         return StrUtil.format("EXEC sys.sp_rename N'{}.{}.{}' , N'{}', 'COLUMN';", schema, tableName, columnName, newColumnName);
     }
 

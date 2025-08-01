@@ -272,8 +272,8 @@ public class OracleTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName, String columnType) {
-        return super.generateRenameColumnDDL(schema, tableName, columnName, newColumnName, columnType);
+    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
+        return super.generateRenameColumnDDL(schema, tableName, columnName, newColumnName);
     }
 
     @Override

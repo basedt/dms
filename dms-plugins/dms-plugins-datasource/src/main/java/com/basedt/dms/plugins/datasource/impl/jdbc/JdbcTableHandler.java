@@ -449,14 +449,14 @@ public class JdbcTableHandler implements TableHandler {
             for (ColumnDTO originCol : originColumns) {
                 if (column.getId().equals(originCol.getId())) {
                     boolean isColumnRename = false;
+                    Type originType = typeMapper.toType(originCol.getDataType());
+                    Type newType = typeMapper.toType(column.getDataType());
                     if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
                         builder.append("\n")
                                 .append(generateRenameColumnDDL(originCol.getSchemaName(), originCol.getTableName(),
-                                        originCol.getColumnName(), column.getColumnName()));
+                                        originCol.getColumnName(), column.getColumnName(), originType.formatString()));
                         isColumnRename = true;
                     }
-                    Type originType = typeMapper.toType(originCol.getDataType());
-                    Type newType = typeMapper.toType(column.getDataType());
                     if (!originCol.getDefaultValue().equals(column.getDefaultValue())) {
                         builder.append("\n")
                                 .append(generateAlterColumnDefaultValueDDL(
@@ -494,7 +494,7 @@ public class JdbcTableHandler implements TableHandler {
         return builder.toString();
     }
 
-    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName) {
+    protected String generateRenameColumnDDL(String schema, String tableName, String columnName, String newColumnName, String columnType) {
         return StrUtil.format("ALTER TABLE {}.{} RENAME COLUMN {} TO {};",
                 schema, tableName, columnName, newColumnName);
     }

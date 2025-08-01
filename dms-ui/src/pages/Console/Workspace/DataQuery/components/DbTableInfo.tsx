@@ -283,23 +283,25 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           >
             {intl.formatMessage({ id: 'dms.common.operate.update' })}
           </a>
-          <Popconfirm
-            key="delete"
-            title={intl.formatMessage({
-              id: 'dms.common.operate.delete.confirm.title',
-            })}
-            onConfirm={() => {
-              const tabData: DMS.Column[] = form.getFieldValue('columnsTable');
-              form.setFieldValue(
-                'columnsTable',
-                tabData.filter((item) => item.id !== row?.id),
-              );
-            }}
-          >
-            <a href="#" style={{ color: 'red' }}>
-              {intl.formatMessage({ id: 'dms.common.operate.delete' })}
-            </a>
-          </Popconfirm>
+          {datasource.datasourceType?.value !== 'apachehive' && (
+            <Popconfirm
+              key="delete"
+              title={intl.formatMessage({
+                id: 'dms.common.operate.delete.confirm.title',
+              })}
+              onConfirm={() => {
+                const tabData: DMS.Column[] = form.getFieldValue('columnsTable');
+                form.setFieldValue(
+                  'columnsTable',
+                  tabData.filter((item) => item.id !== row?.id),
+                );
+              }}
+            >
+              <a href="#" style={{ color: 'red' }}>
+                {intl.formatMessage({ id: 'dms.common.operate.delete' })}
+              </a>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },

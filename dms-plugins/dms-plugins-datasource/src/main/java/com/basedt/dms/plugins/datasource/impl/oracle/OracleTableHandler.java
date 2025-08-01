@@ -288,7 +288,7 @@ public class OracleTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName,String columnType, boolean nullable) {
+    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, String columnType, boolean nullable) {
         //  ALTER TABLE PDBADMIN.TEST_02 MODIFY NAME  NULL;
         if (nullable) {
             return StrUtil.format("ALTER TABLE {}.{} MODIFY {} NULL;", schema, tableName, columnName);

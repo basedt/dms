@@ -132,6 +132,21 @@ public class JdbcTableHandler implements TableHandler {
         Connection conn = dataSource.getConnection();
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet rs = metaData.getColumns(catalog, schemaPattern, tableName, null);
+        //hive compatible
+        ResultSetMetaData rsMeta = rs.getMetaData();
+        int columnCnt = rsMeta.getColumnCount();
+        List<String> columnNames = new ArrayList<>();
+        for (int i = 1; i <= columnCnt; i++) {
+            columnNames.add(rsMeta.getColumnName(i));
+        }
+        String autoIncrementColumnName = "IS_AUTOINCREMENT";
+        for (String columnName : columnNames) {
+            if ("IS_AUTOINCREMENT".equals(columnName) || "IS_AUTO_INCREMENT".equals(columnName)) {
+                autoIncrementColumnName = columnName;
+                break;
+            }
+        }
+
         List<ColumnDTO> result = new ArrayList<>();
         while (rs.next()) {
             ColumnDTO column = new ColumnDTO();
@@ -146,7 +161,8 @@ public class JdbcTableHandler implements TableHandler {
             column.setDefaultValue(rs.getString("COLUMN_DEF"));
             column.setColumnOrdinal(rs.getInt("ORDINAL_POSITION"));
             column.setIsNullable(formatString2Bool(rs.getString("IS_NULLABLE")));
-            column.setAutoIncrement(formatString2Bool(rs.getString("IS_AUTOINCREMENT")));
+            column.setAutoIncrement(formatString2Bool(rs.getString(autoIncrementColumnName)));
+            column.setType(typeMapper.toType(column.getDataType(), column.getDataLength(), column.getDataPrecision(), column.getDataScale()));
             result.add(column);
         }
         JdbcUtil.close(conn, rs);
@@ -433,14 +449,14 @@ public class JdbcTableHandler implements TableHandler {
             for (ColumnDTO originCol : originColumns) {
                 if (column.getId().equals(originCol.getId())) {
                     boolean isColumnRename = false;
+                    Type originType = typeMapper.toType(originCol.getDataType());
+                    Type newType = typeMapper.toType(column.getDataType());
                     if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
                         builder.append("\n")
                                 .append(generateRenameColumnDDL(originCol.getSchemaName(), originCol.getTableName(),
                                         originCol.getColumnName(), column.getColumnName()));
                         isColumnRename = true;
                     }
-                    Type originType = typeMapper.toType(originCol.getDataType());
-                    Type newType = typeMapper.toType(column.getDataType());
                     if (!originCol.getDefaultValue().equals(column.getDefaultValue())) {
                         builder.append("\n")
                                 .append(generateAlterColumnDefaultValueDDL(
@@ -491,7 +507,7 @@ public class JdbcTableHandler implements TableHandler {
         return StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} SET DEFAULT {};", schema, tableName, columnName, defaultValue);
     }
 
-    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName,String columnType, boolean nullable) {
+    protected String generateAlterColumnNullableDDL(String schema, String tableName, String columnName, String columnType, boolean nullable) {
         if (nullable) {
             return StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} SET NOT NULL;", schema, tableName, columnName);
         } else {

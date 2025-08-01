@@ -266,7 +266,6 @@ public class MysqlTableHandler extends JdbcTableHandler {
                     boolean isColumnRename = false;
                     if (!column.getColumnName().equalsIgnoreCase(originCol.getColumnName())) {
                         isColumnRename = true;
-                        //ALTER TABLE sample.test_007 CHANGE salary sala decimal(10,2) NULL;
                         builder.append("\n")
                                 .append("ALTER TABLE ")
                                 .append(originCol.getSchemaName())
@@ -284,12 +283,11 @@ public class MysqlTableHandler extends JdbcTableHandler {
                                 .append(";")
                         ;
                     }
-                    if (!originCol.getDefaultValue().equals(column.getDefaultValue()) ||
-                            !originType.formatString().equals(newType.formatString()) ||
+                    if (!originCol.getDefaultValue().equalsIgnoreCase(column.getDefaultValue()) ||
+                            !originType.formatString().equalsIgnoreCase(newType.formatString()) ||
                             !originCol.getIsNullable().equals(column.getIsNullable()) ||
-                            !originCol.getRemark().equals(column.getRemark())
+                            !originCol.getRemark().equalsIgnoreCase(column.getRemark())
                     ) {
-                        //ALTER TABLE sample.test_007 MODIFY COLUMN profile_img longblob DEFAULT 111 NOT NULL;
                         String columnName = isColumnRename ? column.getColumnName() : originCol.getColumnName();
                         builder.append("\n")
                                 .append("ALTER TABLE ")
@@ -325,8 +323,8 @@ public class MysqlTableHandler extends JdbcTableHandler {
 
     @Override
     protected String generateAddColumnDDL(ColumnDTO column) {
-        StringBuilder builer = new StringBuilder();
-        builer.append("\n")
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n")
                 .append("ALTER TABLE ")
                 .append(column.getSchemaName())
                 .append(Constants.SEPARATOR_DOT)
@@ -339,7 +337,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                 .append(StrUtil.isNotEmpty(column.getDefaultValue()) ? " DEFAULT " + formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()) : "")
                 .append(StrUtil.isNotEmpty(column.getRemark()) ? " COMMENT '" + column.getRemark() + "'" : "")
                 .append(";");
-        return builer.toString();
+        return builder.toString();
     }
 
     @Override

@@ -29,7 +29,7 @@ import java.util.Map;
 
 public interface TableHandler {
 
-    void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper,IndexHandler indexHandler);
+    void initialize(DataSource dataSource, Map<String, String> config, DataTypeMapper typeMapper, IndexHandler indexHandler);
 
     List<TableDTO> listTables(String catalog, String schemaPattern, String tablePattern) throws SQLException;
 
@@ -54,4 +54,6 @@ public interface TableHandler {
     String getTableDDL(TableDTO table) throws SQLException;
 
     String getTableDDL(TableDTO originTable, TableDTO table) throws SQLException;
+
+    boolean isTableChanged(TableDTO originTable, TableDTO table);
 }

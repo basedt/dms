@@ -45,6 +45,12 @@ export const MetaDataService = {
       data: param,
     });
   },
+  isTableChanged(param: DMS.TableEditParam) {
+    return request<DMS.ResponseBody<boolean>>(`${MetaDataService.url}/table/isChange`, {
+      method: 'PUT',
+      data: param,
+    });
+  },
   renameObject(dataSourceId: number | string, identifier: string, type: string, newName: string) {
     const objInfo: string[] = identifier.split('.') as string[];
     if (

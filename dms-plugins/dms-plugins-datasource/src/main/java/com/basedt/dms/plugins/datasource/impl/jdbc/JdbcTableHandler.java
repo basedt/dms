@@ -19,6 +19,7 @@
 package com.basedt.dms.plugins.datasource.impl.jdbc;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.common.constant.Constants;
 import com.basedt.dms.common.utils.DateTimeUtil;
@@ -250,6 +251,56 @@ public class JdbcTableHandler implements TableHandler {
         }
     }
 
+    @Override
+    public boolean isTableChanged(TableDTO originTable, TableDTO table) {
+        if (Objects.isNull(originTable) || Objects.isNull(table)) {
+            return false;
+        } else if (!originTable.getTableName().equalsIgnoreCase(table.getTableName())) {
+            return false;
+        } else {
+            if (!originTable.getRemark().equals(table.getRemark())) {
+                return true;
+            }
+            if (Objects.nonNull(originTable.getColumns()) && Objects.nonNull(table.getColumns())) {
+                if (originTable.getColumns().size() != table.getColumns().size()) {
+                    return true;
+                }
+                for (int i = 0; i < originTable.getColumns().size(); i++) {
+                    ColumnDTO originColumn = originTable.getColumns().get(i);
+                    ColumnDTO column = table.getColumns().get(i);
+                    Type originType = typeMapper.toType(originColumn.getDataType());
+                    Type newType = typeMapper.toType(column.getDataType());
+                    if (!StrUtil.equals(originColumn.getColumnName(), column.getColumnName()) ||
+                            !StrUtil.equals(originType.formatString(), newType.formatString()) ||
+                            !StrUtil.equals(originColumn.getDefaultValue(), column.getDefaultValue()) ||
+                            !StrUtil.equals(originColumn.getRemark(), column.getRemark()) ||
+                            !ObjUtil.equals(originColumn.getIsNullable(), column.getIsNullable()) ||
+                            !ObjUtil.equals(originColumn.getAutoIncrement(), column.getAutoIncrement())
+                    ) {
+                        return true;
+                    }
+                }
+                if (Objects.nonNull(originTable.getIndexes()) && Objects.nonNull(table.getIndexes())) {
+                    if (originTable.getIndexes().size() != table.getIndexes().size()) {
+                        return true;
+                    }
+                    for (int i = 0; i < originTable.getIndexes().size(); i++) {
+                        IndexDTO originIdx = originTable.getIndexes().get(i);
+                        IndexDTO idx = table.getIndexes().get(i);
+                        if (!StrUtil.equals(originIdx.getIndexName(), idx.getIndexName()) ||
+                                !StrUtil.equals(originIdx.getIndexType(), idx.getIndexType()) ||
+                                !StrUtil.equals(originIdx.getColumns(), idx.getColumns()) ||
+                                !Objects.equals(originIdx.getIsUniqueness(), idx.getIsUniqueness())
+                        ) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     protected String generateDropSQL(String schema, String tableName) {
         return StrUtil.format("DROP TABLE {}.{}", schema, tableName);
     }
@@ -401,7 +452,7 @@ public class JdbcTableHandler implements TableHandler {
                                     !originIdx.getColumns().equals(newIdx.getColumns()) ||
                                     !originIdx.getIndexType().equals(newIdx.getIndexType()))) {
                         builder.append("\n")
-                                .append(indexHandler.getDropDDL(newIdx, originTable.getPks(), originTable.getFks()));
+                                .append(indexHandler.getDropDDL(originIdx, originTable.getPks(), originTable.getFks()));
                         builder.append("\n")
                                 .append(indexHandler.getIndexDDL(newIdx, table.getPks(), table.getFks()));
                     }

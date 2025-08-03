@@ -57,12 +57,13 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
   const [dataTypeOptions, setDataTypeOptions] = useState<AutoCompleteProps['options']>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [columnEnum, setColumnEnum] = useState<Map<string, string>>();
-  const [ddlPriview, setDdlPriview] = useState<
+  const [ddlPreview, setDdlPreview] = useState<
     DMS.ModalProps<{ workspaceId: string | number; dataSourceId: string | number; script: string }>
   >({
     open: false,
   });
   const [script, setScript] = useState<string>('');
+  const [isTableChanged, setIsTableChanged] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
@@ -81,6 +82,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     }
     if (action === 'create') {
       form.setFieldsValue({ schemaName: nodeParams[1], tableName: 'newTable' });
+      refreshDDL();
       setLoading(false);
     }
   }, []);
@@ -96,7 +98,6 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
         if (resp.success) {
           const table: DMS.Table = resp.data as DMS.Table;
           originTableRef.current = table;
-          // setOriginTable(table);
           form.setFieldsValue({
             schemaName: table.schemaName,
             tableName: table.tableName,
@@ -113,7 +114,6 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
         setLoading(false);
       })
       .catch((e) => {
-        console.log(e);
         setLoading(false);
       });
   };
@@ -151,6 +151,15 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
         }).then((resp) => {
           if (resp.success) {
             setScript(resp.data || '');
+          }
+        });
+        MetaDataService.isTableChanged({
+          dataSourceId: datasource.id as string,
+          originTable: originTableRef.current as DMS.Table,
+          newTable: { ...originTableRef.current, ...tableInfo },
+        }).then((resp) => {
+          if (resp.success) {
+            setIsTableChanged(resp.data || false);
           }
         });
       }
@@ -295,6 +304,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                   'columnsTable',
                   tabData.filter((item) => item.id !== row?.id),
                 );
+                refreshDDL();
               }}
             >
               <a href="#" style={{ color: 'red' }}>
@@ -462,6 +472,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                 'indexTable',
                 idxData.filter((item) => item.id !== row?.id),
               );
+              refreshDDL();
             }}
           >
             <a href="#" style={{ color: 'red' }}>
@@ -624,6 +635,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
       ),
     },
   ];
+
   const partitionsTable = () => {
     return (
       <>
@@ -659,6 +671,16 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
     );
   };
 
+  const isConfirmDisabled = () => {
+    if (action === 'create') {
+      return false;
+    } else if (action === 'edit') {
+      return !isTableChanged;
+    } else {
+      return true;
+    }
+  };
+
   return (
     <div>
       <div
@@ -672,6 +694,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
             size="small"
             type="primary"
             style={{ height: 22, fontSize: 12, marginLeft: 6 }}
+            disabled={isConfirmDisabled()}
             onClick={() => {
               setLoading(true);
               form
@@ -684,7 +707,7 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     columns: values.columnsTable,
                     indexes: values.indexTable,
                   };
-                  setDdlPriview({
+                  setDdlPreview({
                     open: true,
                     data: {
                       workspaceId: workspaceId,
@@ -788,19 +811,19 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
           </Spin>
         </div>
       </div>
-      {ddlPriview.open && (
+      {ddlPreview.open && (
         <DdlConfirmModal
-          open={ddlPriview.open}
-          data={ddlPriview.data}
+          open={ddlPreview.open}
+          data={ddlPreview.data}
           handleOk={(isOpen: boolean) => {
-            setDdlPriview({ open: isOpen });
+            setDdlPreview({ open: isOpen });
             if (action === 'edit') {
               const nodeParams: string[] = node.identifier.split('.');
               refreshTableInfo(nodeParams, refreshDDL);
             }
           }}
           handleCancel={() => {
-            setDdlPriview({ open: false });
+            setDdlPreview({ open: false });
           }}
         ></DdlConfirmModal>
       )}

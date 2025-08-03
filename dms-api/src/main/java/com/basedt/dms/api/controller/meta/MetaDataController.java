@@ -124,8 +124,6 @@ public class MetaDataController {
     }
 
     /**
-     * todo 判断是普通表还是外部表
-     *
      * @param param
      * @return
      * @throws DmsException
@@ -151,6 +149,19 @@ public class MetaDataController {
         }
         return new ResponseEntity<>(ResponseVO.success(sqlScript), HttpStatus.OK);
     }
+
+    @AuditLogging
+    @PutMapping(path = "table/isChange")
+    @Operation(summary = "get table info", description = "get table info")
+    @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
+    public ResponseEntity<ResponseVO<Boolean>> isTableChanged(@Validate @RequestBody final TableEditVO param) throws DmsException {
+        DmsDataSourceDTO dto = this.dmsDataSourceService.selectOne(param.getDataSourceId());
+        boolean result = metaDataService.isTableChanged(DataSourceConvert.toDataSource(dto),
+                TableInfoConvert.toTableDTO(param.getOriginTable()),
+                TableInfoConvert.toTableDTO(param.getNewTable()));
+        return new ResponseEntity<>(ResponseVO.success(result), HttpStatus.OK);
+    }
+
 
     @AuditLogging
     @GetMapping(path = "/obj/table/rename")

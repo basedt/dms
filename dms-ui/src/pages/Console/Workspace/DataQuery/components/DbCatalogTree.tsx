@@ -235,7 +235,6 @@ const DbCatalogTreeView: React.FC<DbCatalogTreeViewProps> = (props) => {
         updateTree(node, expandedParentKeys),
         typeArray,
       );
-      // console.log('targetList', targetList, node);
       onLoadData(targetList as DMS.CatalogTreeNode<string>);
       setExpandedParentKeys(updateTree({ ...node, expanded: true }, expandedParentKeys));
       setExpandedKeys(getAllIds(updateTree({ ...node, expanded: true }, expandedParentKeys)));

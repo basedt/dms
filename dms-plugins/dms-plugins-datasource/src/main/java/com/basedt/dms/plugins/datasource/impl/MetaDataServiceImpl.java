@@ -506,6 +506,12 @@ public class MetaDataServiceImpl implements MetaDataService {
     }
 
     @Override
+    public boolean isTableChanged(DataSourceDTO dataSource, TableDTO originTable, TableDTO table) {
+        DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);
+        return dataSourcePlugin.getTableHandler().isTableChanged(originTable, table);
+    }
+
+    @Override
     public void renameDbObject(DataSourceDTO dataSource, String catalog, String schemaName, String objectType, String objectName, String newName) throws DmsException {
         try {
             DataSourcePlugin dataSourcePlugin = getDataSourcePluginInstance(dataSource);

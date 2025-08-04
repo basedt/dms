@@ -16,30 +16,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class Int8Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final Int8Type INSTANCE = new Int8Type();
 
-    public static StringType get() {
+    public static Int8Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.TINYINT;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "Int8";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

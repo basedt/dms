@@ -773,7 +773,9 @@ const DbTableInfoView: React.FC<DbTableInfoProps> = (props) => {
                     key: 'indexes',
                     label: intl.formatMessage({ id: 'dms.console.workspace.table.indexes' }),
                     children: indexesTable(),
-                    disabled: datasource.datasourceType?.value === 'apachehive',
+                    disabled:
+                      datasource.datasourceType?.value === 'apachehive' ||
+                      datasource.datasourceType?.value === 'clickhouse',
                     forceRender: true,
                   },
                   // {

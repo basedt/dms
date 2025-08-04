@@ -16,30 +16,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class UInt16Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final UInt16Type INSTANCE = new UInt16Type();
 
-    public static StringType get() {
+    public static UInt16Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.SMALLINT_UNSIGNED;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "UInt16";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

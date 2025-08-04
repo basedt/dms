@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,30 +18,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class Float32Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final Float32Type INSTANCE = new Float32Type();
 
-    public static StringType get() {
+    public static Float32Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.FLOAT;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "Float32";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

@@ -4,8 +4,12 @@ import cn.hutool.core.util.StrUtil;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
@@ -48,5 +52,19 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
             sql += " and t.table_name = '" + tablePattern + "'";
         }
         return super.listTableFromDB(sql);
+    }
+
+    @Override
+    public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
+        String sql = StrUtil.format("show create table {}.{}", schema, tableName);
+        String ddl = "";
+        Connection conn = dataSource.getConnection();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        while (rs.next()) {
+            ddl = rs.getString(1);
+        }
+        JdbcUtil.close(conn, st, rs);
+        return ddl;
     }
 }

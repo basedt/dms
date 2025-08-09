@@ -277,7 +277,7 @@ public class OracleTableHandler extends JdbcTableHandler {
     }
 
     @Override
-    protected String generateAlertColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
+    protected String generateAlterColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
         return StrUtil.format("ALTER TABLE {}.{} MODIFY {} {};", schema, tableName, columnName, newType);
     }
 

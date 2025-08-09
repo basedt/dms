@@ -528,7 +528,7 @@ public class JdbcTableHandler implements TableHandler {
                     }
                     if (!originType.formatString().equals(newType.formatString())) {
                         builder.append("\n")
-                                .append(generateAlertColumnTypeDDL(originCol.getSchemaName(), originCol.getTableName(),
+                                .append(generateAlterColumnTypeDDL(originCol.getSchemaName(), originCol.getTableName(),
                                         isColumnRename ? column.getColumnName() : originCol.getColumnName(),
                                         newType.formatString()));
                     }
@@ -552,7 +552,7 @@ public class JdbcTableHandler implements TableHandler {
                 schema, tableName, columnName, newColumnName);
     }
 
-    protected String generateAlertColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
+    protected String generateAlterColumnTypeDDL(String schema, String tableName, String columnName, String newType) {
         return StrUtil.format("ALTER TABLE {}.{} ALTER COLUMN {} TYPE {};", schema, tableName, columnName, newType);
     }
 

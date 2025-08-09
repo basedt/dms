@@ -185,7 +185,7 @@ public class DorisTableHandler extends MysqlTableHandler {
                 builder.append(typeMapper.fromType(type))
                         .append(column.getIsNullable() ? " NULL" : " NOT NULL")
                         .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " +
-                                formatColumnDefaultValue(typeMapper.toType(column.getDataType()), column.getDefaultValue()));
+                                formatColumnDefaultValue(type, column.getDefaultValue()));
             }
             if (StrUtil.isNotEmpty(column.getRemark())) {
                 builder.append(" COMMENT '")

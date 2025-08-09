@@ -15,31 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
+import lombok.Getter;
+import lombok.Setter;
 
-public class StringType extends Type.STRING{
+@Getter
+@Setter
+public class Decimal64Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private Integer scale;
 
-    public static StringType get() {
-        return INSTANCE;
+    public Decimal64Type(Integer scale) {
+        this.scale = scale;
+    }
+
+    public static Decimal64Type get(Integer scale) {
+        return new Decimal64Type(scale);
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.DECIMAL;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "Decimal64";
     }
 
     @Override
     public String formatString() {
-        return name();
+        return "Decimal64(" + scale + ")";
     }
 }

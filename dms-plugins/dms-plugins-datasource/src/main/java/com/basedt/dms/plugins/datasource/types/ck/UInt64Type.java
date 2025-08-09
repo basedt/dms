@@ -16,30 +16,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class UInt64Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final UInt64Type INSTANCE = new UInt64Type();
 
-    public static StringType get() {
+    public static UInt64Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.BIGINT_UNSIGNED;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "UInt64";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

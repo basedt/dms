@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,30 +17,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class UInt128Type extends Type.NUMBER {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final UInt128Type INSTANCE = new UInt128Type();
 
-    public static StringType get() {
+    public static UInt128Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.UINT128;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "UInt128";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

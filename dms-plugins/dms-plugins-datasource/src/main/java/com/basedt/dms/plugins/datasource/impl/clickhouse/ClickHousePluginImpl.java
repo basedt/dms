@@ -78,7 +78,7 @@ public class ClickHousePluginImpl extends AbstractDataSourcePlugin {
     @Override
     public TableHandler getTableHandler() {
         ClickHouseTableHandler handler = new ClickHouseTableHandler();
-        handler.initialize(getDataSource(), new HashMap<>(), new JdbcDataTypeMapper(), getIndexHandler());
+        handler.initialize(getDataSource(), new HashMap<>(), new ClickHouseDataTypeMapper(), getIndexHandler());
         return handler;
     }
 

@@ -16,30 +16,39 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
+import lombok.Getter;
+import lombok.Setter;
 
-public class StringType extends Type.STRING{
+@Getter
+@Setter
+public class FixedStringType extends Type.STRING {
 
-    private static final StringType INSTANCE = new StringType();
+    private Integer length;
 
-    public static StringType get() {
-        return INSTANCE;
+    public FixedStringType(Integer length) {
+        this.length = length;
+    }
+
+    public static FixedStringType get(Integer length) {
+        return new FixedStringType(length);
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.CHAR;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "FixedString";
     }
 
     @Override
     public String formatString() {
-        return name();
+        return "FixedString(" + length + ")";
     }
 }

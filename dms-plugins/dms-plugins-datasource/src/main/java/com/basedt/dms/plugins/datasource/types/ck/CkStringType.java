@@ -15,16 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class CkStringType extends Type.STRING {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final CkStringType INSTANCE = new CkStringType();
 
-    public static StringType get() {
+    public static CkStringType get() {
         return INSTANCE;
     }
 
@@ -35,7 +35,7 @@ public class StringType extends Type.STRING{
 
     @Override
     public String name() {
-        return "string";
+        return "String";
     }
 
     @Override

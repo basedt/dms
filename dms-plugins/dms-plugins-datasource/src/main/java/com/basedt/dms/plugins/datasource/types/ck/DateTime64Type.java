@@ -16,30 +16,32 @@
  * limitations under the License.
  */
 
-package com.basedt.dms.plugins.datasource.types;
+package com.basedt.dms.plugins.datasource.types.ck;
 
 import com.basedt.dms.plugins.datasource.enums.DbDataType;
+import com.basedt.dms.plugins.datasource.types.Type;
 
-public class StringType extends Type.STRING{
+public class DateTime64Type extends Type.DATE {
 
-    private static final StringType INSTANCE = new StringType();
+    private static final DateTime64Type INSTANCE = new DateTime64Type();
 
-    public static StringType get() {
+    public static DateTime64Type get() {
         return INSTANCE;
     }
 
     @Override
     public DbDataType type() {
-        return DbDataType.STRING;
+        return DbDataType.TINYINT;
     }
 
     @Override
     public String name() {
-        return "string";
+        return "DateTime32";
     }
 
     @Override
     public String formatString() {
         return name();
     }
+
 }

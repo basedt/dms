@@ -2,15 +2,15 @@ package com.basedt.dms.plugins.datasource.impl.clickhouse;
 
 import com.basedt.dms.plugins.datasource.dto.CatalogDTO;
 import com.basedt.dms.plugins.datasource.dto.SchemaDTO;
+import com.basedt.dms.plugins.datasource.dto.TypeInfoDTO;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcCatalogHandler;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.*;
@@ -51,5 +51,24 @@ public class ClickHouseCatalogHandler extends JdbcCatalogHandler {
             add(FUNCTION.name());
         }};
         return list.stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, TypeInfoDTO> listDataType() throws SQLException {
+        Map<String, TypeInfoDTO> map = new HashMap<>();
+        Connection conn = dataSource.getConnection();
+        DatabaseMetaData metaData = conn.getMetaData();
+        ResultSet rs = metaData.getTypeInfo();
+        while (rs.next()) {
+            TypeInfoDTO typeInfo = new TypeInfoDTO();
+            typeInfo.setTypeName(rs.getString("TYPE_NAME"));
+            typeInfo.setDataType(rs.getInt("DATA_TYPE"));
+            typeInfo.setPrecision(rs.getInt("PRECISION"));
+            typeInfo.setLocalTypeName(rs.getString("LOCAL_TYPE_NAME"));
+            typeInfo.setAutoIncrement(rs.getBoolean("AUTO_INCREMENT"));
+            map.put(typeInfo.getTypeName(), typeInfo);
+        }
+        JdbcUtil.close(conn, rs);
+        return map;
     }
 }

@@ -37,13 +37,13 @@
 
     <developers>
         <developer>
-            <name>gleiyu</name>
+            <name>Gleiyu</name>
             <email>gleiyu@sina.cn</email>
         </developer>
     </developers>
 
     <properties>
-        <reversion>v1.0.3-SNAPSHOT</reversion>
+        <reversion>v1.1.0</reversion>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

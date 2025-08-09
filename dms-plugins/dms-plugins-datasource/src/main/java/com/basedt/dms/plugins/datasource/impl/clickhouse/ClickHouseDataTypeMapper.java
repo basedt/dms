@@ -122,7 +122,7 @@ public class ClickHouseDataTypeMapper extends JdbcDataTypeMapper {
                 && !formatedTypeName.contains(",")) {
             ColumnDTO column = new ColumnDTO();
             column.setDataType(StrUtil.subBefore(formatedTypeName, "(", false));
-            column.setDataScale(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(")"))));
+            column.setDataScale(Integer.parseInt(StrUtil.sub(formatedTypeName, formatedTypeName.indexOf("(") + 1, formatedTypeName.indexOf(")")).trim()));
             return column;
         } else {
             return super.toColumnDTO(formatedTypeName);

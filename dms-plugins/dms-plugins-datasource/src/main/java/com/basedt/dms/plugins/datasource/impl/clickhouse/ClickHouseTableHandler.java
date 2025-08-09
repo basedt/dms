@@ -60,6 +60,24 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
     }
 
     @Override
+    public List<ColumnDTO> listColumnsByTable(String catalog, String schemaPattern, String tableName) throws SQLException {
+        List<ColumnDTO> columns = super.listColumnsByTable(catalog, schemaPattern, tableName);
+        if (!CollectionUtils.isEmpty(columns)) {
+            for (ColumnDTO col : columns) {
+                if (col.getDataType().startsWith("Nullable")) {
+                    String dataType = StrUtil.sub(col.getDataType(),
+                            StrUtil.indexOf(col.getDataType(), '(', 0) + 1,
+                            StrUtil.lastIndexOf(col.getDataType(), ")", 0, false));
+                    col.setDataType(dataType);
+                    col.setIsNullable(true);
+                    col.setType(typeMapper.toType(dataType));
+                }
+            }
+        }
+        return columns;
+    }
+
+    @Override
     public String getTableDDL(String catalog, String schema, String tableName) throws SQLException {
         String sql = StrUtil.format("show create table {}.{}", schema, tableName);
         String ddl = "";
@@ -101,7 +119,7 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
                     .append("ORDER BY (")
                     .append(orderCol)
                     .append(")");
-            if (StrUtil.isNotEmpty(table.getRemark())){
+            if (StrUtil.isNotEmpty(table.getRemark())) {
                 builder.append("\n")
                         .append("COMMENT '")
                         .append(table.getRemark())
@@ -130,4 +148,8 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
         }
     }
 
+    @Override
+    protected String generateRenameSQL(String schema, String tableName, String newName) {
+        return StrUtil.format("RENAME TABLE {}.{} TO {}", schema, tableName, newName);
+    }
 }

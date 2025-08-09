@@ -1,16 +1,21 @@
 package com.basedt.dms.plugins.datasource.impl.clickhouse;
 
 import cn.hutool.core.util.StrUtil;
+import com.basedt.dms.common.constant.Constants;
+import com.basedt.dms.plugins.datasource.dto.ColumnDTO;
 import com.basedt.dms.plugins.datasource.dto.TableDTO;
 import com.basedt.dms.plugins.datasource.enums.DbObjectType;
 import com.basedt.dms.plugins.datasource.impl.jdbc.JdbcTableHandler;
+import com.basedt.dms.plugins.datasource.types.Type;
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 
 import static com.basedt.dms.plugins.datasource.enums.DbObjectType.TABLE;
 
@@ -67,4 +72,62 @@ public class ClickHouseTableHandler extends JdbcTableHandler {
         JdbcUtil.close(conn, st, rs);
         return ddl;
     }
+
+    @Override
+    public String getTableDDL(TableDTO table) throws SQLException {
+        if (Objects.isNull(table)) {
+            throw new SQLException("no such table");
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("CREATE TABLE IF NOT EXISTS ")
+                    .append(table.getSchemaName())
+                    .append(Constants.SEPARATOR_DOT)
+                    .append(table.getTableName())
+                    .append(" (\n");
+            String orderCol = "";
+            if (!CollectionUtils.isEmpty(table.getColumns())) {
+                for (int i = 0; i < table.getColumns().size(); i++) {
+                    generateTableColumnDDL(table.getColumns().get(i), builder);
+                    if (i < table.getColumns().size() - 1) {
+                        builder.append(",\n");
+                    }
+                }
+                orderCol = table.getColumns().get(0).getColumnName();
+            }
+            builder.append("\n)");
+            builder.append("\n")
+                    .append("ENGINE = MergeTree")
+                    .append("\n")
+                    .append("ORDER BY (")
+                    .append(orderCol)
+                    .append(")");
+            if (StrUtil.isNotEmpty(table.getRemark())){
+                builder.append("\n")
+                        .append("COMMENT '")
+                        .append(table.getRemark())
+                        .append("'");
+            }
+            builder.append(";");
+            return builder.toString();
+        }
+    }
+
+    private void generateTableColumnDDL(ColumnDTO column, StringBuilder builder) {
+        if (Objects.nonNull(column)) {
+            Type type = typeMapper.toType(column.getDataType());
+            builder.append("\t")
+                    .append(column.getColumnName())
+                    .append(" ")
+                    .append(typeMapper.fromType(type))
+                    .append(column.getIsNullable() ? " NULL" : " NOT NULL")
+                    .append(StrUtil.isEmpty(column.getDefaultValue()) ? "" : " DEFAULT " +
+                            formatColumnDefaultValue(type, column.getDefaultValue()));
+            if (StrUtil.isNotEmpty(column.getRemark())) {
+                builder.append(" COMMENT '")
+                        .append(column.getRemark())
+                        .append("'");
+            }
+        }
+    }
+
 }

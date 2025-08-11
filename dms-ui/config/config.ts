@@ -8,7 +8,8 @@ const { REACT_APP_ENV = 'dev' } = process.env;
 
 const socketServerMap = {
   dev: 'http://localhost:8366/sql',
-  pre: 'http://dms-backend:8366/sql',
+  pre: 'http://localhost:8366/sql',
+  // pre: 'http://dms-backend:8366/sql',
 };
 
 export default defineConfig({

@@ -59,7 +59,7 @@ services:
       - 9001:9001
     networks:
       - dms
-  dms_backend:
+  dms-backend:
     image: basedt/dms-backend
     profiles: [ "prod" ]
     container_name: dms_backend
@@ -71,18 +71,18 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://dms_backend:8080/dms/api/health/status" ]
+      test: [ "CMD", "curl", "-f", "http://dms-backend:8080/dms/api/health/status" ]
     ports:
       - 8080:8080
       - 8366:8366
     networks:
       - dms
-  dms_frontend:
+  dms-frontend:
     image: basedt/dms-frontend
     profiles: [ "prod" ]
     container_name: dms_frontend
     depends_on:
-      dms_backend:
+      dms-backend:
         condition: service_healthy
     ports:
       - 80:80

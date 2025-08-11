@@ -123,14 +123,14 @@ spring:
             password: 123456
             maxActive: 20
   mail:
-    host: dms-backend
+    host: localhost
     username: dms
     password: 123456
     port: 25
     default-encoding: UTF-8
 
 socket.io:
-  host: dms-backend
+  host: localhost
   port: 8366
   workerThreads: 100
 

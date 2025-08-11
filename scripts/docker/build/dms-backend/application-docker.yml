@@ -25,7 +25,7 @@ spring:
         driver-class-name: org.postgresql.Driver
         username: root
         password: 123456
-        url: jdbc:postgresql://dms_postgres:5432/dms
+        url: jdbc:postgresql://db:5432/dms
         initial-size: 5
         max-active: 30
         min-idle: 5
@@ -58,7 +58,7 @@ spring:
         driver-class-name: org.postgresql.Driver
         username: root
         password: 123456
-        url: jdbc:postgresql://dms_postgres:5432/dms
+        url: jdbc:postgresql://db:5432/dms
         initial-size: 5
         max-active: 30
         min-idle: 5
@@ -87,7 +87,7 @@ spring:
   data:
     redis:
       database: 0
-      host: dms_redis
+      host: redis
       port: 6379
       password: 123456
       timeout: 5000
@@ -118,7 +118,7 @@ spring:
         dataSource:
           quartzDS:
             driverClassName: org.postgresql.Driver
-            url: jdbc:postgresql://dms_postgres:5432/dms
+            url: jdbc:postgresql://db:5432/dms
             username: root
             password: 123456
             maxActive: 20
@@ -135,7 +135,7 @@ socket.io:
   workerThreads: 100
 
 minio:
-  endpoint: http://dms_minio:9000
+  endpoint: http://minio:9000
   accessKey: admin
   secretKey: password
   bucketName: dms

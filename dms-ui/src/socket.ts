@@ -1,5 +1,6 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 
-export const SqlSocketCreator = () => io("http://localhost:8366/sql", {
-  transports: ["websocket"],
-});
+export const SqlSocketCreator = () =>
+  io(process.env.SOCKET_IO_SERVER, {
+    transports: ['websocket'],
+  });

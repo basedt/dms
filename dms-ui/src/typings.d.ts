@@ -18,7 +18,7 @@ declare module 'react-fittext';
 declare module 'bizcharts-plugin-slider';
 declare module 'react-cookies';
 
-declare const REACT_APP_ENV: 'test' | 'dev' | 'pre' | false;
+declare const REACT_APP_ENV: 'dev' | 'test' | 'pre' | false;
 declare module 'monaco-editor/esm/vs/basic-languages/sql/sql';
 declare module '@ant-design/icons';
 declare module '@ant-design/x';

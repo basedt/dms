@@ -22,4 +22,10 @@ export default {
       changeOrigin: true,
     },
   },
+  test: {
+    '/api/': {
+      target: 'http://localhost:8080/dms',
+      changeOrigin: true,
+    },
+  },
 };

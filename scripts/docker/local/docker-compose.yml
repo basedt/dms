@@ -20,7 +20,6 @@ services:
     image: postgres:15.1-alpine
     profiles: [ "dev","prod" ]
     container_name: dms_postgres
-    hostname: dms_postgres
     restart: always
     environment:
       POSTGRES_USER: root
@@ -42,7 +41,6 @@ services:
     image: redis:7.0.7
     profiles: [ "dev","prod" ]
     container_name: dms_redis
-    hostname: dms_redis
     restart: always
     ports:
       - 6379:6379
@@ -52,7 +50,6 @@ services:
     image: bitnami/minio:2024
     profiles: [ "dev","prod" ]
     container_name: dms_minio
-    hostname: dms_minio
     environment:
       - MINIO_ROOT_USER=admin
       - MINIO_ROOT_PASSWORD=password
@@ -66,7 +63,6 @@ services:
     image: basedt/dms-backend
     profiles: [ "prod" ]
     container_name: dms_backend
-    hostname: dms_backend
     depends_on:
       redis:
         condition: service_started
@@ -85,7 +81,6 @@ services:
     image: basedt/dms-frontend
     profiles: [ "prod" ]
     container_name: dms_frontend
-    hostname: dms_frontend
     depends_on:
       dms_backend:
         condition: service_healthy

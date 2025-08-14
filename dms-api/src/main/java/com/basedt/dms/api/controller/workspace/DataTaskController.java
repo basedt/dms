@@ -35,7 +35,9 @@ import com.basedt.dms.service.workspace.vo.DmsImportTaskVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,7 +46,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,6 +66,9 @@ public class DataTaskController {
     private final DmsDataTaskService dmsDataTaskService;
 
     private final MinioUtil minioUtil;
+
+    @Value("${minio.bucketName}")
+    private String bucketName;
 
     public DataTaskController(DmsDataTaskService dmsDataTaskService, MinioUtil minioUtil) {
         this.dmsDataTaskService = dmsDataTaskService;
@@ -110,7 +114,10 @@ public class DataTaskController {
         dmsDataTaskDTO.setTaskStatus(TaskStatus.WAIT.toDict());
         dmsDataTaskDTO.setTaskType(TaskType.IMPORT.toDict());
         Long taskId = this.dmsDataTaskService.insert(dmsDataTaskDTO);
-        this.dmsDataTaskService.createImportTask(taskId, importTaskVO, file);
+        // upload file to minio
+        String objectName = StrUtil.concat(true, "import/", String.valueOf(taskId), "/", file.getOriginalFilename());
+        minioUtil.uploadObject(this.bucketName, objectName, file.getInputStream());
+        this.dmsDataTaskService.createImportTask(taskId, importTaskVO, objectName);
         return new ResponseEntity<>(ResponseVO.success(), HttpStatus.OK);
     }
 
@@ -125,7 +132,7 @@ public class DataTaskController {
             String fileName = URLEncoder.encode(StrUtil.concat(true, dmsDataTaskDTO.getFileName(), ".zip"), StandardCharsets.UTF_8.name());
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName.replace("+", "%20"));
         } else {
-            String fileName = URLEncoder.encode(dmsDataTaskDTO.getFileName(), StandardCharsets.UTF_8.name());
+            String fileName = URLEncoder.encode(dmsDataTaskDTO.getFileName(), StandardCharsets.UTF_8);
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName.replace("+", "%20"));
         }
         try (InputStream inputStream = minioUtil.downloadObject(minioUtil.getBucketName(filePath), minioUtil.getObjectName(filePath))) {

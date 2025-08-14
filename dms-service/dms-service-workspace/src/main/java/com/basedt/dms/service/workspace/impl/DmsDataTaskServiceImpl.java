@@ -59,7 +59,6 @@ import org.apache.commons.beanutils.ResultSetDynaClass;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -149,15 +148,13 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
 
     @Override
     @Async("asyncExecutor")
-    public void createImportTask(Long taskId, DmsImportTaskVO dmsImportTaskVO, MultipartFile file) {
+    public void createImportTask(Long taskId, DmsImportTaskVO dmsImportTaskVO, String objectName) {
         DmsDataTaskDTO dmsDataTaskDTO = this.selectOne(taskId);
         try {
             dmsDataTaskDTO.setTaskStatus(TaskStatus.RUNNING.toDict());
             this.update(dmsDataTaskDTO);
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "data import task start..."));
-            //1. upload file to minio
-            String objectName = StrUtil.concat(true, "import/", String.valueOf(taskId), "/", file.getOriginalFilename());
-            minioUtil.uploadObject(this.bucketName, objectName, file.getInputStream());
+            //get file
             String tmpFilePath = System.getProperty("java.io.tmpdir");
             tmpFilePath += "dms" + File.separator + "import" + File.separator + taskId;
             FileUtil.mkdir(tmpFilePath);
@@ -167,7 +164,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
             String fileUrl = minioUtil.getObjectURI(this.bucketName, objectName);
             dmsDataTaskDTO.setFileUrl(fileUrl);
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("upload file to minio {}", fileUrl)));
-            //2. read file
+            //read file
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("begin read file {}", tmpFile.getCanonicalPath())));
             Map<String, Object> propMap = new HashMap<>();
             propMap.put("file", tmpFile);

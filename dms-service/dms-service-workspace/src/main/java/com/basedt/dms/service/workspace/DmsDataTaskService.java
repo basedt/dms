@@ -22,7 +22,6 @@ import com.basedt.dms.service.log.dto.LogDataTaskDTO;
 import com.basedt.dms.service.workspace.dto.DmsDataTaskDTO;
 import com.basedt.dms.service.workspace.param.DmsDataTaskParam;
 import com.basedt.dms.service.workspace.vo.DmsImportTaskVO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -42,7 +41,7 @@ public interface DmsDataTaskService {
 
     PageDTO<DmsDataTaskDTO> listByPage(DmsDataTaskParam param);
 
-    void createImportTask(Long taskId, DmsImportTaskVO dmsImportTaskVO, MultipartFile file) throws IOException, SQLException;
+    void createImportTask(Long taskId, DmsImportTaskVO dmsImportTaskVO, String objectName) throws IOException, SQLException;
 
     void createExportTask(Long taskId, String script) throws SQLException;
 

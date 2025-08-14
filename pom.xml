@@ -43,7 +43,7 @@
     </developers>
 
     <properties>
-        <reversion>v1.1.0</reversion>
+        <reversion>v1.1.1-SNAPSHOT</reversion>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

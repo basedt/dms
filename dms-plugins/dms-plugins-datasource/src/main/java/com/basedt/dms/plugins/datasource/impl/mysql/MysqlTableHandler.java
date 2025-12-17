@@ -135,6 +135,7 @@ public class MysqlTableHandler extends JdbcTableHandler {
                     .append(table.getSchemaName())
                     .append(Constants.SEPARATOR_DOT)
                     .append(table.getTableName())
+                    .append(MYSQL_QUOTE)
                     .append("(\n");
             if (!CollectionUtils.isEmpty(table.getColumns())) {
                 for (int i = 0; i < table.getColumns().size(); i++) {

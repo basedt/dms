@@ -12,6 +12,7 @@ import * as sqlFormatter from 'sql-formatter';
 import DmsGrid from '../DmsAgGrid';
 import './index.less';
 import suggestionsProvider from './suggestionsProvider';
+import { githubTheme } from './themes/GitHub';
 
 type CoderEditorProps = {
   theme: string;
@@ -24,24 +25,6 @@ type CoderEditorProps = {
   parentId?: string | number;
   keyId?: string;
   unSave: (d: string | number | undefined, type: string) => void;
-};
-
-const monacoThemes: Map<string, string> = new Map([
-  ['github', 'GitHub'],
-  ['clouds', 'Clouds'],
-  ['eiffel', 'Eiffel'],
-]);
-
-const defineTheme = (theme: string) => {
-  return new Promise<void>((res) => {
-    Promise.all([
-      loader.init(),
-      import(`monaco-themes/themes/${monacoThemes.get(theme)}.json`),
-    ]).then(([monaco, themeData]) => {
-      monaco.editor.defineTheme(theme, themeData);
-      res();
-    });
-  });
 };
 
 loader.config({ monaco });
@@ -165,10 +148,7 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
   };
 
   useEffect(() => {
-    //init themes
-    monacoThemes.forEach((value, key) => {
-      defineTheme(key);
-    });
+
     //初始化请求内容数据
     initialData();
 
@@ -181,6 +161,8 @@ const CodeEditor: React.FC<CoderEditorProps> = (props) => {
   useEffect(() => {
     if (monaco) {
       //config monaco
+      monaco.editor.defineTheme('github', githubTheme as monaco.editor.IStandaloneThemeData);
+      monaco.editor.setTheme('github');
     }
   }, [monaco]);
 

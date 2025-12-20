@@ -81,11 +81,11 @@ services:
     networks:
       - dms
   dms-backend:
-    image: basedt/dms-backend
+    image: ghcr.io/basedt/dms/dms-backend
     profiles: [ "prod" ]
     container_name: dms_backend
-    volumes:
-      - ./application-docker.yml:/opt/app/dms/application-docker.yml
+#    volumes:
+#      - ./application-docker.yml:/opt/app/dms/application-docker.yml
     depends_on:
       redis:
         condition: service_started
@@ -101,7 +101,7 @@ services:
     networks:
       - dms
   dms-frontend:
-    image: basedt/dms-frontend
+    image: ghcr.io/basedt/dms/dms-frontend
     profiles: [ "prod" ]
     container_name: dms_frontend
     depends_on:

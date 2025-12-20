@@ -7,8 +7,8 @@ import routes from './routes';
 const { REACT_APP_ENV = 'dev' } = process.env;
 
 const socketServerMap = {
-  dev: 'http://localhost:8366/sql',
-  pre: 'http://localhost:8366/sql',
+  dev: 'http://localhost:8366',
+  pre: '',
   // pre: 'http://dms-backend:8366/sql',
 };
 
@@ -132,7 +132,7 @@ export default defineConfig({
   // ],
   define: {
     'process.env.SOCKET_IO_SERVER':
-      socketServerMap[(REACT_APP_ENV as keyof typeof socketServerMap) || 'dev'],
+      socketServerMap[(REACT_APP_ENV as keyof typeof socketServerMap)],
   },
   mfsu: {
     strategy: 'normal',

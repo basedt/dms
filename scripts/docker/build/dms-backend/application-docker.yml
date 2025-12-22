@@ -130,7 +130,7 @@ spring:
     default-encoding: UTF-8
 
 socket.io:
-  host: dms-backend
+  host: 0.0.0.0
   port: 8366
   workerThreads: 100
 

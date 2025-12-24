@@ -55,10 +55,10 @@
         <maven.frontend.plugin>1.9.1</maven.frontend.plugin>
         <spring.boot.version>3.3.9</spring.boot.version>
         <druid.spring.boot.version>1.2.24</druid.spring.boot.version>
-        <mysql.version>8.0.28</mysql.version>
+        <mysql.version>8.0.33</mysql.version>
         <postgresql.version>42.3.3</postgresql.version>
         <guava.version>31.0-jre</guava.version>
-        <commons.beanutils.version>1.9.4</commons.beanutils.version>
+        <commons.beanutils.version>1.11.0</commons.beanutils.version>
         <hutool.version>5.8.36</hutool.version>
         <sqids.version>0.1.0</sqids.version>
         <mapstruct.extensions.spring.version>0.1.1</mapstruct.extensions.spring.version>

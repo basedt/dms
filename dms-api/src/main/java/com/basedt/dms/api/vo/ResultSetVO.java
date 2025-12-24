@@ -46,7 +46,7 @@ public class ResultSetVO {
     private List<JSONObject> data;
 
     public ResultSetVO(ResultSet rs, Boolean editable) throws SQLException {
-        ResultSetDynaClass resultSetDynaClass = new ResultSetDynaClass(rs);
+        ResultSetDynaClass resultSetDynaClass = new ResultSetDynaClass(rs, true, true);
         DynaProperty[] cols = resultSetDynaClass.getDynaProperties();
         this.columns = new ArrayList<>(cols.length);
         for (DynaProperty col : cols) {

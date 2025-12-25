@@ -243,7 +243,7 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
             pstm = connection.prepareStatement(sql);
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("execute query {}", sql)));
             rs = pstm.executeQuery();
-            ResultSetDynaClass resultSetDynaClass = new ResultSetDynaClass(rs);
+            ResultSetDynaClass resultSetDynaClass = new ResultSetDynaClass(rs, true, true);
             Iterator<DynaBean> iterator = resultSetDynaClass.iterator();
             if (Objects.nonNull(dmsDataTaskDTO.getSplitRow()) && dmsDataTaskDTO.getSplitRow() > 0) {
                 //split file

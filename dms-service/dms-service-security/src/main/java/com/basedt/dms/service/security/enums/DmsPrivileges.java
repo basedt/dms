@@ -59,6 +59,10 @@ public enum DmsPrivileges {
     WORKSPACE_DATASOURCE_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_DATASOURCE, BlockCode.DEFAULT, SHOW)),
     @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_HISTORY, block = BlockCode.DEFAULT, action = SHOW, parent = WORKSPACE_SHOW)
     WORKSPACE_HISTORY_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_HISTORY, BlockCode.DEFAULT, SHOW)),
+    @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_EXPORT, block = BlockCode.DEFAULT, action = SHOW, parent = WORKSPACE_SHOW)
+    WORKSPACE_EXPORT_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_EXPORT, BlockCode.DEFAULT, SHOW)),
+    @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_IMPORT, block = BlockCode.DEFAULT, action = SHOW, parent = WORKSPACE_SHOW)
+    WORKSPACE_IMPORT_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_IMPORT, BlockCode.DEFAULT, SHOW)),
     /**
      * action privileges
      */
@@ -119,7 +123,11 @@ public enum DmsPrivileges {
     @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_DATASOURCE, block = DATASOURCE_LIST, action = DELETE, parent = WORKSPACE_DATASOURCE_SHOW)
     WORKSPACE_WS_DATASOURCE_DELETE(getPrivilegeCode(WORKSPACE, WORKSPACE_DATASOURCE, DATASOURCE_LIST, DELETE)),
     @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_HISTORY, block = HISTORY_LIST, action = SHOW, parent = WORKSPACE_HISTORY_SHOW)
-    WORKSPACE_WS_HISTORY_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_HISTORY, HISTORY_LIST, SHOW));
+    WORKSPACE_WS_HISTORY_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_HISTORY, HISTORY_LIST, SHOW)),
+    @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_EXPORT, block = EXPORT_LIST, action = SHOW, parent = WORKSPACE_EXPORT_SHOW)
+    WORKSPACE_WS_EXPORT_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_EXPORT, EXPORT_LIST, SHOW)),
+    @PrivilegeDesc(module = WORKSPACE, page = WORKSPACE_IMPORT, block = IMPORT_LIST, action = SHOW, parent = WORKSPACE_IMPORT_SHOW)
+    WORKSPACE_WS_IMPORT_SHOW(getPrivilegeCode(WORKSPACE, WORKSPACE_IMPORT, IMPORT_LIST, SHOW));
 
     private final String code;
 

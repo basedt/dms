@@ -29,8 +29,8 @@ public enum BlockCode {
     WORKSPACE_LIST("wpi", "dms.p.ws.wss.wpi.show"),
     DATASOURCE_LIST("wdl", "dms.p.ws.wsd.wdl.show"),
     HISTORY_LIST("whl", "dms.p.ws.wsh.whl.show"),
-    EXPORT_LIST("whl", "dms.p.ws.wsh.whl.show"),
-    IMPORT_LIST("whl", "dms.p.ws.wsh.whl.show"),
+    EXPORT_LIST("whe", "dms.p.ws.wse.whe.show"),
+    IMPORT_LIST("whi", "dms.p.ws.wsi.whi.show"),
     ;
 
     private final String value;

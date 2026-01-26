@@ -77,7 +77,9 @@
                 <configuration>
                     <mainClass>com.basedt.dms.DmsApplication</mainClass>
                     <layout>ZIP</layout>
-                    <jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+                    <jvmArguments>
+                        <jvmArgument>-Dfile.encoding=UTF-8</jvmArgument>
+                    </jvmArguments>
                     <excludes>
                         <exclude>
                             <groupId>org.springframework.boot</groupId>

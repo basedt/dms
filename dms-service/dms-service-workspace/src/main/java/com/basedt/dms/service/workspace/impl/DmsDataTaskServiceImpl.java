@@ -156,6 +156,9 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "data import task start..."));
             //get file
             String tmpFilePath = System.getProperty("java.io.tmpdir");
+            if (!tmpFilePath.endsWith(File.separator)) {
+                tmpFilePath += File.separator;
+            }
             tmpFilePath += "dms" + File.separator + "import" + File.separator + taskId;
             FileUtil.mkdir(tmpFilePath);
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("local temp file folder is {}", tmpFilePath)));
@@ -207,6 +210,8 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
                 this.logDataTaskService.insert(new LogDataTaskDTO(taskId, "data import completed."));
                 FileUtil.del(tmpFilePath);
                 dmsDataTaskDTO.setTaskStatus(TaskStatus.SUCCESS.toDict());
+            } catch (Exception e) {
+                this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("[{}] exception:{}", e.getMessage())));
             }
         } catch (Exception e) {
             this.logDataTaskService.insert(new LogDataTaskDTO(taskId, StrUtil.format("[{}] exception:{}", e.getMessage())));
@@ -223,6 +228,9 @@ public class DmsDataTaskServiceImpl implements DmsDataTaskService {
         dmsDataTaskDTO.setSqlScript(script);
         // 1. create local tmp folder
         String tmpFilePath = System.getProperty("java.io.tmpdir");
+        if (!tmpFilePath.endsWith(File.separator)) {
+            tmpFilePath += File.separator;
+        }
         tmpFilePath += "dms" + File.separator + "export" + File.separator + taskId;
         FileUtil.mkdir(tmpFilePath);
         //2.set task status running

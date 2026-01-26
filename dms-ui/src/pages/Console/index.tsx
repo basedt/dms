@@ -313,7 +313,7 @@ const DmsConsoleView: React.FC = () => {
                           id: 'dms.common.operate.delete.confirm.content',
                         }),
                         onOk: () => {
-                          WorkspaceService.deleteBatch(selectedRowKeys).then((resp) => {
+                          WorkspaceService.deleteBatch(selectedRowKeys as string[]).then((resp) => {
                             if (resp.success) {
                               message.success(
                                 intl.formatMessage({

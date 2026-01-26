@@ -104,6 +104,9 @@ public class DataTaskController {
     @Operation(summary = "new data import task", description = "new data import task")
     @PreAuthorize("@sec.validate(T(com.basedt.dms.service.security.enums.DmsPrivileges).WORKSPACE_SHOW)")
     public ResponseEntity<ResponseVO<Object>> newImportTask(@Validated DmsImportTaskVO importTaskVO, @RequestPart("file") MultipartFile file) throws IOException, SQLException {
+        if (file.isEmpty()) {
+            return new ResponseEntity<>(ResponseVO.error("Uploaded file cannot be empty"), HttpStatus.BAD_REQUEST);
+        }
         DmsDataTaskDTO dmsDataTaskDTO = new DmsDataTaskDTO();
         dmsDataTaskDTO.setWorkspaceId(importTaskVO.getWorkspaceId());
         dmsDataTaskDTO.setDatasourceId(importTaskVO.getDatasourceId());
@@ -113,6 +116,15 @@ public class DataTaskController {
         dmsDataTaskDTO.setFileSize(file.getSize());
         dmsDataTaskDTO.setTaskStatus(TaskStatus.WAIT.toDict());
         dmsDataTaskDTO.setTaskType(TaskType.IMPORT.toDict());
+        if (dmsDataTaskDTO.getFileSize() > 200 * 1024 * 1024) {
+            return new ResponseEntity<>(ResponseVO.error("Uploaded file size cannot exceed 200MB"), HttpStatus.BAD_REQUEST);
+        }
+        if (!("csv".equalsIgnoreCase(dmsDataTaskDTO.getFileType().getValue())
+                || "xls".equalsIgnoreCase(dmsDataTaskDTO.getFileType().getValue())
+                || "xlsx".equalsIgnoreCase(dmsDataTaskDTO.getFileType().getValue())
+        )) {
+            return new ResponseEntity<>(ResponseVO.error("File types are not supported"), HttpStatus.BAD_REQUEST);
+        }
         Long taskId = this.dmsDataTaskService.insert(dmsDataTaskDTO);
         // upload file to minio
         String objectName = StrUtil.concat(true, "import/", String.valueOf(taskId), "/", file.getOriginalFilename());

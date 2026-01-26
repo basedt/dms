@@ -245,23 +245,29 @@ const DataImportModal: React.FC<DMS.ModalProps<DataImportModalProps>> = (props) 
             maxCount={1}
             accept=".csv,.xlsx,.xls"
             beforeUpload={(fileInfo) => {
-              let flag = true;
               if (fileInfo.size > 1024 * 1024 * 200) {
-                flag = false;
                 message.error(
                   intl.formatMessage({
                     id: 'dms.console.workspace.import.file.sizeLimit',
                   }),
                 );
+                return Upload.LIST_IGNORE;
               } else {
                 setUploadFile(fileInfo);
               }
-              return flag || Upload.LIST_IGNORE;
+              return false; // 阻止自动上传
             }}
             onChange={(info) => {
-              const fileType = info.file.name.split('.').pop();
-              formRef.current?.setFieldValue('fileType', fileType == 'csv' ? 'csv' : 'xlsx');
-              setSeparatorStatus(fileType === 'csv');
+              console.log('change info', info);
+              if (info.fileList.length >= 1) {
+                const fileType = info.file.name.split('.').pop();
+                formRef.current?.setFieldValue('fileType', fileType == 'csv' ? 'csv' : 'xlsx');
+                setSeparatorStatus(fileType === 'csv');
+              } else {
+                formRef.current?.setFieldValue('fileType', undefined);
+                formRef.current?.setFieldValue('file', undefined);
+                setSeparatorStatus(true);
+              }
             }}
           >
             <Button icon={<UploadOutlined />}>

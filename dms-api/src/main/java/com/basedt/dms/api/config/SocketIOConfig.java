@@ -32,6 +32,21 @@ public class SocketIOConfig {
     @Value("${socket.io.port}")
     private Integer port;
 
+    @Value("${socket.io.workerThreads}")
+    private Integer workerThreads;
+
+    @Value("${socket.io.pingInterval}")
+    private Integer pingInterval;
+
+    @Value("${socket.io.pingTimeout}")
+    private Integer pingTimeout;
+
+    @Value("${socket.io.maxHttpContentLength}")
+    private Integer maxHttpContentLength;
+
+    @Value("${socket.io.maxFramePayloadLength}")
+    private Integer maxFramePayloadLength;
+
     private final SocketAuthorizationListener socketAuthorizationListener;
 
     public SocketIOConfig(SocketAuthorizationListener socketAuthorizationListener) {
@@ -43,7 +58,13 @@ public class SocketIOConfig {
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
         config.setHostname(host);
         config.setPort(port);
+        config.setWorkerThreads(workerThreads);
+        config.setPingInterval(pingInterval);
+        config.setPingTimeout(pingTimeout);
+        config.setMaxHttpContentLength(maxHttpContentLength);
+        config.setMaxFramePayloadLength(maxFramePayloadLength);
         config.setAuthorizationListener(socketAuthorizationListener);
         return new SocketIOServer(config);
     }
+
 }

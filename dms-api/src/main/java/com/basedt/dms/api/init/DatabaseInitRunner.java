@@ -19,19 +19,19 @@ package com.basedt.dms.api.init;
 
 import com.basedt.dms.plugins.datasource.utils.JdbcUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.jdbc.ScriptRunner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ClassUtils;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Order(1)
@@ -55,17 +55,13 @@ public class DatabaseInitRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         if (isNeedInit()) {
             log.info("Initialize database script");
-            List<InputStream> inList = new ArrayList<>();
-            inList.add(ClassUtils.getDefaultClassLoader().getResourceAsStream("db/init/dms.sql"));
-            inList.add(ClassUtils.getDefaultClassLoader().getResourceAsStream("db/init/dms_quartz.sql"));
+            Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:db/init/*.sql");
+            List<Resource> sortedResources = Arrays.stream(resources).sorted(Comparator.comparing(Resource::getFilename, Comparator.nullsLast(String::compareTo))).toList();
             Connection conn = null;
             try {
                 conn = JdbcUtil.getConnection(this.jdbc_url, this.driverClassName, this.userName, this.password, null);
-                for (InputStream in : inList) {
-                    ScriptRunner scriptRunner = new ScriptRunner(conn);
-                    scriptRunner.setSendFullScript(true);
-                    scriptRunner.setLogWriter(null);
-                    scriptRunner.runScript(new InputStreamReader(in));
+                for (Resource resource : sortedResources) {
+                    ScriptUtils.executeSqlScript(conn, resource);
                 }
             } catch (Exception e) {
                 log.info("sql script init error : {}", e.getMessage());

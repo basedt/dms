@@ -30,8 +30,9 @@
         <result column="file_type" property="fileType"/>
         <result column="file_size" property="fileSize"/>
         <result column="file_url" property="fileUrl"/>
+        <result column="split_row" property="splitRow"/>
+        <result column="file_encoding" property="fileEncoding"/>
         <result column="task_status" property="taskStatus"/>
         <result column="task_type" property="taskType"/>
     </resultMap>
-
 </mapper>

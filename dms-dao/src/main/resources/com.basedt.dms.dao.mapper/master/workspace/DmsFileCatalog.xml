@@ -28,5 +28,4 @@
         <result column="pid" property="pid"/>
         <result column="workspace_id" property="workspaceId"/>
     </resultMap>
-
 </mapper>

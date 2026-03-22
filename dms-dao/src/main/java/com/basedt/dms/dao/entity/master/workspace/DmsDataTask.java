@@ -23,7 +23,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @TableName(value = "dms_data_task", resultMap = "dmsDataTaskMap")
 public class DmsDataTask extends BaseDO {
 

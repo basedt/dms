@@ -80,4 +80,6 @@ export default {
   'dms.common.operate.sql.success': 'Success',
   'dms.common.operate.sql.failure': 'Failed',
   'dms.common.operate.new.row': 'Add New Record',
+    'dms.common.text.yes': 'Yes',
+  'dms.common.text.no': 'No',
 };

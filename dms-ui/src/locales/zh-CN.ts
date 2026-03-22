@@ -78,4 +78,6 @@ export default {
   'dms.common.operate.sql.success': '成功',
   'dms.common.operate.sql.failure': '失败',
   'dms.common.operate.new.row': '新增一行数据',
+  'dms.common.text.yes': '是',
+  'dms.common.text.no': '否',
 };

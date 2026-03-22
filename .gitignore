@@ -37,3 +37,4 @@ hs_err_pid*
 
 /scripts/docker/thirdparties/doris/docker-compose-doris.yaml
 /dms-api/src/main/resources/application-local.yml
+/.kilocode/

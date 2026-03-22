@@ -1,5 +1,5 @@
 export default {
-  'dms.workspace': 'Workspace',
+  'dms.workspace': ' Workspace',
   'dms.console.workspace.workspaceCode': 'Code',
   'dms.console.workspace.workspaceName': 'Name',
   'dms.console.workspace.owner': 'Owner',

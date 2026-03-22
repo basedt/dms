@@ -10,6 +10,18 @@ import { errorConfig } from "./requestErrorConfig";
 import { AuthService } from "./services/admin/auth.service";
 const whiteList: string[] = ["/user/login", "/user/register"];
 
+// Temporary fix for findDOMNode deprecation warning in development
+// This only runs in development mode and will not affect production builds
+if (process.env.NODE_ENV === 'development') {
+  const originalConsoleError = console.error;
+  console.error = (...args) => {
+    if (args[0]?.includes?.('findDOMNode is deprecated')) {
+      return;
+    }
+    originalConsoleError.apply(console, args);
+  };
+}
+
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
@@ -91,7 +103,7 @@ export const layout: RunTimeLayoutConfig = ({
     },
     rightContentRender: () => <RightContent />,
     menuFooterRender: (props) => {
-      false;
+      return false;
     },
     onPageChange: () => {
       const { location } = history;

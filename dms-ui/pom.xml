@@ -12,9 +12,9 @@
     <artifactId>dms-ui</artifactId>
 
     <properties>
-        <build.node.version>v18.20.5</build.node.version>
-        <build.pnpm.version>v9.10.0</build.pnpm.version>
-        <eirslett.frontend.version>1.12.1</eirslett.frontend.version>
+        <build.node.version>v20.19.6</build.node.version>
+        <build.pnpm.version>10.26.2</build.pnpm.version>
+        <eirslett.frontend.version>1.15.4</eirslett.frontend.version>
     </properties>
 
     <build>

@@ -35,5 +35,4 @@
         <result column="remark" property="remark"/>
         <result column="attrs" property="attrs"/>
     </resultMap>
-
 </mapper>

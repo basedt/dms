@@ -220,7 +220,7 @@ const DmsDictDataView: React.FC = () => {
                         id: 'dms.common.operate.delete.confirm.content',
                       }),
                       onOk: () => {
-                        DictDataService.deleteBatch(selectedRowKeys).then((resp) => {
+                        DictDataService.deleteBatch(selectedRowKeys as (string | number)[]).then((resp) => {
                           if (resp.success) {
                             message.success(
                               intl.formatMessage({

@@ -29,5 +29,4 @@
         <result column="owner" property="owner"/>
         <result column="remark" property="remark"/>
     </resultMap>
-
 </mapper>

@@ -140,6 +140,7 @@ export default [
       },
     ],
   },
+
   {
     path: "/user/center",
     component: "./User",
